@@ -1,0 +1,60 @@
+const CONSTANT = {
+  status: {
+    pending: 2,
+    active: 1,
+    deleted: 0,
+    false: false,
+    true: true,
+  },
+  RESERVED_ACCOUNT: "RESERVED_ACCOUNT",
+  WEB_SDK: "WEB_SDK",
+  AccountFunding: "Account-Funding",
+  successMessage: {
+    airtimePurchase: "Your Airtime Purchase is successful",
+    dataPurchase: "Your Data Purchase was successful",
+    electricityPurchase: "Your Electricity Units Purchase was successful",
+    tvSubscriptionPurchase: "Your Television Subscription was successful",
+  },
+  transactionStatus: {
+    failed: "Failed",
+    pending: "Pending",
+    success: "Successful",
+  },
+  transactionPinSize: 6,
+  fundingSource: [
+    { name: "Self", type: "self" },
+    { name: "pay For Me", type: "payForMe" },
+  ],
+  defaultProfileImage:
+    "https://res.cloudinary.com/cvtechdom/image/upload/v1584379801/Cervitech_AndroidApp/bupwntkxpcmklgc0o3u0.png",
+
+  transactionalMailContent: `
+    Dear [user_name], \n
+    
+    We are writing to confirm that your payment for the [service_name] has been successfully processed on our platform. Below are the details of your transaction:
+    \n\n\n
+        Amount of Service: [amount] \n
+        Service Name: [service_name]\n
+        Transaction Date: [transaction_date] \n
+        Amount Before: [amount_before]\n
+        Amount After: [amount_after]\n
+        Transaction Reference: [trans_ref]\n \n\n\n
+    
+    Please keep this email as your receipt for the payment made. If you have any questions or concerns regarding the transaction, please do not hesitate to reach out to our customer support team at [support_mail].
+    
+    Thank you for using our platform to pay your utility bills. We appreciate your business.
+    
+    Best regards,
+    UfitSub`,
+
+  supportEmail: "support@ufitsub.com",
+  monnifyPaymentStatus: { paid: "PAID", expired: "EXPIRED" },
+  monnifyBillTypes: {
+    airtime: "Airtime",
+    data: "Data-Bundle",
+    electricity: "Electricity",
+    television: "Tv-Subscription",
+  },
+};
+
+module.exports = { CONSTANT };
