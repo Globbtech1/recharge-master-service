@@ -1,0 +1,45 @@
+{
+  "development": {
+    "username": "root",
+    "password": "",
+    "database": "rechargeMaster",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+      "logging": false,
+      "define": {
+        "freezeTableName": true
+      }
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "define": {
+        "freezeTableName": true
+    }
+  },
+  "staging": {
+    "username": "prudence_ufit_coreUser",
+    "password": "rHyeJQ6#FvH9",
+    "database": "prudence_ufitsubcore",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "logging": true,
+    "define": {
+      "freezeTableName": true
+    }
+  },
+  "production": {
+    "username": "noisystr_root",
+    "password": "&WxM7Z4=8DoZ",
+    "database": "noisystr_backend",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "logging": false,
+    "define": {
+      "freezeTableName": true
+    }
+  }
+}
