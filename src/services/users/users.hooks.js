@@ -9,7 +9,10 @@ const processUser = require("../../hooks/process-user");
 const generateDefaultpassword = require("../../hooks/generate-defaultpassword");
 
 const proccessEmail = require("../../hooks/proccess-email");
-const { insertIntoVerification } = require("../../hooks/general-uses");
+const {
+  insertIntoVerification,
+  SendGeneralResponse,
+} = require("../../hooks/general-uses");
 // const { VerificationMailBodyContent } = require('../../dependency/templates/templates');
 
 // SendEmail(Payloads, Mailbody, "Welcome to Krib- Let’s complete your account setup.");
@@ -19,6 +22,7 @@ const {
   getUserNecessaryInformation,
 } = require("../../hooks/userManagement.hook");
 const { FundUserAccount } = require("../../hooks/userFund.hook");
+const { CONSTANT } = require("../../dependency/Config");
 module.exports = {
   before: {
     all: [],
@@ -30,7 +34,7 @@ module.exports = {
       authenticate("jwt"),
       // getUserNecessaryInformation()
     ],
-    create: [hashPassword("password"), processUser()],
+    create: [processUser(), hashPassword("password")],
     update: [hashPassword("password"), authenticate("jwt")],
     patch: [
       hashPassword("password"),
@@ -56,6 +60,9 @@ module.exports = {
       insertIntoVerification(),
       FundUserAccount(),
       proccessEmail({ mailtype: "userCreation" }),
+      SendGeneralResponse({
+        message: CONSTANT.successMessage.userRegistrationSuccess,
+      }),
     ],
     update: [],
     patch: [],

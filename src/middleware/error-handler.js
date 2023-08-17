@@ -12,8 +12,8 @@ const Sentry = require("@sentry/node");
 function sentryErrorHandler() {
   console.log("enter middle whareee");
   return function (err, req, res, next) {
-    console.log(err, "err.........");
-    console.log("enter middle whareee????");
+    // console.log(err, "err.........");
+    // console.log("enter middle whareee????");
     Sentry.captureException(err);
     res.status(err.code || 500).json({ error: err.message });
   };

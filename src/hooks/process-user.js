@@ -7,7 +7,7 @@ const { signupValidationSchema } = require("../validations/auth.validation");
 module.exports = (options = {}) => {
   return async (context) => {
     const { data } = context;
-    console.log(data, "data");
+    // console.log(data, "data");
     // SendEmail
     const { error } = signupValidationSchema(data);
     if (error) {

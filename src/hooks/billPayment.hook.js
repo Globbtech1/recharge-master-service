@@ -128,7 +128,7 @@ const logErrorToDb = (options = {}) => {
   return async (context) => {
     try {
       const { app, method, result, params, data, id, error } = context;
-      console.log(error, "errormmmmmmm");
+      // console.log(error, "errormmmmmmm");
       Sentry.captureException(error);
       const sequelize = app.get("sequelizeClient");
       const { account_balance } = sequelize.models;

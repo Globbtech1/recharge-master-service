@@ -21,6 +21,7 @@ const authentication = require("./authentication");
 
 const sequelize = require("./sequelize");
 const sentryErrorHandler = require("./middleware/error-handler");
+const customErrorHandler = require("./middleware/custom-error-handler");
 
 const app = express(feathers());
 
@@ -70,6 +71,7 @@ app.use(Sentry.Handlers.errorHandler());
 app.configure(services);
 // Set up event channels (see channels.js)
 app.configure(channels);
+app.use(customErrorHandler());
 
 // Configure a middleware for 404s and the error handler
 app.use(express.notFound());

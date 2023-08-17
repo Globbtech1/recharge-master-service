@@ -15,8 +15,8 @@ const { successMessage } = require("../dependency/UtilityFunctions");
 
 module.exports = (options = {}) => {
   return async (context) => {
-    console.log(context, "context");
-    console.log(options, "options");
+    // console.log(context, "context");
+    // console.log(options, "options");
     const { mailtype } = options;
     const { result } = context;
     const { data } = context;
@@ -48,7 +48,6 @@ module.exports = (options = {}) => {
       mailSubject = "Change User Email";
     }
     if (mailtype === "resetEmail") {
-      console.log(data, "data");
       Payloads = {
         userEmail: [
           {
