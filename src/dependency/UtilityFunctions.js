@@ -15,6 +15,10 @@ const errorMessage = (message = "", reason = "", statusCode = 400) => {
   return reponse;
   // throw new Error(message);
 };
+const errorMessageV2 = (message = "", data = null) => {
+  let response = { success: false, data: data, message: message };
+  return response;
+};
 
 const handleError = (error) => {
   let message;
@@ -191,4 +195,5 @@ module.exports = {
   getProviderCashBack,
   getCurrentMonth,
   getCurrentYear,
+  errorMessageV2,
 };

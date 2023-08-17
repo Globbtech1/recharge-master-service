@@ -14,6 +14,7 @@ const CONSTANT = {
     dataPurchase: "Your Data Purchase was successful",
     electricityPurchase: "Your Electricity Units Purchase was successful",
     tvSubscriptionPurchase: "Your Television Subscription was successful",
+    userRegistrationSuccess: "Registration successfully",
   },
   transactionStatus: {
     failed: "Failed",
