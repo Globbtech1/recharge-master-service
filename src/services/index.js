@@ -9,8 +9,6 @@ const updateUserProfile = require("./update-user-profile/update-user-profile.ser
 
 const userProfile = require("./user-profile/user-profile.service.js");
 
-const setSecurityPin = require("./set-security-pin/set-security-pin.service.js");
-
 const changeSecurityPin = require("./change-security-pin/change-security-pin.service.js");
 
 const changeUserPassword = require("./change-user-password/change-user-password.service.js");
@@ -75,57 +73,59 @@ const userChangeUserProfilePix = require("./user/change-user-profile-pix/change-
 
 const userDeleteUserAccount = require("./user/delete-user-account/delete-user-account.service.js");
 
-const verifySecurityPin = require('./verify-security-pin/verify-security-pin.service.js');
+const verifySecurityPin = require("./verify-security-pin/verify-security-pin.service.js");
 
-const electricityBuyElectricity = require('./electricity/buy-electricity/buy-electricity.service.js');
+const electricityBuyElectricity = require("./electricity/buy-electricity/buy-electricity.service.js");
 
-const electricityProviders = require('./electricity/providers/providers.service.js');
+const electricityProviders = require("./electricity/providers/providers.service.js");
 
-const tvSubscriptionBuyTvSubscription = require('./tv-subscription/buy-tv-subscription/buy-tv-subscription.service.js');
+const tvSubscriptionBuyTvSubscription = require("./tv-subscription/buy-tv-subscription/buy-tv-subscription.service.js");
 
-const tvSubscriptionProviders = require('./tv-subscription/providers/providers.service.js');
+const tvSubscriptionProviders = require("./tv-subscription/providers/providers.service.js");
 
-const tvSubscriptionProviderProductTypes = require('./tv-subscription/provider-product-types/provider-product-types.service.js');
+const tvSubscriptionProviderProductTypes = require("./tv-subscription/provider-product-types/provider-product-types.service.js");
 
-const tvSubscriptionMyBeneficiaries = require('./tv-subscription/my-beneficiaries/my-beneficiaries.service.js');
+const tvSubscriptionMyBeneficiaries = require("./tv-subscription/my-beneficiaries/my-beneficiaries.service.js");
 
-const electricityValidateMeterNumber = require('./electricity/validate-meter-number/validate-meter-number.service.js');
+const electricityValidateMeterNumber = require("./electricity/validate-meter-number/validate-meter-number.service.js");
 
-const electricityMyBeneficiaries = require('./electricity/my-beneficiaries/my-beneficiaries.service.js');
+const electricityMyBeneficiaries = require("./electricity/my-beneficiaries/my-beneficiaries.service.js");
 
-const tvSubscriptionProductTypeBundles = require('./tv-subscription/product-type-bundles/product-type-bundles.service.js');
+const tvSubscriptionProductTypeBundles = require("./tv-subscription/product-type-bundles/product-type-bundles.service.js");
 
-const tvSubscriptionValidateTvDetails = require('./tv-subscription/validate-tv-details/validate-tv-details.service.js');
+const tvSubscriptionValidateTvDetails = require("./tv-subscription/validate-tv-details/validate-tv-details.service.js");
 
-const guestAirtimeBuyAirtime = require('./guest/airtime/buy-airtime/buy-airtime.service.js');
+const guestAirtimeBuyAirtime = require("./guest/airtime/buy-airtime/buy-airtime.service.js");
 
-const guestAirtimeProviders = require('./guest/airtime/providers/providers.service.js');
+const guestAirtimeProviders = require("./guest/airtime/providers/providers.service.js");
 
-const guestDataBuyData = require('./guest/data/buy-data/buy-data.service.js');
+const guestDataBuyData = require("./guest/data/buy-data/buy-data.service.js");
 
-const guestDataProviders = require('./guest/data/providers/providers.service.js');
+const guestDataProviders = require("./guest/data/providers/providers.service.js");
 
-const guestDataBundles = require('./guest/data/bundles/bundles.service.js');
+const guestDataBundles = require("./guest/data/bundles/bundles.service.js");
 
-const guestElectricityBuyElectricity = require('./guest/electricity/buy-electricity/buy-electricity.service.js');
+const guestElectricityBuyElectricity = require("./guest/electricity/buy-electricity/buy-electricity.service.js");
 
-const guestElectricityProviders = require('./guest/electricity/providers/providers.service.js');
+const guestElectricityProviders = require("./guest/electricity/providers/providers.service.js");
 
-const guestElectricityVerifyMeterNumber = require('./guest/electricity/verify-meter-number/verify-meter-number.service.js');
+const guestElectricityVerifyMeterNumber = require("./guest/electricity/verify-meter-number/verify-meter-number.service.js");
 
-const guestTvTvSubscription = require('./guest/tv/tv-subscription/tv-subscription.service.js');
+const guestTvTvSubscription = require("./guest/tv/tv-subscription/tv-subscription.service.js");
 
-const guestTvProviders = require('./guest/tv/providers/providers.service.js');
+const guestTvProviders = require("./guest/tv/providers/providers.service.js");
 
-const guestTvVerifyTvDetails = require('./guest/tv/verify-tv-details/verify-tv-details.service.js');
+const guestTvVerifyTvDetails = require("./guest/tv/verify-tv-details/verify-tv-details.service.js");
 
-const guestTvProviderProductTypes = require('./guest/tv/provider-product-types/provider-product-types.service.js');
+const guestTvProviderProductTypes = require("./guest/tv/provider-product-types/provider-product-types.service.js");
 
-const guestTvProductTypeBundles = require('./guest/tv/product-type-bundles/product-type-bundles.service.js');
+const guestTvProductTypeBundles = require("./guest/tv/product-type-bundles/product-type-bundles.service.js");
 
-const guestConfirm = require('./guest/confirm/confirm.service.js');
+const guestConfirm = require("./guest/confirm/confirm.service.js");
 
-const guestGuestPurchase = require('./guest/guest-purchase/guest-purchase.service.js');
+const guestGuestPurchase = require("./guest/guest-purchase/guest-purchase.service.js");
+
+const userCreateTransactionPin = require("./user/create-transaction-pin/create-transaction-pin.service.js");
 
 module.exports = function (app) {
   app.configure(users);
@@ -134,7 +134,6 @@ module.exports = function (app) {
   app.configure(testing);
   app.configure(updateUserProfile);
   app.configure(userProfile);
-  app.configure(setSecurityPin);
   app.configure(changeSecurityPin);
   app.configure(changeUserPassword);
   app.configure(paymentList);
@@ -193,4 +192,5 @@ module.exports = function (app) {
   app.configure(guestTvProductTypeBundles);
   app.configure(guestConfirm);
   app.configure(guestGuestPurchase);
+  app.configure(userCreateTransactionPin);
 };

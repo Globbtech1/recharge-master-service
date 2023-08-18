@@ -1,14 +1,14 @@
-const logger = require("../../logger");
 const { BadRequest, NotFound } = require("@feathersjs/errors");
+const { CONSTANT } = require("../../../dependency/Config");
 const {
-  successMessage,
   errorMessage,
+  successMessage,
   hashData,
-} = require("../../dependency/UtilityFunctions");
-const { CONSTANT } = require("../../dependency/Config");
+} = require("../../../dependency/UtilityFunctions");
+const logger = require("../../../logger");
 
 /* eslint-disable no-unused-vars */
-exports.SetSecurityPin = class SetSecurityPin {
+exports.CreateTransactionPin = class CreateTransactionPin {
   constructor(options, app) {
     this.options = options || {};
     this.app = app || {};
@@ -27,21 +27,21 @@ exports.SetSecurityPin = class SetSecurityPin {
 
   async create(data, params) {
     const { user } = params;
-    const { securityNumber, confirmSecurityNumber } = data;
+    const { pinNumber, confirmPinNumber } = data;
     logger.info("data", user);
     const loggedInUserId = user?.id;
     const sequelize = this.app.get("sequelizeClient");
-    if (securityNumber.length !== CONSTANT.transactionPinSize) {
+    if (pinNumber.length !== CONSTANT.transactionPinSize) {
       throw new BadRequest(
         `Transaction PIN must be ${CONSTANT.transactionPinSize} digits`
       );
     }
-    if (confirmSecurityNumber.length !== CONSTANT.transactionPinSize) {
+    if (confirmPinNumber.length !== CONSTANT.transactionPinSize) {
       throw new BadRequest(
         `Confirm Transaction PIN must be ${CONSTANT.transactionPinSize} digits`
       );
     }
-    if (securityNumber !== confirmSecurityNumber) {
+    if (pinNumber !== confirmPinNumber) {
       throw new BadRequest("Transaction PIN does not match");
     }
 
@@ -57,12 +57,11 @@ exports.SetSecurityPin = class SetSecurityPin {
         const notFound = new NotFound("User not found, please try again");
         return Promise.reject(notFound);
       }
-      let hasSecurityNumberSet =
-        userDetails.securityPin === null ? false : true;
-      if (hasSecurityNumberSet) {
+      let hasPinNumberSet = userDetails.securityPin === null ? false : true;
+      if (hasPinNumberSet) {
         return Promise.reject(new BadRequest("Transaction PIN already set"));
       }
-      let hashedValue = await hashData(securityNumber);
+      let hashedValue = await hashData(pinNumber);
       console.log(hashedValue, "hashedValue");
       userDetails.securityPin = hashedValue;
       await userDetails.save();

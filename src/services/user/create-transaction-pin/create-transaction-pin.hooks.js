@@ -1,6 +1,6 @@
 const {
   validateSetSecurityNumberUserInput,
-} = require("../../hooks/rule.validator");
+} = require("../../../hooks/rule.validator");
 
 const { authenticate } = require("@feathersjs/authentication").hooks;
 
