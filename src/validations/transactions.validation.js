@@ -18,8 +18,8 @@ const postArticleValidator = (data) => {
 };
 const setSecurityNumberValidator = (data) => {
   const schema = Joi.object({
-    securityNumber: Joi.number().required(),
-    confirmSecurityNumber: Joi.number().required(),
+    pinNumber: Joi.number().required(),
+    confirmPinNumber: Joi.number().required(),
   });
   return schema.validate(data, { allowUnknown: true });
 };

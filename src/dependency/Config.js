@@ -21,7 +21,7 @@ const CONSTANT = {
     pending: "Pending",
     success: "Successful",
   },
-  transactionPinSize: 6,
+  transactionPinSize: 4,
   fundingSource: [
     { name: "Self", type: "self" },
     { name: "pay For Me", type: "payForMe" },
