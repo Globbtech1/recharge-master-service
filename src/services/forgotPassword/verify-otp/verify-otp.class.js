@@ -1,5 +1,6 @@
-const { BadRequest } = require("@feathersjs/errors");
+const { BadRequest, NotFound } = require("@feathersjs/errors");
 const { successMessage } = require("../../../dependency/UtilityFunctions");
+const { Sequelize } = require("sequelize");
 
 /* eslint-disable no-unused-vars */
 exports.VerifyOtp = class VerifyOtp {
@@ -22,10 +23,21 @@ exports.VerifyOtp = class VerifyOtp {
   async create(data, params) {
     const sequelize = this.app.get("sequelizeClient");
     const { users, initiate_reset_pwd } = sequelize.models;
-    const { email, code } = data;
+    const { emailOrPhoneNumber, code } = data;
+    if (!emailOrPhoneNumber) {
+      let error = `Email or phone number is required`;
 
+      const notFound = new NotFound(error);
+      return Promise.reject(notFound);
+    }
     const userDetails = await users.findOne({
-      where: { deletedAt: null, email: email },
+      where: {
+        deletedAt: null,
+        [Sequelize.Op.or]: [
+          { email: emailOrPhoneNumber },
+          { phoneNumber: emailOrPhoneNumber },
+        ],
+      },
     });
 
     if (userDetails === null) {
@@ -41,7 +53,6 @@ exports.VerifyOtp = class VerifyOtp {
 
     if (userResetDetails === null) {
       let error = `Incorrect reset code supplied, please check and try again`;
-
       const notFound = new BadRequest(error);
       return Promise.reject(notFound);
     }
