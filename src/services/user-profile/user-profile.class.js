@@ -94,8 +94,8 @@ exports.UserProfile = class UserProfile {
         let cashBackBalance = userAccountBalance?.cashBackBalance || 0;
         userBalance = {
           accountBalance: convertToNaira(accountBalance),
-          ledgerBalance: convertToNaira(ledgerBalance),
-          cashBackBalance: convertToNaira(cashBackBalance),
+          // ledgerBalance: convertToNaira(ledgerBalance),
+          // cashBackBalance: convertToNaira(cashBackBalance),
         };
       }
 
@@ -110,7 +110,7 @@ exports.UserProfile = class UserProfile {
       userProfile.setTransactionPin =
         userProfile?.securityPin !== null ? true : false;
 
-      userProfile.systemConfig = systemConfig;
+      // userProfile.systemConfig = systemConfig;
       userProfile.accountBalance = userBalance;
       delete userProfile.securityPin;
       delete userProfile.id;

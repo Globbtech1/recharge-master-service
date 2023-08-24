@@ -1,7 +1,7 @@
 // Use this hook to manipulate incoming or outgoing data.
 // For more information on hooks see: http://docs.feathersjs.com/api/hooks.html
 const { BadRequest, NotFound } = require("@feathersjs/errors");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const {
   generateRandomNumber,
   errorMessage,
@@ -481,9 +481,20 @@ const InitiateResetPassword = () => {
   return async (context) => {
     const { app, method, result, params, data } = context;
     const sequelize = app.get("sequelizeClient");
-    const { email } = data;
+    const { emailOrPhoneNumber } = data;
+    if (!emailOrPhoneNumber) {
+      let error = `Email or phone number is required`;
 
-    let payload = { deletedAt: null, email: email };
+      const notFound = new NotFound(error);
+      return Promise.reject(notFound);
+    }
+    let payload = {
+      deletedAt: null,
+      [Sequelize.Op.or]: [
+        { email: emailOrPhoneNumber },
+        { phoneNumber: emailOrPhoneNumber },
+      ],
+    };
     const { initiate_reset_pwd, users } = sequelize.models;
 
     const userDetails = await users.findOne({
