@@ -21,9 +21,9 @@
     }
   },
   "staging": {
-    "username": "prudence_ufit_coreUser",
-    "password": "rHyeJQ6#FvH9",
-    "database": "prudence_ufitsubcore",
+    "username": "igbohoma_rmaster",
+    "password": "jF0fAmkhtj@7",
+    "database": "igbohoma_portalDB",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "logging": true,
