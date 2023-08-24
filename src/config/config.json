@@ -21,9 +21,9 @@
     }
   },
   "staging": {
-    "username": "igbohoma_rmaster",
+    "username": "igbohoma__portalUser",
     "password": "jF0fAmkhtj@7",
-    "database": "igbohoma_portalDB",
+    "database": "igbohoma_rmaster",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "logging": true,
