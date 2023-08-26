@@ -62,8 +62,8 @@ module.exports = (options = {}) => {
       mailBody = await ResetPasswordMailBodyContent(Payloads);
       mailSubject = "Reset Password";
       let response = successMessage(
-        null,
-        "verification code has been sent to your email address "
+        data.code,
+        "verification code has been sent to your email or phone number"
       );
       console.log(response);
       context.result = { ...response };

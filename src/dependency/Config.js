@@ -56,7 +56,8 @@ const CONSTANT = {
     electricity: "Electricity",
     television: "Tv-Subscription",
   },
-  PasswordRegex: `^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$`,
+  // PasswordRegex: `^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$`,
+  PasswordRegex: `/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/`,
 };
 
 module.exports = { CONSTANT };

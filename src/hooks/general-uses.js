@@ -348,6 +348,47 @@ const pushSlackNotification = (information, notificationType) => {
   console.log(stringifyMessage, notificationType);
 };
 
+const checkForExistingValues = (options = {}) => {
+  return async (context) => {
+    const { fieldsToCheck, serviceType = "users" } = options;
+    const { app, data } = context;
+    for (const field of fieldsToCheck) {
+      const { fieldName, friendlyName } = field;
+      const fieldValue = data[fieldName];
+      // "users";
+      // Check if the specified field value already exists
+      const existingUser = await context.app.service(serviceType).find({
+        query: { [fieldName]: fieldValue },
+      });
+      if (existingUser?.data.length > 0) {
+        // Value already exists; prevent the user from being created
+        throw new Error(`${friendlyName} is already registered`);
+      }
+    }
+    return context;
+  };
+};
+const checkIfNotExisting = (options = {}) => {
+  return async (context) => {
+    const { fieldsToCheck, serviceType = "users" } = options;
+    const { app, data } = context;
+    for (const field of fieldsToCheck) {
+      const { fieldName, friendlyName, value } = field;
+      const fieldValue = data[value];
+      // "users";
+      // Check if the specified field value already exists
+      const existingUser = await context.app.service(serviceType).find({
+        query: { [fieldName]: fieldValue },
+      });
+      if (existingUser?.data.length < 1) {
+        // Value already exists; prevent the user from being created
+        throw new Error(`${friendlyName} does not exist`);
+      }
+    }
+    return context;
+  };
+};
+
 module.exports = {
   insertIntoVerification,
   verifyUserAccount,
@@ -358,4 +399,6 @@ module.exports = {
   sendSlackNotification,
   pushSlackNotification,
   sendTransactionEmail,
+  checkForExistingValues,
+  checkIfNotExisting,
 };

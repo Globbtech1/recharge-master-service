@@ -1,10 +1,16 @@
 // import Joi from "joi";
 const Joi = require("joi");
-// import { email, password, token } from "./common.validation";
 
-const { email, password, token } = require("./common.validation");
+const {
+  email,
+  password,
+  token,
+  nigerianPhoneNumber,
+} = require("./common.validation");
 
 const signupValidationSchema = (data) => {
+  data.phoneNumber = data.phoneNumber.replace(/^\+234/, "0");
+
   const schema = Joi.object({
     password: Joi.string()
       .min(8) // You can adjust the minimum length as needed
@@ -19,13 +25,15 @@ const signupValidationSchema = (data) => {
         "any.required": "Password is required",
       }),
     fullName: Joi.string().trim().min(2).required(),
-    phoneNumber: Joi.string()
-      .pattern(/^[0-9]+$/) // Adjust the pattern as needed
-      .required()
-      .messages({
-        "string.pattern.base": "Phone number must contain only digits",
-        "any.required": "Phone number is required",
-      }),
+    // phoneNumber: Joi.string()
+    //   .pattern(/^[0-9]+$/) // Adjust the pattern as needed
+    //   .required()
+    //   .messages({
+    //     "string.pattern.base": "Phone number must contain only digits",
+    //     "any.required": "Phone number is required",
+    //   }),
+    phoneNumber: nigerianPhoneNumber.nigerianPhoneNumber().required(),
+
     gender: Joi.string(),
     avatar: Joi.string(),
     email: Joi.string().email().required().messages({
@@ -88,20 +96,8 @@ const resetPasswordValidationSchema = (data) => {
           "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character",
         "any.required": "Password is required",
       }),
-    fullName: Joi.string().trim().min(2).required(),
-    phoneNumber: Joi.string()
-      .pattern(/^[0-9]+$/) // Adjust the pattern as needed
-      .required()
-      .messages({
-        "string.pattern.base": "Phone number must contain only digits",
-        "any.required": "Phone number is required",
-      }),
-    gender: Joi.string(),
-    avatar: Joi.string(),
-    email: Joi.string().email().required().messages({
-      "string.email": "Invalid email format",
-      "any.required": "Email address is required",
-    }),
+    emailOrPhoneNumber: Joi.string().required(),
+    code: Joi.string().required(),
   });
 
   return schema.validate(data, { allowUnknown: true });
@@ -114,4 +110,5 @@ module.exports = {
   resendVerificationCodeValidator,
   changeUserEmailValidator,
   userEmailVerifyValidator,
+  resetPasswordValidationSchema,
 };

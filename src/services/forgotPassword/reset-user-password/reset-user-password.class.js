@@ -66,12 +66,12 @@ exports.ResetUserPassword = class ResetUserPassword {
       return Promise.reject(notFound);
     }
 
-    if (!password.match(CONSTANT.PasswordRegex)) {
-      let error = `Password must have at least 8 characters, including one letter, one number, and one special character.`;
+    // if (!password.match(CONSTANT.PasswordRegex)) {
+    //   let error = `Password must have at least 8 characters, including one letter, one number, and one special character.`;
 
-      const notFound = new BadRequest(error);
-      return Promise.reject(notFound);
-    }
+    //   const notFound = new BadRequest(error);
+    //   return Promise.reject(notFound);
+    // }
 
     let passwordUpdateData = {
       password: password,
