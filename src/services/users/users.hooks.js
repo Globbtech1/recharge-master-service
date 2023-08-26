@@ -12,6 +12,7 @@ const proccessEmail = require("../../hooks/proccess-email");
 const {
   insertIntoVerification,
   SendGeneralResponse,
+  checkForExistingValues,
 } = require("../../hooks/general-uses");
 // const { VerificationMailBodyContent } = require('../../dependency/templates/templates');
 
@@ -34,7 +35,17 @@ module.exports = {
       authenticate("jwt"),
       // getUserNecessaryInformation()
     ],
-    create: [processUser(), hashPassword("password")],
+    create: [
+      processUser(),
+      checkForExistingValues({
+        fieldsToCheck: [
+          { fieldName: "email", friendlyName: "Email" },
+          { fieldName: "phoneNumber", friendlyName: "Phone Number" },
+          // Add more fields to check as needed
+        ],
+      }),
+      hashPassword("password"),
+    ],
     update: [hashPassword("password"), authenticate("jwt")],
     patch: [
       hashPassword("password"),

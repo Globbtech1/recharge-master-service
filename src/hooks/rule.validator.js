@@ -35,6 +35,9 @@ const {
   customerValidationValidator: guestCustomerValidationValidator,
   tvSubscriptionValidator: guestTvSubscriptionValidator,
 } = require("../validations/guest-tv-subscription.validation");
+const {
+  resetPasswordValidationSchema,
+} = require("../validations/auth.validation");
 
 // eslint-disable-next-line no-unused-vars
 
@@ -234,6 +237,16 @@ const guestTvSubValidationInput = (options = {}) => {
     return context;
   };
 };
+const validateResetPasswordInput = (options = {}) => {
+  return async (context) => {
+    const { data } = context;
+    const { error } = resetPasswordValidationSchema(data);
+    if (error) {
+      throw new Error(error.details[0].message);
+    }
+    return context;
+  };
+};
 
 module.exports = {
   validateSetSecurityNumberUserInput,
@@ -255,4 +268,5 @@ module.exports = {
   validateGuestTvProviderProductTypeInput,
   guestCustomerValidationInput,
   guestTvSubValidationInput,
+  validateResetPasswordInput,
 };
