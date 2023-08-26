@@ -127,6 +127,10 @@ const guestGuestPurchase = require("./guest/guest-purchase/guest-purchase.servic
 
 const userCreateTransactionPin = require("./user/create-transaction-pin/create-transaction-pin.service.js");
 
+const products = require('./products/products.service.js');
+
+const productList = require('./product-list/product-list.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -193,4 +197,6 @@ module.exports = function (app) {
   app.configure(guestConfirm);
   app.configure(guestGuestPurchase);
   app.configure(userCreateTransactionPin);
+  app.configure(products);
+  app.configure(productList);
 };
