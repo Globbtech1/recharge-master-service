@@ -7,7 +7,14 @@ module.exports = (options = {}) => {
     console.log(error, "oooooooooooooooo");
     console.log(error?.name, "oooooooooooooooommmmm");
     // Check if the error is a Feathers error
-    const handledErrorNames = ["Error", "BadRequest", "NotAuthenticated"];
+    const handledErrorNames = [
+      "Error",
+      "BadRequest",
+      "NotAuthenticated",
+      "GeneralError",
+      "myCustomError",
+      "TypeError",
+    ];
     if (handledErrorNames.includes(error?.name)) {
       const statusCode = error?.code || 500;
       const ErrorMessage = error?.message;
