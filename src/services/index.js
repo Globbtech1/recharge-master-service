@@ -131,6 +131,10 @@ const products = require('./products/products.service.js');
 
 const productList = require('./product-list/product-list.service.js');
 
+const accountFundingInnitiateFund = require('./accountFunding/innitiate-fund/innitiate-fund.service.js');
+
+const accountFundingFundInnitiator = require('./accountFunding/fund-innitiator/fund-innitiator.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -199,4 +203,6 @@ module.exports = function (app) {
   app.configure(userCreateTransactionPin);
   app.configure(products);
   app.configure(productList);
+  app.configure(accountFundingInnitiateFund);
+  app.configure(accountFundingFundInnitiator);
 };

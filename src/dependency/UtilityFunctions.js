@@ -179,6 +179,14 @@ const getCurrentYear = () => {
   const currentYear = new Date().getFullYear();
   return currentYear;
 };
+const successResp = (data, message = "") => {
+  let reponse = { success: true, data: data, message: message };
+  return reponse;
+};
+const failedResp = (message = "") => {
+  let reponse = { success: false, message: message, name: "myCustomError" };
+  return reponse;
+};
 module.exports = {
   successMessage,
   errorMessage,
@@ -196,4 +204,6 @@ module.exports = {
   getCurrentMonth,
   getCurrentYear,
   errorMessageV2,
+  successResp,
+  failedResp,
 };
