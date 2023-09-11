@@ -51,14 +51,6 @@ exports.InnitiateFund = class InnitiateFund {
         reference: referenceNumber,
         paymentData: JSON.stringify(payData),
         status: CONSTANT.transactionStatus.pending,
-
-        // emailAddress,
-        // phoneNumber,
-        // userDonationId,
-        // amount,
-        // currency,
-        // referenceNumber,
-        // payData: JSON.stringify(payData),
       };
       console.log(UserData2Save, "UserData2Save");
       this.app.service("accountFunding/fund-innitiator").create(UserData2Save);

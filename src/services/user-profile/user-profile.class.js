@@ -131,16 +131,4 @@ exports.UserProfile = class UserProfile {
 
     return data;
   }
-
-  async update(id, data, params) {
-    return data;
-  }
-
-  async patch(id, data, params) {
-    return data;
-  }
-
-  async remove(id, params) {
-    return { id };
-  }
 };
