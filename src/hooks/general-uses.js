@@ -72,7 +72,7 @@ const sendSlackNotification = (options = {}) => {
 const sendTransactionEmail = (options = {}) => {
   return async (context) => {
     const { app, data } = context;
-    console.log(data);
+    console.log(data, "userId.....");
     const sequelize = app.get("sequelizeClient");
     const { users, payment_list: product } = sequelize.models;
     const { userId, amountBefore, amountAfter, amount, referenceNumber } = data;
@@ -80,10 +80,11 @@ const sendTransactionEmail = (options = {}) => {
       where: {
         deletedAt: null,
         id: userId,
-        isVerify: true,
+        //  isVerify: true,
       },
     });
-    const userEmail = userDetails.email;
+    console.log(userDetails, "userDetails");
+    const userEmail = userDetails?.email;
     const { paymentListId, transactionDate } = data;
     const productDetail = await product.findOne({
       where: {
@@ -92,9 +93,9 @@ const sendTransactionEmail = (options = {}) => {
         deletedAt: null,
       },
     });
-    const productName = productDetail.name;
+    const productName = "Account Funding";
     let mailBody = CONSTANT.transactionalMailContent
-      .replace("[user_name]", `${userDetails.lastName}`)
+      .replace("[user_name]", `${userDetails.fullName}`)
 
       .replace("[amount]", amount)
       .replace("[amount_before]", amountBefore)

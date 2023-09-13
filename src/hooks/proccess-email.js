@@ -65,8 +65,8 @@ module.exports = (options = {}) => {
         data.code,
         "verification code has been sent to your email or phone number"
       );
-      console.log(response);
-      context.result = { ...response };
+      // console.log(response);
+      // context.result = { ...response };
     }
 
     SendEmail(Payloads, mailBody, mailSubject);

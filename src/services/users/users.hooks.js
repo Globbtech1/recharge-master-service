@@ -22,7 +22,12 @@ const { setField } = require("feathers-authentication-hooks");
 const {
   getUserNecessaryInformation,
 } = require("../../hooks/userManagement.hook");
-const { FundUserAccount } = require("../../hooks/userFund.hook");
+const {
+  FundUserAccount,
+  generateWalletId,
+  generateReferLink,
+  validateReferByLink,
+} = require("../../hooks/userFund.hook");
 const { CONSTANT } = require("../../dependency/Config");
 module.exports = {
   before: {
@@ -44,7 +49,10 @@ module.exports = {
           // Add more fields to check as needed
         ],
       }),
+      validateReferByLink(),
       hashPassword("password"),
+      generateWalletId(),
+      generateReferLink(),
     ],
     update: [hashPassword("password"), authenticate("jwt")],
     patch: [

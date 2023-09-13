@@ -14,6 +14,7 @@ module.exports = (options = {}) => {
       "GeneralError",
       "myCustomError",
       "TypeError",
+      "NotFound",
     ];
     if (handledErrorNames.includes(error?.name)) {
       const statusCode = error?.code || 500;

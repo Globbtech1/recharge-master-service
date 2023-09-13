@@ -137,6 +137,10 @@ const accountFundingFundInnitiator = require("./accountFunding/fund-innitiator/f
 
 const accountFundingVerifyPayment = require("./accountFunding/verify-payment/verify-payment.service.js");
 
+const fundTransferInnitiateRequest = require("./fundTransfer/innitiate-request/innitiate-request.service.js");
+
+const fundTransferFinalizeRequest = require("./fundTransfer/finalize-request/finalize-request.service.js");
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -208,4 +212,6 @@ module.exports = function (app) {
   app.configure(accountFundingInnitiateFund);
   app.configure(accountFundingFundInnitiator);
   app.configure(accountFundingVerifyPayment);
+  app.configure(fundTransferInnitiateRequest);
+  app.configure(fundTransferFinalizeRequest);
 };

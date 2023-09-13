@@ -1,24 +1,34 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
+const { SendGeneralResponse } = require("../../../hooks/general-uses");
+const {
+  KeepFundingHistory,
+  KeepPaymentHistory,
+} = require("../../../hooks/userFund.hook");
+
+const { authenticate } = require("@feathersjs/authentication").hooks;
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
+    all: [authenticate("jwt")],
     find: [],
     get: [],
     create: [],
     update: [],
     patch: [],
-    remove: []
+    remove: [],
   },
 
   after: {
     all: [],
     find: [],
-    get: [],
+    get: [
+      KeepFundingHistory(),
+      KeepPaymentHistory(),
+      SendGeneralResponse({ message: "Account Funded Successfully" }),
+    ],
     create: [],
     update: [],
     patch: [],
-    remove: []
+    remove: [],
   },
 
   error: {
@@ -28,6 +38,6 @@ module.exports = {
     create: [],
     update: [],
     patch: [],
-    remove: []
-  }
+    remove: [],
+  },
 };
