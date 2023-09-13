@@ -60,6 +60,18 @@ module.exports = {
         allowNull: true,
         defaultValue: "email",
       },
+      refererLink: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      walletId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      invitedBy: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

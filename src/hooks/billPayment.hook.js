@@ -329,13 +329,11 @@ const validateTransactionPin = (options = {}) => {
         deletedAt: null,
       },
     });
-    // console.log(userDetails, "submissionData");
-    // console.log(userPin, "userPin");
     if (userDetails !== null) {
       const { securityPin } = userDetails;
       if (securityPin === null) {
         const insufficient = new BadRequest(
-          "Security pin not set. please set it and try again "
+          "Transaction Pin. please set it and try again "
         );
         return Promise.reject(insufficient);
       }

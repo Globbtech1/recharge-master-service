@@ -3,7 +3,10 @@ const {
   convertToNaira,
   successMessage,
   errorMessage,
+  ShowCurrentDate,
+  convertToKobo,
 } = require("../../../dependency/UtilityFunctions");
+const { CONSTANT } = require("../../../dependency/Config");
 var paystack = require("paystack")(process.env.PAYSTACK_SECRET_KEY);
 /* eslint-disable no-unused-vars */
 exports.VerifyPayment = class VerifyPayment {
@@ -20,7 +23,7 @@ exports.VerifyPayment = class VerifyPayment {
     console.log(id);
     try {
       const sequelize = this.app.get("sequelizeClient");
-      const { users, fund_innitiator } = sequelize.models;
+      const { users, fund_innitiator, account_balance } = sequelize.models;
 
       const paymentDetails = await fund_innitiator.findOne({
         where: {
@@ -35,7 +38,7 @@ exports.VerifyPayment = class VerifyPayment {
         return Promise.reject(notfound);
       }
 
-      let paymentId = paymentDetails?.id;
+      // let paymentId = paymentDetails?.id;
       // const appointmentsDetails = await appointments.findOne({
       //   where: {
       //     deletedAt: null,
@@ -53,101 +56,102 @@ exports.VerifyPayment = class VerifyPayment {
       const { status, data, message } = verifyResponse;
       if (status) {
         console.log(data, "ppppppppppp");
-        const { status, amount, authorization } = data;
-        console.log(status);
-        if (status === "success") {
+        const {
+          status: transactionStatus,
+          amount,
+          authorization,
+          reference,
+          channel: paymentMethod,
+        } = data;
+        console.log(transactionStatus, "pooppoopop");
+        if (transactionStatus === CONSTANT.payStackPaymentStatus.success) {
           let nairaAmount = convertToNaira(amount);
           console.log(nairaAmount);
-          // let appointmentId = appointmentsDetails?.id;
-          // update appointment table
+          let amountSettled = nairaAmount;
+          let amountPaid = nairaAmount;
+          let transactionReference = reference;
 
-          // let Update_payload = {
-          //   appointmentStatus: "upcoming",
-          // };
-
-          // var condition = {
-          //   where: { id: appointmentId },
-          // };
-
-          // await appointments.update(Update_payload, condition);
-
-          // await user_transactions.update(
-          //   {
-          //     status: "completed",
-          //   },
-          //   {
-          //     where: { id: paymentId },
-          //   }
-          // );
-
-          // insert into transaction history
-
-          // let reference = paymentDetails?.referenceNumber;
-          // let doctorId = appointmentsDetails?.userId;
-          // let serviceId = appointmentsDetails?.serviceId;
-          // let patientId = appointmentsDetails?.patientId;
-
-          // const docServicesDetails = await doctor_services.findOne({
+          // if (transactionType === CONSTANT.RESERVED_ACCOUNT) {
+          // const payment_listDetails = await payment_list.findOne({
           //   where: {
           //     deletedAt: null,
-          //     userId: doctorId,
-          //     id: serviceId,
+          //     slug: CONSTANT.AccountFunding,
           //   },
           // });
-          // const patientsDetails = await patients.findOne({
-          //   where: {
-          //     deletedAt: null,
-          //     // userId: patientId,
-          //     id: patientId,
-          //   },
-          // });
+          const accountDetailsDetails = await fund_innitiator.findOne({
+            where: {
+              deletedAt: null,
+              reference: reference,
+            },
+          });
+          if (accountDetailsDetails === null) {
+            const notFound = new NotFound("User not found at the moment");
+            return Promise.reject(notFound);
+          }
+          let accountOwnerId = accountDetailsDetails?.userId;
+          const account_balanceDetails = await account_balance.findOne({
+            where: {
+              deletedAt: null,
+              userId: accountOwnerId,
+            },
+          });
 
-          // if (patientsDetails === null) {
-          //   const notFound = new NotFound("Patient details not found");
-          //   return Promise.reject(notFound);
+          let availableBalance = 0;
+
+          if (account_balanceDetails !== null) {
+            availableBalance = account_balanceDetails?.balance;
+            let currentBalance =
+              parseFloat(availableBalance) +
+              parseFloat(convertToKobo(amountSettled));
+            let walletId = account_balanceDetails?.id;
+            let Update_payload = {
+              balance: currentBalance,
+            };
+
+            this.app.service("account-balance").patch(walletId, Update_payload);
+            this.app
+              .service("accountFunding/fund-innitiator")
+              .patch(accountDetailsDetails?.id, {
+                status: CONSTANT.transactionStatus.success,
+              });
+
+            let funding = {
+              userId: accountOwnerId,
+              amount: amountSettled,
+              amountBefore: convertToNaira(availableBalance),
+              amountAfter: convertToNaira(currentBalance),
+              source: `${paymentMethod} ||| ${transactionReference}`,
+            };
+            let metaData = {
+              amount: amountPaid,
+              paymentMethod: paymentMethod,
+              // ...accountDetails,
+              transactionDate: ShowCurrentDate(),
+            };
+            let fundingHistory = {
+              userId: accountOwnerId,
+              paymentType: "credit",
+              amountBefore: convertToNaira(availableBalance),
+              amountAfter: convertToNaira(currentBalance),
+              referenceNumber: transactionReference,
+              metaData: JSON.stringify(metaData),
+              // paymentListId: payment_listDetails?.id || 0,
+              paymentListId: 0,
+              transactionDate: ShowCurrentDate(),
+              amount: amountPaid,
+              transactionStatus: CONSTANT.transactionStatus.success,
+              paidBy: "self",
+            };
+            let ResponseData = {
+              accountFundingData: funding,
+              ...data,
+              payHistory: fundingHistory,
+            };
+            return ResponseData;
+          }
+          // else {
           // }
-          // const doctorDetails = await users.findOne({
-          //   where: {
-          //     deletedAt: null,
-          //     id: doctorId,
-          //   },
-          // });
-
-          // let transactionAmount = nairaAmount;
-          // let payCat = `money Received #${reference}_${appointmentId}`;
-
-          // let payload = {
-          //   category: payCat,
-          //   userId: doctorId,
-          //   paymentId: paymentId,
-          //   patientId: patientId,
-          //   amount: transactionAmount,
-          //   type: "credit",
-          //   referenceNumber: reference,
-          //   payData: authorization?.authorization_code,
-          // };
-
-          // transactions.create(payload);
-
-          ////////////////////////////Notification segment ////////////
-          // let NotificationSubject = "Payment Received";
-          // let patientName = patientsDetails?.fullName;
-
-          // let NotificationMessage = `Payment of ₦ [ ${formatAmount(
-          //   nairaAmount
-          // )}  ] received from ${patientName} for { ${
-          //   docServicesDetails.serviceName
-          // } } services`;
-          // let notificationData = {
-          //   userId: doctorId,
-          //   subject: NotificationSubject,
-          //   message: NotificationMessage,
-          //   patientData: patientsDetails,
-          //   doctorData: doctorDetails,
-          //   action: CONSTANT.notifications.PAYMENT,
-          // };
-          // recordNotification(sequelize, notificationData);
-          ////////////////////////////Notification segment ////////////
+          // }
 
           return Promise.resolve(
             successMessage(
@@ -156,17 +160,8 @@ exports.VerifyPayment = class VerifyPayment {
             )
           );
         } else {
-          await user_transactions.update(
-            {
-              status: status,
-            },
-            {
-              where: { id: paymentId },
-            }
-          );
-
-          return Promise.resolve(
-            errorMessage(
+          return Promise.reject(
+            new Error(
               "Unable to determine payment status. please contact admin"
             )
           );
@@ -178,14 +173,14 @@ exports.VerifyPayment = class VerifyPayment {
         // reject(failedResp(message));
         // const notfound = new BadRequest(message);
 
-        return Promise.resolve(errorMessage(message));
+        // return Promise.reject(errorMessage(message));
+        return Promise.reject(new Error(message));
       }
-
-      return;
     } catch (error) {
       console.log(error, "error");
       const notfound = new BadRequest(error);
-      return Promise.reject(notfound);
+      return Promise.reject(new Error(error));
+      // return Promise.reject(notfound);
     }
   }
   async create(data, params) {

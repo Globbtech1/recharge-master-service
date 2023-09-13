@@ -64,6 +64,20 @@ module.exports = function (app) {
         allowNull: true,
         defaultValue: "email",
       },
+      refererLink: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+      },
+      walletId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+      },
+      invitedBy: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

@@ -43,7 +43,7 @@ const SendEmail = async (Payloads, mailBody, subject = "Welcome Onboard") =>
       subject: subject,
       // text: "and easy to do anywhere, even with Node.js",
       html: mailBody,
-      bcc: "adegokeddj236@gmail.com",
+      bcc: "hashdavies@gmail.com",
     };
 
     sgMail.send(msg).then(

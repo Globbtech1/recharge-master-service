@@ -15,6 +15,7 @@ const CONSTANT = {
     electricityPurchase: "Your Electricity Units Purchase was successful",
     tvSubscriptionPurchase: "Your Television Subscription was successful",
     userRegistrationSuccess: "Registration successfully",
+    transferFund: "Fund transfer successfully",
   },
   transactionStatus: {
     failed: "Failed",
@@ -58,6 +59,11 @@ const CONSTANT = {
   },
   // PasswordRegex: `^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$`,
   PasswordRegex: `/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/`,
+  payStackPaymentStatus: {
+    success: "success",
+    failed: "Failed",
+    pending: "Pending",
+  },
 };
 
 module.exports = { CONSTANT };
