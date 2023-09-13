@@ -127,9 +127,19 @@ const guestGuestPurchase = require("./guest/guest-purchase/guest-purchase.servic
 
 const userCreateTransactionPin = require("./user/create-transaction-pin/create-transaction-pin.service.js");
 
-const products = require('./products/products.service.js');
+const products = require("./products/products.service.js");
 
-const productList = require('./product-list/product-list.service.js');
+const productList = require("./product-list/product-list.service.js");
+
+const accountFundingInnitiateFund = require("./accountFunding/innitiate-fund/innitiate-fund.service.js");
+
+const accountFundingFundInnitiator = require("./accountFunding/fund-innitiator/fund-innitiator.service.js");
+
+const accountFundingVerifyPayment = require("./accountFunding/verify-payment/verify-payment.service.js");
+
+const fundTransferInnitiateRequest = require("./fundTransfer/innitiate-request/innitiate-request.service.js");
+
+const fundTransferFinalizeRequest = require("./fundTransfer/finalize-request/finalize-request.service.js");
 
 module.exports = function (app) {
   app.configure(users);
@@ -199,4 +209,9 @@ module.exports = function (app) {
   app.configure(userCreateTransactionPin);
   app.configure(products);
   app.configure(productList);
+  app.configure(accountFundingInnitiateFund);
+  app.configure(accountFundingFundInnitiator);
+  app.configure(accountFundingVerifyPayment);
+  app.configure(fundTransferInnitiateRequest);
+  app.configure(fundTransferFinalizeRequest);
 };

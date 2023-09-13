@@ -6,6 +6,9 @@ const {
   successMessage,
   generateRandomNumber,
   generateRandomString,
+  convertToKobo,
+  failedResp,
+  successResp,
 } = require("../dependency/UtilityFunctions");
 
 // var Mailchimp = require("mailchimp-api-v3");
@@ -27,6 +30,8 @@ mailchimp.setConfig({
   apiKey: "9e042aec617b1584dd34c94cc1d59389-us6",
   server: "us6",
 });
+var paystack = require("paystack")(process.env.PAYSTACK_SECRET_KEY);
+
 const insertIntoVerification = (options = {}) => {
   return async (context) => {
     const { app, method, result, params, data } = context;
@@ -67,7 +72,7 @@ const sendSlackNotification = (options = {}) => {
 const sendTransactionEmail = (options = {}) => {
   return async (context) => {
     const { app, data } = context;
-    console.log(data);
+    console.log(data, "userId.....");
     const sequelize = app.get("sequelizeClient");
     const { users, payment_list: product } = sequelize.models;
     const { userId, amountBefore, amountAfter, amount, referenceNumber } = data;
@@ -75,10 +80,11 @@ const sendTransactionEmail = (options = {}) => {
       where: {
         deletedAt: null,
         id: userId,
-        isVerify: true,
+        //  isVerify: true,
       },
     });
-    const userEmail = userDetails.email;
+    console.log(userDetails, "userDetails");
+    const userEmail = userDetails?.email;
     const { paymentListId, transactionDate } = data;
     const productDetail = await product.findOne({
       where: {
@@ -87,9 +93,9 @@ const sendTransactionEmail = (options = {}) => {
         deletedAt: null,
       },
     });
-    const productName = productDetail.name;
+    const productName = "Account Funding";
     let mailBody = CONSTANT.transactionalMailContent
-      .replace("[user_name]", `${userDetails.lastName}`)
+      .replace("[user_name]", `${userDetails.fullName}`)
 
       .replace("[amount]", amount)
       .replace("[amount_before]", amountBefore)
@@ -388,7 +394,105 @@ const checkIfNotExisting = (options = {}) => {
     return context;
   };
 };
+const GeneratePaymentUrl = async (email, amount, ref) =>
+  new Promise(async (resolve, reject) => {
+    let payload = {
+      email: email,
+      amount: amount,
+      channels: ["card", "bank", "ussd", "qr", "mobile_money", "bank_transfer"],
+      reference: ref,
+      callback_url: process.env.PAYSTACK_CALLBACK_URL,
+    };
+    paystack.transaction
+      .initialize(payload)
+      .then(function (body) {
+        const { status, data, message } = body;
+        if (status) {
+          console.log(data);
+          resolve(successResp(data));
+        } else {
+          console.log(body, "body..........");
+          reject(failedResp(message));
+        }
+      })
+      .catch(function (error) {
+        console.log(error, "error");
+        let message = "unable to generate payment link. please try again later";
+        reject(failedResp(message));
+      });
+  });
+const VerifyPaymentPayload = () => {
+  return async (context) => {
+    const { app, method, result, params, data } = context;
+    const sequelize = app.get("sequelizeClient");
+    let loggedInUser = params.user.id;
+    const { amount: AmountFunded } = data;
 
+    const { users, fund_innitiator } = sequelize.models;
+    if (!AmountFunded) {
+      const badRequest = new BadRequest("Please enter amount to fund");
+      return Promise.reject(badRequest);
+    }
+    const users_Details = await users.findOne({
+      where: {
+        deletedAt: null,
+
+        id: loggedInUser,
+      },
+    });
+
+    if (users_Details === null) {
+      const notFound = new NotFound("This account does not exist");
+      return Promise.reject(notFound);
+    }
+    let userEmail = users_Details?.email;
+    // const doctorDetails = await users.findOne({
+    //   where: {
+    //     deletedAt: null,
+    //     id: loggedInUser,
+    //   },
+    // });
+    // let serviceAmount = docServicesDetails.servicePrice;
+    // let patientEmail = patientsDetails.email;
+    let amount = convertToKobo(AmountFunded);
+    let PaymentReferenceNumber = await generateRandomNumber(
+      fund_innitiator,
+      "reference",
+      22
+    );
+
+    const paymentData = await GeneratePaymentUrl(
+      userEmail,
+      amount,
+      PaymentReferenceNumber
+    );
+    const { success } = paymentData;
+    if (!success) {
+      let error = new NotFound(
+        "Can not fund Account   at the moment, please try again later"
+      );
+      return Promise.reject(error);
+    }
+    let payStackResponseData = paymentData.data;
+    console.log(payStackResponseData, "paymentData");
+
+    let payload = {
+      payData: payStackResponseData,
+      status: "pending",
+      referenceNumber: PaymentReferenceNumber,
+      userEmail,
+      amount: AmountFunded,
+    };
+
+    let AdditionalData = {
+      ...payload,
+    };
+
+    context.data = { ...context.data, ...AdditionalData };
+
+    return context;
+  };
+};
 module.exports = {
   insertIntoVerification,
   verifyUserAccount,
@@ -401,4 +505,6 @@ module.exports = {
   sendTransactionEmail,
   checkForExistingValues,
   checkIfNotExisting,
+  GeneratePaymentUrl,
+  VerifyPaymentPayload,
 };
