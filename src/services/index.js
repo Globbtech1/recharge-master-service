@@ -141,6 +141,10 @@ const fundTransferInnitiateRequest = require("./fundTransfer/innitiate-request/i
 
 const fundTransferFinalizeRequest = require("./fundTransfer/finalize-request/finalize-request.service.js");
 
+const emailVerification = require("./email-verification/email-verification.service.js")
+
+const phoneVerification = require("./phone-verification/phone-verification.service.js")
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -214,4 +218,6 @@ module.exports = function (app) {
   app.configure(accountFundingVerifyPayment);
   app.configure(fundTransferInnitiateRequest);
   app.configure(fundTransferFinalizeRequest);
+  app.configure(emailVerification);
+  app.configure(phoneVerification);
 };
