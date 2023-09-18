@@ -3,6 +3,7 @@ const mailgun = require("mailgun-js")({
   domain: "mg.krib.ng",
 });
 const sgMail = require("@sendgrid/mail");
+const twilio = require('twilio');
 
 const SendEmailOld = async (Payloads, mailBody, subject = "Welcome Onboard") =>
   new Promise(async (resolve, reject) => {
@@ -83,6 +84,25 @@ const SendEmail = async (Payloads, mailBody, subject = "Welcome Onboard") =>
     // } else {
     //   resolve(true);
     // }
-  });
+});
 
-module.exports = { SendEmail };
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
+
+const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+
+async function sendSMS(to, body) {
+  try {
+    await client.messages.create({
+      body,
+      from: TWILIO_PHONE_NUMBER,
+      to,
+    });
+  } catch (error) {
+    console.error('Error sending SMS:', error);
+    throw new Error('Failed to send SMS.');
+  }
+}
+
+module.exports = { SendEmail, sendSMS };
