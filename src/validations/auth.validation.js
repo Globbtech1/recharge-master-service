@@ -103,6 +103,26 @@ const resetPasswordValidationSchema = (data) => {
   return schema.validate(data, { allowUnknown: true });
 };
 
+const verifyUserEmailValidator = (data) => {
+  const schema = Joi.object({
+    email: email.required().required(),
+  });
+  return schema.validate(data, { allowUnknown: true });
+};
+
+const verifyUserPhoneNumberValidator = (data) => {
+  const schema = Joi.object({
+    phoneNumber: nigerianPhoneNumber.required().required(),
+  });
+  return schema.validate(data, { allowUnknown: true });
+};
+const userVerificationValidator = (data) => {
+  const schema = Joi.object({
+    token: Joi.string().required(),
+    platform: Joi.string().required(),
+  });
+  return schema.validate(data, { allowUnknown: true });
+};
 module.exports = {
   loginValidationSchema,
   signupValidationSchema,
@@ -111,4 +131,7 @@ module.exports = {
   changeUserEmailValidator,
   userEmailVerifyValidator,
   resetPasswordValidationSchema,
+  verifyUserEmailValidator,
+  verifyUserPhoneNumberValidator,
+  userVerificationValidator,
 };

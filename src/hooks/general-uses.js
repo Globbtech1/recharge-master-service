@@ -327,13 +327,12 @@ const CalculationRequestHash = async (stringifiedRequestBody) => {
 
 const SendGeneralResponse = (options = {}) => {
   const { message, data = null } = options;
-  console.log("enter here.....");
   return async (context) => {
-    // console.log(data, "dataIhunna", context?.result, "contextIhunna");
     context.result = successMessage(data, message);
     return context;
   };
 };
+
 const pushSlackNotification = (information, notificationType) => {
   let slackChannel = process.env.SLACK_WEBHOOK;
   let stringifyMessage = JSON.stringify(information);
