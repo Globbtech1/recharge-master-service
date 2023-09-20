@@ -64,6 +64,10 @@ const CONSTANT = {
     failed: "Failed",
     pending: "Pending",
   },
+  verificationType: {
+    email: "emailAddress",
+    phoneNumber: "phoneNumber",
+  },
 };
 
 module.exports = { CONSTANT };

@@ -18,13 +18,25 @@ module.exports = function (app) {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      code: {
+      token: {
         type: DataTypes.STRING,
         allowNull: false,
       },
       isUsed: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
+      },
+      expiredAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      data: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,

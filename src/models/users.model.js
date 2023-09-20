@@ -75,7 +75,37 @@ module.exports = function (app) {
         unique: true,
       },
       invitedBy: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      isEmailVerify: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+      },
+      address: {
         type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: false,
+      },
+      localGovernment: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      city: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      state: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      country: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      dateOfBirth: {
+        type: DataTypes.DATE,
         allowNull: true,
       },
       createdAt: {

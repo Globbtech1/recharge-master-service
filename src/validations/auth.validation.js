@@ -116,7 +116,13 @@ const verifyUserPhoneNumberValidator = (data) => {
   });
   return schema.validate(data, { allowUnknown: true });
 };
-
+const userVerificationValidator = (data) => {
+  const schema = Joi.object({
+    token: Joi.string().required(),
+    platform: Joi.string().required(),
+  });
+  return schema.validate(data, { allowUnknown: true });
+};
 module.exports = {
   loginValidationSchema,
   signupValidationSchema,
@@ -126,5 +132,6 @@ module.exports = {
   userEmailVerifyValidator,
   resetPasswordValidationSchema,
   verifyUserEmailValidator,
-  verifyUserPhoneNumberValidator
+  verifyUserPhoneNumberValidator,
+  userVerificationValidator,
 };
