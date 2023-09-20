@@ -6,10 +6,11 @@ const { email, password, token } = require("./common.validation");
 const buyAirtimeValidator = (data) => {
   const schema = Joi.object({
     phoneNumber: Joi.string().trim().min(2).required(),
+    productId: Joi.number().required(),
     amount: Joi.number().required(),
-    provider: Joi.string().trim().min(2).required(),
-    fundSource: Joi.string().trim().min(2).required(),
-    paymentId: Joi.number().required(),
+    // provider: Joi.string().trim().min(2).required(),
+    // fundSource: Joi.string().trim().min(2).required(),
+    //paymentId: Joi.number().required(),
     saveBeneficiary: Joi.boolean().required(),
     beneficiaryAlias: Joi.string().optional().trim().min(2).allow(null, ""),
     userPin: Joi.string().trim().min(2).required(),

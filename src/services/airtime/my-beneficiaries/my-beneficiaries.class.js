@@ -21,7 +21,7 @@ exports.MyBeneficiaries = class MyBeneficiaries {
     let result = await this.app.service("user/quick-beneficiary").find({
       query: {
         userId: loggedInUserId,
-        paymentListId: paymentId,
+        productId: paymentId,
         $select: ["sourceImage", "uniqueNumber", "nameAlias", "metaData"],
       },
     });

@@ -24,7 +24,7 @@ module.exports = {
       validateBuyDataUserInput(),
       validateMobileNumber(),
       checkAvailableBalance(),
-      validateTransactionPin(),
+      // validateTransactionPin(),
     ],
     update: [],
     patch: [],

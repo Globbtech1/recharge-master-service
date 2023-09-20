@@ -69,12 +69,11 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   paymentList.associate = function (models) {
-    const { quick_beneficiary, transactions_history, guest_purchases } = models;
+    // const { quick_beneficiary, transactions_history, guest_purchases } = models;
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
-    paymentList.hasMany(quick_beneficiary);
-    paymentList.hasOne(transactions_history);
-    paymentList.hasOne(guest_purchases);
+    // paymentList.hasMany(quick_beneficiary);
+    // paymentList.hasOne(transactions_history);
   };
 
   return paymentList;

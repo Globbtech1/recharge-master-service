@@ -157,16 +157,9 @@ const getProviderSourceImage = (paymentProviders, name) => {
   );
   return filteredObjects.length > 0 ? filteredObjects[0] : {};
 };
-const getProviderCashBack = (paymentProviders, providerName, PaymentId) => {
-  /*console.log(
-    paymentProviders,
-    providerName,
-    PaymentId,
-    "paymentProviders, providerName, PaymentId"
-  );*/
+const getProviderCashBack = (paymentProviders, providerName, productId) => {
   const filteredObjects = paymentProviders?.filter(
-    (object) =>
-      object.provider == providerName && object.paymentListId == PaymentId
+    (object) => object.provider == providerName && object.productId == productId
   );
   //console.log(filteredObjects, "filteredObjectsfilteredObjects");
   return filteredObjects.length > 0 ? filteredObjects[0] : {};

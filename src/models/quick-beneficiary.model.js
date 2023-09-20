@@ -30,7 +30,7 @@ module.exports = function (app) {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      paymentListId: {
+      productId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -63,10 +63,10 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   quickBeneficiary.associate = function (models) {
-    const { payment_list } = models;
+    const { product_list } = models;
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
-    quickBeneficiary.belongsTo(payment_list);
+    quickBeneficiary.belongsTo(product_list);
   };
 
   return quickBeneficiary;

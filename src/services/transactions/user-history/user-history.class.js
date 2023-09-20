@@ -36,7 +36,7 @@ exports.UserHistory = class UserHistory {
         filters = {
           ...filters,
           ...{
-            paymentListId: paymentId,
+            productId: paymentId,
           },
         };
       }

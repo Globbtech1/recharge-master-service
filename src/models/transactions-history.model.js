@@ -42,7 +42,7 @@ module.exports = function (app) {
         type: DataTypes.STRING(1234),
         allowNull: true,
       },
-      paymentListId: {
+      productId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

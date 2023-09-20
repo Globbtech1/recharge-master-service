@@ -10,6 +10,7 @@ const {
 const {
   SendGeneralResponse,
   sendSlackNotification,
+  checkIfNotExisting,
 } = require("../../../hooks/general-uses");
 const {
   validateBuyAirtimeUserInput,
@@ -25,6 +26,15 @@ module.exports = {
     create: [
       // getAllProviders(),
       validateBuyAirtimeUserInput(),
+      checkIfNotExisting({
+        fieldsToCheck: [
+          { fieldName: "id", value: "productId", friendlyName: "Product id" },
+
+          // Add more fields to check as needed
+        ],
+        serviceType: "product-list",
+      }),
+
       validateMobileNumber(),
       checkAvailableBalance(),
       validateTransactionPin(),
@@ -40,9 +50,9 @@ module.exports = {
     get: [],
     create: [
       debitUserAccount(),
-      recordUserCashBack(),
-      recordQuickBeneficiary(),
-      sendSlackNotification(),
+      // recordUserCashBack(),
+      // recordQuickBeneficiary(),
+      // sendSlackNotification(),
       SendGeneralResponse({ message: CONSTANT.successMessage.airtimePurchase }),
     ],
     update: [],

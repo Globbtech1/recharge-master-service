@@ -69,16 +69,17 @@ exports.AirtimePurchase = class AirtimePurchase {
     });
   buyAirtime = (data) =>
     new Promise(async (resolve, reject) => {
-      let userAmount = data?.amount;
-      let amountInNaira = convertToNaira(userAmount);
-      const { phoneNumber, provider } = data;
+      // let userAmount = data?.amount;
+      // let amountInNaira = convertToNaira(userAmount);
+      // const { phoneNumber, provider } = data;
       let AccessToken = "ResponseData.accessToken";
-      let payload = {
-        phone: phoneNumber,
-        amount: amountInNaira,
-        service_type: provider,
-        plan: "prepaid",
-      };
+      // let payload = {
+      //   phone: phoneNumber,
+      //   amount: amountInNaira,
+      //   service_type: provider,
+      //   plan: "prepaid",
+      // };
+      let payload = data;
       let endpoint = `${process.env.BillingURl}/v1/airtime`;
       handleAPICall(endpoint, "POST", "bearer", AccessToken, payload)
         .then((res) => {
