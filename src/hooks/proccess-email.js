@@ -6,6 +6,7 @@ const {
   VerificationMailBodyContent,
   ChangeUserEmail,
   ResetPasswordMailBodyContent,
+  EmailVerificationContent,
 } = require("../dependency/templates/templates");
 const { successMessage } = require("../dependency/UtilityFunctions");
 
@@ -60,6 +61,27 @@ module.exports = (options = {}) => {
         },
       };
       mailBody = await ResetPasswordMailBodyContent(Payloads);
+      mailSubject = "Reset Password";
+      let response = successMessage(
+        data.code,
+        "verification code has been sent to your email or phone number"
+      );
+      // console.log(response);
+      // context.result = { ...response };
+    }
+    if (mailtype === "EmailVerification") {
+      Payloads = {
+        userEmail: [
+          {
+            email: data.email,
+            // name: "Admin HNS",
+          },
+        ],
+        contentData: {
+          token: data.token,
+        },
+      };
+      mailBody = EmailVerificationContent(Payloads);
       mailSubject = "Reset Password";
       let response = successMessage(
         data.code,

@@ -699,9 +699,18 @@ const TransactionNotificationContent = (data) => {
   </html>`;
   resolve(html);
 };
+const EmailVerificationContent = (data) => {
+  let token = data?.contentData?.token;
+  const verificationLink = `https://rechargemaster.com/email-verification?token=${token}`;
+  const mailBody = `Click the link below to verify your email:\n\n${verificationLink}, 
+                        <p>Click the link below to verify your email:</p><p><a href="${verificationLink}">Verify Email</a></p>`;
+
+  return mailBody;
+};
 module.exports = {
   VerificationMailBodyContent,
   ChangeUserEmail,
   ResetPasswordMailBodyContent,
   TransactionNotificationContent,
+  EmailVerificationContent,
 };

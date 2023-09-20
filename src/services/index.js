@@ -141,9 +141,15 @@ const fundTransferInnitiateRequest = require("./fundTransfer/innitiate-request/i
 
 const fundTransferFinalizeRequest = require("./fundTransfer/finalize-request/finalize-request.service.js");
 
-const emailVerification = require("./email-verification/email-verification.service.js")
+const emailVerification = require("./email-verification/email-verification.service.js");
 
-const phoneVerification = require("./phone-verification/phone-verification.service.js")
+const phoneVerification = require("./phone-verification/phone-verification.service.js");
+
+const authVerifyUserEmail = require("./auth/verify-user-email/verify-user-email.service.js");
+
+const authAccountVaerification = require('./auth/account-vaerification/account-vaerification.service.js');
+
+const authVerifyUserPhoneNumber = require('./auth/verify-user-phone-number/verify-user-phone-number.service.js');
 
 module.exports = function (app) {
   app.configure(users);
@@ -220,4 +226,7 @@ module.exports = function (app) {
   app.configure(fundTransferFinalizeRequest);
   app.configure(emailVerification);
   app.configure(phoneVerification);
+  app.configure(authVerifyUserEmail);
+  app.configure(authAccountVaerification);
+  app.configure(authVerifyUserPhoneNumber);
 };

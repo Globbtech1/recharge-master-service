@@ -15,6 +15,7 @@ module.exports = (options = {}) => {
       "myCustomError",
       "TypeError",
       "NotFound",
+      "ReferenceError",
     ];
     if (handledErrorNames.includes(error?.name)) {
       const statusCode = error?.code || 500;

@@ -76,7 +76,7 @@ module.exports = {
     find: [],
     get: [],
     create: [
-      insertIntoVerification(),
+      // insertIntoVerification(),
       FundUserAccount(),
       proccessEmail({ mailtype: "userCreation" }),
       SendGeneralResponse({
