@@ -5,8 +5,8 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get("sequelizeClient");
-  const rewardUser = sequelizeClient.define(
-    "reward_user",
+  const providers = sequelizeClient.define(
+    "providers",
     {
       id: {
         allowNull: false,
@@ -14,42 +14,22 @@ module.exports = function (app) {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      userId: {
-        type: DataTypes.INTEGER,
+      productName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+
+      image: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      amount: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-      },
-      amountBefore: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-      },
-      amountAfter: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-      },
-      cashBackAmount: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-      },
-      productId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      transactionsHistoryId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      cashBackAmount: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-      },
-      metaData: {
-        type: DataTypes.STRING(1234),
-        allowNull: true,
-      },
+
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
@@ -74,10 +54,10 @@ module.exports = function (app) {
   );
 
   // eslint-disable-next-line no-unused-vars
-  rewardUser.associate = function (models) {
+  providers.associate = function (models) {
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
   };
 
-  return rewardUser;
+  return providers;
 };

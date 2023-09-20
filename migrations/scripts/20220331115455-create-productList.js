@@ -9,11 +9,16 @@ module.exports = {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      productId: {
+      providerId: {
         allowNull: false,
         type: DataTypes.INTEGER,
       },
       productName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      slug: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,

@@ -2,37 +2,29 @@
 
 module.exports = {
   up: (queryInterface, DataTypes) =>
-    queryInterface.createTable("quick_beneficiary", {
+    queryInterface.createTable("providers", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      userId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      sourceImage: {
+      productName: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
+        unique: true,
       },
-      uniqueNumber: {
+      slug: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
+        unique: true,
       },
-      nameAlias: {
+
+      image: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      productId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      metaData: {
-        type: DataTypes.STRING(1234),
-        allowNull: true,
-      },
+
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
@@ -48,5 +40,5 @@ module.exports = {
       },
     }),
   down: (queryInterface /* , Sequelize */) =>
-    queryInterface.dropTable("quick_beneficiary"),
+    queryInterface.dropTable("providers"),
 };

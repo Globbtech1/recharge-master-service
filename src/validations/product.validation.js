@@ -11,6 +11,7 @@ const {
 const validateAddProductSchema = (data) => {
   const schema = Joi.object({
     productName: Joi.string().trim().min(2).required(),
+    slug: Joi.string().trim().min(2).required(),
     image: Joi.string().uri().required(), // Validate as a URI
   });
 
@@ -18,8 +19,9 @@ const validateAddProductSchema = (data) => {
 };
 const validateAddProductListSchema = (data) => {
   const schema = Joi.object({
-    productId: Joi.number().integer().positive().required(),
+    providerId: Joi.number().integer().positive().required(),
     productName: Joi.string().trim().min(2).required(),
+    slug: Joi.string().trim().min(2).required(),
     image: Joi.string().allow(null), // Allow null or a string
     allowedDiscount: Joi.number().positive().required(),
   });

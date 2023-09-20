@@ -19,7 +19,7 @@ module.exports = {
     all: [],
     find: [],
     get: [],
-    create: [sendTransactionEmail()],
+    // create: [sendTransactionEmail()],
     update: [],
     patch: [],
     remove: [],

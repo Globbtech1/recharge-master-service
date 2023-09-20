@@ -93,7 +93,7 @@ exports.FinalizeRequest = class FinalizeRequest {
           amountAfter: convertToNaira(currentBalance),
           referenceNumber: transactionReference,
           metaData: JSON.stringify(metaData),
-          paymentListId: 0, //TODO change to wallet transfer id  // paymentId
+          productId: 0, //TODO change to wallet transfer id  // paymentId
           transactionDate: ShowCurrentDate(),
           amount: convertToNaira(amount),
           transactionStatus: CONSTANT.transactionStatus.success,
