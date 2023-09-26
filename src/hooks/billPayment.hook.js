@@ -14,6 +14,7 @@ const {
   convertToKobo,
   getProviderSourceImage,
   compareHashData,
+  removeSensitiveKeys,
 } = require("../dependency/UtilityFunctions");
 
 const {
@@ -253,7 +254,7 @@ const recordQuickBeneficiary = (options = {}) => {
       amount,
       productId,
       saveBeneficiary,
-      beneficiaryAlias,
+      beneficiaryAlias = "No Name",
       uniqueTransIdentity,
       provider,
     } = data;
@@ -273,17 +274,19 @@ const recordQuickBeneficiary = (options = {}) => {
         where: {
           deletedAt: null,
           userId: loggedInUserId,
-          productId: productId,
+          productListId: productId,
           uniqueNumber: uniqueTransIdentity,
         },
       });
       if (quickBeneficiaryList === null) {
+        const keysToRemove = ["userPin"];
+        const sanitizedData = removeSensitiveKeys(data, keysToRemove);
         const quickBeneficiaryData = {
           userId: loggedInUserId,
           sourceImage: providerImage,
           nameAlias: beneficiaryAlias,
-          productId: productId,
-          metaData: JSON.stringify(data),
+          productListId: productId,
+          metaData: JSON.stringify(sanitizedData),
           uniqueNumber: uniqueTransIdentity,
         };
         app.service("user/quick-beneficiary").create(quickBeneficiaryData);
@@ -297,12 +300,19 @@ const includeBillDetails = (options = {}) => {
   return async (context) => {
     const { app, method, result, params, data } = context;
     const sequelize = app.get("sequelizeClient");
-    const { payment_list } = sequelize.models;
+    const { product_list, providers } = sequelize.models;
     params.sequelize = {
       include: [
         {
-          model: payment_list,
-          attributes: ["name", "slug", "image"],
+          model: product_list,
+          attributes: ["productName", "slug", "image"],
+          include: [
+            {
+              model: providers,
+              as: "provider", // Use the same alias you defined in the association
+              attributes: ["productName", "slug", "image", "id"],
+            },
+          ],
         },
       ],
       raw: false,

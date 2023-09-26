@@ -51,7 +51,7 @@ module.exports = {
     create: [
       debitUserAccount(),
       // recordUserCashBack(),
-      // recordQuickBeneficiary(),
+      recordQuickBeneficiary(),
       // sendSlackNotification(),
       SendGeneralResponse({ message: CONSTANT.successMessage.airtimePurchase }),
     ],

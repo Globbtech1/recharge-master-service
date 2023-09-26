@@ -180,6 +180,15 @@ const failedResp = (message = "") => {
   let reponse = { success: false, message: message, name: "myCustomError" };
   return reponse;
 };
+const removeSensitiveKeys = (data, keysToRemove) => {
+  const newData = { ...data }; // Create a copy of the original object
+
+  keysToRemove.forEach((key) => {
+    delete newData[key]; // Delete the specified key from the copied object
+  });
+
+  return newData; // Return the modified object
+};
 module.exports = {
   successMessage,
   errorMessage,
@@ -199,4 +208,5 @@ module.exports = {
   errorMessageV2,
   successResp,
   failedResp,
+  removeSensitiveKeys,
 };

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const { BadRequest } = require("@feathersjs/errors");
+const { BadRequest, NotFound } = require("@feathersjs/errors");
 const { CONSTANT } = require("../../../dependency/Config");
 const {
   successMessage,
@@ -31,22 +31,58 @@ exports.BuyDataBundle = class BuyDataBundle {
 
     const sequelize = this.app.get("sequelizeClient");
     // const { users, initiate_reset_pwd, payment_list } = sequelize.models;
+    const { users, initiate_reset_pwd, product_list, providers } =
+      sequelize.models;
     const {
       phoneNumber,
       amount,
-      provider,
-      fundSource,
+      // provider,
+      fundSource = "self",
       availableBalance,
-      paymentId,
+      // paymentId,
       dataCode,
       name,
+      productId,
     } = data;
     let loggedInUserId = params?.user?.id;
+    const productDetails = await product_list.findOne({
+      where: {
+        deletedAt: null,
+        id: productId,
+      },
+      include: [
+        {
+          model: providers,
+          as: "provider", // Use the same alias you defined in the association
+        },
+      ],
+    });
+    if (productDetails === null) {
+      const notFound = new NotFound(
+        "Product not fund or it currently disabled"
+      );
+      return Promise.reject(notFound);
+    }
+    console.log(productDetails, "productDetails");
+    const { provider: providerDetails, slug, productName } = productDetails;
+    console.log(providerDetails, slug, productName, "productName");
+    const { slug: provider } = providerDetails;
+
+    //TODO futher check if the price coming is the same as the price of the bundle
+    // data = { ...data, amount: dataAmount };
+    let amountInNaira = convertToNaira(amount);
+    let payload = {
+      phone: phoneNumber,
+      amount: amountInNaira,
+      service_type: provider,
+      datacode: dataCode,
+    };
+
     try {
-      //TODO futher check if the price coming is the same as the price of the bundle
-      // data = { ...data, amount: dataAmount };
       let dataPurchase = new DataPurchase();
-      let dataPurchasePaymentResponse = await dataPurchase.buyDataPlans(data);
+      let dataPurchasePaymentResponse = await dataPurchase.buyDataPlans(
+        payload
+      );
       console.log(dataPurchasePaymentResponse, "dataPurchasePaymentResponse");
       let providerStatus = dataPurchasePaymentResponse?.status;
       if (providerStatus != "success") {
@@ -69,7 +105,7 @@ exports.BuyDataBundle = class BuyDataBundle {
           amountAfter: convertToNaira(availableBalance),
           referenceNumber: "Nill",
           metaData: JSON.stringify(metaData),
-          productId: paymentId,
+          productId: productId,
           transactionDate: ShowCurrentDate(),
           amount: convertToNaira(amount),
           transactionStatus: CONSTANT.transactionStatus.failed,
@@ -103,7 +139,7 @@ exports.BuyDataBundle = class BuyDataBundle {
         amountAfter: convertToNaira(newBalance),
         referenceNumber: transactionReference,
         metaData: JSON.stringify(metaData),
-        productId: paymentId,
+        productId: productId,
         transactionDate: ShowCurrentDate(),
         amount: convertToNaira(amount),
         transactionStatus: CONSTANT.transactionStatus.success,
@@ -121,6 +157,7 @@ exports.BuyDataBundle = class BuyDataBundle {
       // );
       let additionalOrderDetails = {
         slackNotificationData: dataPurchasePaymentResponse,
+        provider,
       };
       responseTransaction = {
         ...responseTransaction,
@@ -153,7 +190,7 @@ exports.BuyDataBundle = class BuyDataBundle {
         amountAfter: convertToNaira(availableBalance),
         referenceNumber: "Nill",
         metaData: JSON.stringify(metaData),
-        productId: paymentId,
+        productId: productId,
         transactionDate: ShowCurrentDate(),
         amount: convertToNaira(amount),
         transactionStatus: CONSTANT.transactionStatus.failed,

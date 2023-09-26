@@ -10,15 +10,15 @@ exports.MyBeneficiaries = class MyBeneficiaries {
     const { user, query } = params;
     console.log(query, "parameter");
     const loggedInUserId = user?.id;
-    const paymentId = query?.paymentId || 0;
-    if (paymentId === 0) {
+    const productId = query?.productId || 0;
+    if (productId === 0) {
       return Promise.reject(new BadRequest("Payment Id is required"));
     }
 
     let result = await this.app.service("user/quick-beneficiary").find({
       query: {
         userId: loggedInUserId,
-        productId: paymentId,
+        productListId: productId,
         $select: ["sourceImage", "uniqueNumber", "nameAlias", "metaData"],
       },
     });
