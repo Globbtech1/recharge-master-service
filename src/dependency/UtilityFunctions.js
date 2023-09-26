@@ -157,16 +157,9 @@ const getProviderSourceImage = (paymentProviders, name) => {
   );
   return filteredObjects.length > 0 ? filteredObjects[0] : {};
 };
-const getProviderCashBack = (paymentProviders, providerName, PaymentId) => {
-  /*console.log(
-    paymentProviders,
-    providerName,
-    PaymentId,
-    "paymentProviders, providerName, PaymentId"
-  );*/
+const getProviderCashBack = (paymentProviders, providerName, productId) => {
   const filteredObjects = paymentProviders?.filter(
-    (object) =>
-      object.provider == providerName && object.paymentListId == PaymentId
+    (object) => object.provider == providerName && object.productId == productId
   );
   //console.log(filteredObjects, "filteredObjectsfilteredObjects");
   return filteredObjects.length > 0 ? filteredObjects[0] : {};
@@ -187,6 +180,15 @@ const failedResp = (message = "") => {
   let reponse = { success: false, message: message, name: "myCustomError" };
   return reponse;
 };
+const removeSensitiveKeys = (data, keysToRemove) => {
+  const newData = { ...data }; // Create a copy of the original object
+
+  keysToRemove.forEach((key) => {
+    delete newData[key]; // Delete the specified key from the copied object
+  });
+
+  return newData; // Return the modified object
+};
 module.exports = {
   successMessage,
   errorMessage,
@@ -206,4 +208,5 @@ module.exports = {
   errorMessageV2,
   successResp,
   failedResp,
+  removeSensitiveKeys,
 };

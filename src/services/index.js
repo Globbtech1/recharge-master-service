@@ -95,39 +95,9 @@ const tvSubscriptionProductTypeBundles = require("./tv-subscription/product-type
 
 const tvSubscriptionValidateTvDetails = require("./tv-subscription/validate-tv-details/validate-tv-details.service.js");
 
-const guestAirtimeBuyAirtime = require("./guest/airtime/buy-airtime/buy-airtime.service.js");
-
-const guestAirtimeProviders = require("./guest/airtime/providers/providers.service.js");
-
-const guestDataBuyData = require("./guest/data/buy-data/buy-data.service.js");
-
-const guestDataProviders = require("./guest/data/providers/providers.service.js");
-
-const guestDataBundles = require("./guest/data/bundles/bundles.service.js");
-
-const guestElectricityBuyElectricity = require("./guest/electricity/buy-electricity/buy-electricity.service.js");
-
-const guestElectricityProviders = require("./guest/electricity/providers/providers.service.js");
-
-const guestElectricityVerifyMeterNumber = require("./guest/electricity/verify-meter-number/verify-meter-number.service.js");
-
-const guestTvTvSubscription = require("./guest/tv/tv-subscription/tv-subscription.service.js");
-
-const guestTvProviders = require("./guest/tv/providers/providers.service.js");
-
-const guestTvVerifyTvDetails = require("./guest/tv/verify-tv-details/verify-tv-details.service.js");
-
-const guestTvProviderProductTypes = require("./guest/tv/provider-product-types/provider-product-types.service.js");
-
-const guestTvProductTypeBundles = require("./guest/tv/product-type-bundles/product-type-bundles.service.js");
-
-const guestConfirm = require("./guest/confirm/confirm.service.js");
-
-const guestGuestPurchase = require("./guest/guest-purchase/guest-purchase.service.js");
-
 const userCreateTransactionPin = require("./user/create-transaction-pin/create-transaction-pin.service.js");
 
-const products = require("./products/products.service.js");
+// const products = require("./products/products.service.js");
 
 const productList = require("./product-list/product-list.service.js");
 
@@ -147,9 +117,15 @@ const phoneVerification = require("./phone-verification/phone-verification.servi
 
 const authVerifyUserEmail = require("./auth/verify-user-email/verify-user-email.service.js");
 
-const authAccountVaerification = require('./auth/account-vaerification/account-vaerification.service.js');
+const authAccountVaerification = require("./auth/account-vaerification/account-vaerification.service.js");
 
-const authVerifyUserPhoneNumber = require('./auth/verify-user-phone-number/verify-user-phone-number.service.js');
+const authVerifyUserPhoneNumber = require("./auth/verify-user-phone-number/verify-user-phone-number.service.js");
+
+const providers = require("./providers/providers.service.js");
+
+const billsProviders = require("./bills/providers/providers.service.js");
+
+const billsProviderProducts = require("./bills/provider-products/provider-products.service.js");
 
 module.exports = function (app) {
   app.configure(users);
@@ -201,23 +177,8 @@ module.exports = function (app) {
   app.configure(electricityMyBeneficiaries);
   app.configure(tvSubscriptionProductTypeBundles);
   app.configure(tvSubscriptionValidateTvDetails);
-  app.configure(guestAirtimeBuyAirtime);
-  app.configure(guestAirtimeProviders);
-  app.configure(guestDataBuyData);
-  app.configure(guestDataProviders);
-  app.configure(guestDataBundles);
-  app.configure(guestElectricityBuyElectricity);
-  app.configure(guestElectricityProviders);
-  app.configure(guestElectricityVerifyMeterNumber);
-  app.configure(guestTvTvSubscription);
-  app.configure(guestTvProviders);
-  app.configure(guestTvVerifyTvDetails);
-  app.configure(guestTvProviderProductTypes);
-  app.configure(guestTvProductTypeBundles);
-  app.configure(guestConfirm);
-  app.configure(guestGuestPurchase);
   app.configure(userCreateTransactionPin);
-  app.configure(products);
+  // app.configure(products);
   app.configure(productList);
   app.configure(accountFundingInnitiateFund);
   app.configure(accountFundingFundInnitiator);
@@ -229,4 +190,7 @@ module.exports = function (app) {
   app.configure(authVerifyUserEmail);
   app.configure(authAccountVaerification);
   app.configure(authVerifyUserPhoneNumber);
+  app.configure(providers);
+  app.configure(billsProviders);
+  app.configure(billsProviderProducts);
 };

@@ -14,6 +14,7 @@ const {
   convertToKobo,
   getProviderSourceImage,
   compareHashData,
+  removeSensitiveKeys,
 } = require("../dependency/UtilityFunctions");
 
 const {
@@ -29,9 +30,12 @@ const checkAvailableBalance = (options = {}) => {
   return async (context) => {
     const { app, method, result, params, data, id } = context;
     const sequelize = app.get("sequelizeClient");
-    // console.log(data, "dataSent");
+    // console.log(params, "dataSent.........");
+    // console.log(params.user, "dataSent.........");
     const { account_balance } = sequelize.models;
     let loggedInUserId = params?.user?.id;
+    // debugger;
+    // return Promise.reject(params);
     // console.log(loggedInUserId, "loggedInUserIds");
     const accountBalance = await account_balance.findOne({
       where: {
@@ -48,7 +52,6 @@ const checkAvailableBalance = (options = {}) => {
         const insufficient = new BadRequest(
           "insufficient balance , please top up your account"
         );
-        return Promise.reject(insufficient);
       }
       let additionalOrderDetails = {
         availableBalance: balance,
@@ -161,8 +164,9 @@ const recordUserCashBack = (options = {}) => {
     console.log(result, "resultkkkkkkkk");
     const { account_balance, payment_list, payment_providers } =
       sequelize.models;
-    const { amount, paymentId, provider } = data;
-
+    const { amount, productId } = data;
+    const { provider } = result;
+    console.log(data, "..........");
     let loggedInUserId = params?.user?.id;
     let transactionsHistoryId = result?.id;
 
@@ -176,7 +180,7 @@ const recordUserCashBack = (options = {}) => {
       // const paymentListDetails = await payment_list.findOne({
       //   where: {
       //     deletedAt: null,
-      //     id: paymentId,
+      //     id: productId,
       //   },
       // });
       // const PaymentProvidersDetails = await payment_providers.findOne({
@@ -188,7 +192,7 @@ const recordUserCashBack = (options = {}) => {
       const PaymentProvidersDetails = await getSingleProvidersV2(
         payment_providers,
         provider,
-        paymentId
+        productId
       );
       if (PaymentProvidersDetails !== null) {
         console.log(PaymentProvidersDetails, "PaymentProvidersDetails");
@@ -212,7 +216,7 @@ const recordUserCashBack = (options = {}) => {
           amountBefore: convertToNaira(cashBackBalance),
           amountAfter: convertToNaira(newCashBackAmount),
           cashBackAmount: cashBackAmount,
-          paymentListId: paymentId,
+          productId: productId,
           transactionsHistoryId: transactionsHistoryId || 0,
           metaData: JSON.stringify(data),
         };
@@ -244,16 +248,17 @@ const recordQuickBeneficiary = (options = {}) => {
   return async (context) => {
     const { app, method, result, params, data, id, error } = context;
     const sequelize = app.get("sequelizeClient");
-    const { quick_beneficiary, payment_providers } = sequelize.models;
+    const { quick_beneficiary, payment_providers, providers } =
+      sequelize.models;
     const {
       amount,
-      paymentId,
+      productId,
       saveBeneficiary,
-      beneficiaryAlias,
+      beneficiaryAlias = "No Name",
       uniqueTransIdentity,
       provider,
     } = data;
-    let paymentProviders = await getAllProvidersV2(payment_providers);
+    let paymentProviders = await getAllProvidersV2(providers);
     let providerDetails = getProviderSourceImage(paymentProviders, provider);
     console.log(data, "data....");
     console.log(providerDetails, "providerDetails");
@@ -269,17 +274,19 @@ const recordQuickBeneficiary = (options = {}) => {
         where: {
           deletedAt: null,
           userId: loggedInUserId,
-          paymentListId: paymentId,
+          productListId: productId,
           uniqueNumber: uniqueTransIdentity,
         },
       });
       if (quickBeneficiaryList === null) {
+        const keysToRemove = ["userPin"];
+        const sanitizedData = removeSensitiveKeys(data, keysToRemove);
         const quickBeneficiaryData = {
           userId: loggedInUserId,
           sourceImage: providerImage,
           nameAlias: beneficiaryAlias,
-          paymentListId: paymentId,
-          metaData: JSON.stringify(data),
+          productListId: productId,
+          metaData: JSON.stringify(sanitizedData),
           uniqueNumber: uniqueTransIdentity,
         };
         app.service("user/quick-beneficiary").create(quickBeneficiaryData);
@@ -293,12 +300,19 @@ const includeBillDetails = (options = {}) => {
   return async (context) => {
     const { app, method, result, params, data } = context;
     const sequelize = app.get("sequelizeClient");
-    const { payment_list } = sequelize.models;
+    const { product_list, providers } = sequelize.models;
     params.sequelize = {
       include: [
         {
-          model: payment_list,
-          attributes: ["name", "slug", "image"],
+          model: product_list,
+          attributes: ["productName", "slug", "image"],
+          include: [
+            {
+              model: providers,
+              as: "provider", // Use the same alias you defined in the association
+              attributes: ["productName", "slug", "image", "id"],
+            },
+          ],
         },
       ],
       raw: false,
@@ -339,7 +353,6 @@ const validateTransactionPin = (options = {}) => {
       }
 
       let userPinCorrect = await compareHashData(userPin, securityPin);
-      // console.log(userPinCorrect, "userPinCorrect");
       if (!userPinCorrect) {
         return Promise.reject(new BadRequest("Incorrect Transaction Pin"));
       }
@@ -360,7 +373,7 @@ const getAllProviders = (options = {}) => {
     const { payment_providers, payment_list } = sequelize.models;
     // const {
     //   amount,
-    //   paymentId,
+    //   productId,
     //   saveBeneficiary,
     //   beneficiaryAlias,
     //   uniqueTransIdentity,
@@ -386,8 +399,8 @@ const getAllProviders = (options = {}) => {
   };
 };
 
-const getAllProvidersV2 = async (payment_providers) => {
-  const paymentProvidersList = await payment_providers.findAll({
+const getAllProvidersV2 = async (providers) => {
+  const paymentProvidersList = await providers.findAll({
     where: {
       deletedAt: null,
     },
@@ -397,12 +410,12 @@ const getAllProvidersV2 = async (payment_providers) => {
   paymentProviders = JSON.parse(paymentProviders);
   return paymentProviders;
 };
-const getSingleProvidersV2 = async (payment_providers, provider, paymentId) => {
-  const PaymentProvidersDetails = await payment_providers.findOne({
+const getSingleProvidersV2 = async (providers, provider, productId) => {
+  const PaymentProvidersDetails = await providers.findOne({
     where: {
       deletedAt: null,
       provider: provider,
-      paymentListId: paymentId,
+      productId: productId,
     },
   });
   // let paymentProviders = paymentProvidersList || [];

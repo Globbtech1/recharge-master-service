@@ -1,4 +1,4 @@
-const { BadRequest } = require("@feathersjs/errors");
+const { BadRequest, NotFound } = require("@feathersjs/errors");
 const { successMessage } = require("../../../dependency/UtilityFunctions");
 const { DataPurchase } = require("../../../interfaces/dataPurchase");
 const logger = require("../../../logger");
@@ -13,16 +13,42 @@ exports.Bundles = class Bundles {
   async find(params) {
     try {
       const { query } = params;
-      const dataProvider = query?.provider;
-      if (!dataProvider) {
-        return Promise.reject(new BadRequest("Provider is missing"));
+      const productId = query?.productId;
+      if (!productId) {
+        return Promise.reject(new BadRequest("Product Id  is missing"));
       }
       const sequelize = this.app.get("sequelizeClient");
+      const { users, initiate_reset_pwd, product_list, providers } =
+        sequelize.models;
+      const productDetails = await product_list.findOne({
+        where: {
+          deletedAt: null,
+          id: productId,
+        },
+        include: [
+          {
+            model: providers,
+            as: "provider", // Use the same alias you defined in the association
+          },
+        ],
+      });
+      if (productDetails === null) {
+        const notFound = new NotFound(
+          "Product not fund or it currently disabled"
+        );
+        return Promise.reject(notFound);
+      }
+      console.log(productDetails, "productDetails");
+      const { provider: providerDetails, slug, productName } = productDetails;
+      const { slug: provider } = providerDetails;
 
       let dataPurchase = new DataPurchase();
-      let databundles = await dataPurchase.getBundleListList(dataProvider);
+      let databundles = await dataPurchase.getBundleListList(provider);
       return Promise.resolve(
-        successMessage(databundles, "Data bundles retrieved successfully")
+        successMessage(
+          databundles,
+          `Data bundles retrieved successfully ${provider}`
+        )
       );
     } catch (error) {
       logger.error("error", error);

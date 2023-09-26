@@ -125,7 +125,7 @@ exports.PaymentCallback = class PaymentCallback {
             amountAfter: convertToNaira(currentBalance),
             referenceNumber: transactionReference,
             metaData: JSON.stringify(metaData),
-            paymentListId: payment_listDetails?.id || 0,
+            productId: payment_listDetails?.id || 0,
             transactionDate: ShowCurrentDate(),
             amount: amountPaid,
             transactionStatus: CONSTANT.transactionStatus.success,

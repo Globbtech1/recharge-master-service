@@ -36,7 +36,7 @@ exports.UserHistory = class UserHistory {
         filters = {
           ...filters,
           ...{
-            paymentListId: paymentId,
+            productId: paymentId,
           },
         };
       }
@@ -74,7 +74,8 @@ exports.UserHistory = class UserHistory {
 
       return Promise.resolve(successMessage(result, "User History"));
     } catch (error) {
-      Sentry.captureException(error);
+      console.log(error);
+      // Sentry.captureException(error);
     }
   }
 

@@ -10,6 +10,7 @@ const {
 const {
   sendSlackNotification,
   SendGeneralResponse,
+  checkIfNotExisting,
 } = require("../../../hooks/general-uses");
 const { validateBuyDataUserInput } = require("../../../hooks/rule.validator");
 
@@ -22,6 +23,15 @@ module.exports = {
     get: [],
     create: [
       validateBuyDataUserInput(),
+      checkIfNotExisting({
+        fieldsToCheck: [
+          { fieldName: "id", value: "productId", friendlyName: "Product id" },
+
+          // Add more fields to check as needed
+        ],
+        serviceType: "product-list",
+      }),
+
       validateMobileNumber(),
       checkAvailableBalance(),
       validateTransactionPin(),
@@ -37,9 +47,9 @@ module.exports = {
     get: [],
     create: [
       debitUserAccount(),
-      recordUserCashBack(),
+      // recordUserCashBack(),
       recordQuickBeneficiary(),
-      sendSlackNotification(),
+      // sendSlackNotification(),
       SendGeneralResponse({ message: CONSTANT.successMessage.dataPurchase }),
     ],
     update: [],

@@ -14,11 +14,16 @@ module.exports = function (app) {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      productId: {
+      providerId: {
         allowNull: false,
         type: DataTypes.INTEGER,
       },
       productName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      slug: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
@@ -60,6 +65,11 @@ module.exports = function (app) {
   productList.associate = function (models) {
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
+    const { providers } = models;
+    productList.belongsTo(providers, {
+      foreignKey: "providerId", // This should match the actual foreign key column name in the productList table
+      as: "provider", // Alias for the association
+    });
   };
 
   return productList;

@@ -1,4 +1,4 @@
-const { BadRequest } = require("@feathersjs/errors");
+const { BadRequest, NotFound } = require("@feathersjs/errors");
 const { CONSTANT } = require("../../../dependency/Config");
 const {
   successMessage,
@@ -22,23 +22,78 @@ exports.BuyAirtime = class BuyAirtime {
   }
 
   async create(data, params) {
+    console.log(params, "params");
+    const { headers } = params;
+    console.log(JSON.stringify(headers), "params");
+    // return;
     console.log(data, "please");
 
     const sequelize = this.app.get("sequelizeClient");
-    const { users, initiate_reset_pwd, payment_list } = sequelize.models;
+    const { users, initiate_reset_pwd, product_list, providers } =
+      sequelize.models;
     const {
       phoneNumber,
       amount,
-      provider,
-      fundSource,
+      fundSource = "self",
       availableBalance,
-      paymentId,
+      productId,
     } = data;
     let loggedInUserId = params?.user?.id;
 
+    const productDetails = await product_list.findOne({
+      where: {
+        deletedAt: null,
+        id: productId,
+      },
+      include: [
+        {
+          model: providers,
+          as: "provider", // Use the same alias you defined in the association
+        },
+      ],
+    });
+    if (productDetails === null) {
+      const notFound = new NotFound(
+        "Product not fund or it currently disabled"
+      );
+      return Promise.reject(notFound);
+    }
+    console.log(productDetails, "productDetails");
+    const { provider: providerDetails, slug, productName } = productDetails;
+    console.log(providerDetails, slug, productName, "productName");
+    const { slug: provider } = providerDetails;
+
+    // if (slug === "Data_Plan") {
+    //   const headersNN = {
+    //     Authorization: `Bearer ${"userToken"}`,
+    //   };
+    //   return await this.app.service("/data/buy-data-bundle").create(
+    //     {
+    //       phoneNumber: "07065873900",
+    //       amount: "10000",
+    //       provider: "mtn",
+    //       fundSource: "self",
+    //       dataCode: "100",
+    //       name: "100MB Daily - Daily",
+    //       paymentId: 3,
+    //       saveBeneficiary: true,
+    //       beneficiaryAlias: "my mtn bun",
+    //       userPin: "111111",
+    //     },
+    //     { ...headers }
+    //   );
+    // }
+    let amountInNaira = convertToNaira(amount);
+    let payload = {
+      phone: phoneNumber,
+      amount: amountInNaira,
+      service_type: provider,
+      plan: "prepaid",
+    };
+    // return;
     try {
       let airtimePurchase = new AirtimePurchase();
-      let airtimePaymentResponse = await airtimePurchase.buyAirtime(data);
+      let airtimePaymentResponse = await airtimePurchase.buyAirtime(payload);
       console.log(airtimePaymentResponse, "airtimePaymentResponse");
       let providerStatus = airtimePaymentResponse?.status;
       if (providerStatus != "success") {
@@ -60,7 +115,7 @@ exports.BuyAirtime = class BuyAirtime {
           amountAfter: convertToNaira(availableBalance),
           referenceNumber: "Nill",
           metaData: JSON.stringify(metaData),
-          paymentListId: paymentId,
+          productId: productId,
           transactionDate: ShowCurrentDate(),
           amount: convertToNaira(amount),
           transactionStatus: CONSTANT.transactionStatus.failed,
@@ -93,7 +148,7 @@ exports.BuyAirtime = class BuyAirtime {
         amountAfter: convertToNaira(newBalance),
         referenceNumber: transactionReference,
         metaData: JSON.stringify(metaData),
-        paymentListId: paymentId,
+        productId: productId,
         transactionDate: ShowCurrentDate(),
         amount: convertToNaira(amount),
         transactionStatus: CONSTANT.transactionStatus.success,
@@ -111,14 +166,17 @@ exports.BuyAirtime = class BuyAirtime {
       // );
       let additionalOrderDetails = {
         slackNotificationData: airtimePaymentResponse,
+        provider,
       };
       responseTransaction = {
         ...responseTransaction,
         ...additionalOrderDetails,
+        // ...data,
       };
 
       return responseTransaction;
     } catch (error) {
+      console.log(error, "pppppp");
       let errorMessage =
         error?.response?.data?.error?.message ||
         "Unable to process your request";
@@ -141,7 +199,7 @@ exports.BuyAirtime = class BuyAirtime {
         amountAfter: convertToNaira(availableBalance),
         referenceNumber: "Nill",
         metaData: JSON.stringify(metaData),
-        paymentListId: paymentId,
+        productId: productId,
         transactionDate: ShowCurrentDate(),
         amount: convertToNaira(amount),
         transactionStatus: CONSTANT.transactionStatus.failed,

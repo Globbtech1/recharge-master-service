@@ -42,7 +42,7 @@ module.exports = function (app) {
         type: DataTypes.STRING(1234),
         allowNull: true,
       },
-      paymentListId: {
+      productListId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -87,8 +87,8 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   transactionsHistory.associate = function (models) {
-    const { payment_list } = models;
-    transactionsHistory.belongsTo(payment_list);
+    const { product_list } = models;
+    transactionsHistory.belongsTo(product_list);
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
   };

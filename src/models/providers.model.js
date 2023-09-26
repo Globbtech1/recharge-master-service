@@ -5,8 +5,8 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get("sequelizeClient");
-  const quickBeneficiary = sequelizeClient.define(
-    "quick_beneficiary",
+  const providers = sequelizeClient.define(
+    "providers",
     {
       id: {
         allowNull: false,
@@ -14,30 +14,22 @@ module.exports = function (app) {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      userId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      sourceImage: {
+      productName: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
+        unique: true,
       },
-      uniqueNumber: {
+      slug: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
+        unique: true,
       },
-      nameAlias: {
+
+      image: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      productListId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      metaData: {
-        type: DataTypes.STRING(1234),
-        allowNull: true,
-      },
+
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
@@ -62,12 +54,10 @@ module.exports = function (app) {
   );
 
   // eslint-disable-next-line no-unused-vars
-  quickBeneficiary.associate = function (models) {
-    const { product_list } = models;
+  providers.associate = function (models) {
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
-    quickBeneficiary.belongsTo(product_list);
   };
 
-  return quickBeneficiary;
+  return providers;
 };

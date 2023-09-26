@@ -2,15 +2,11 @@
 
 module.exports = {
   up: (queryInterface, DataTypes) =>
-    queryInterface.createTable("product_list", {
+    queryInterface.createTable("providers", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: DataTypes.INTEGER,
-      },
-      providerId: {
-        allowNull: false,
         type: DataTypes.INTEGER,
       },
       productName: {
@@ -23,14 +19,12 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
+
       image: {
         type: DataTypes.STRING,
-        allowNull: true,
-      },
-      allowedDiscount: {
         allowNull: false,
-        type: DataTypes.DOUBLE,
       },
+
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
@@ -46,5 +40,5 @@ module.exports = {
       },
     }),
   down: (queryInterface /* , Sequelize */) =>
-    queryInterface.dropTable("product_list"),
+    queryInterface.dropTable("providers"),
 };

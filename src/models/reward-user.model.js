@@ -34,7 +34,7 @@ module.exports = function (app) {
         type: DataTypes.DOUBLE,
         allowNull: false,
       },
-      paymentListId: {
+      productId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

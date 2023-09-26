@@ -25,7 +25,7 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      paymentListId: {
+      productListId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

@@ -251,7 +251,7 @@ const validateResetPasswordInput = (options = {}) => {
     return context;
   };
 };
-const validateAddProductInput = (options = {}) => {
+const validateAddProviderInput = (options = {}) => {
   return async (context) => {
     const { data } = context;
     const { error } = validateAddProductSchema(data);
@@ -293,6 +293,6 @@ module.exports = {
   guestCustomerValidationInput,
   guestTvSubValidationInput,
   validateResetPasswordInput,
-  validateAddProductInput,
+  validateAddProviderInput,
   validateAddProductListInput,
 };
