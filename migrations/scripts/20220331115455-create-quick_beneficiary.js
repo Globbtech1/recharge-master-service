@@ -25,7 +25,7 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      productId: {
+      productListId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

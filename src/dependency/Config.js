@@ -68,6 +68,8 @@ const CONSTANT = {
     email: "emailAddress",
     phoneNumber: "phoneNumber",
   },
+  externalRequestFailErrorMessage:
+    "The request failed due to an external provider's error.",
 };
 
 module.exports = { CONSTANT };

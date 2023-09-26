@@ -1,4 +1,5 @@
 const { handleAPICall } = require("../dependency/apiServices");
+const { CONSTANT } = require("../dependency/Config");
 const {
   convertToNaira,
   getProviderSourceImage,
@@ -52,7 +53,7 @@ exports.DataPurchase = class DataPurchase {
             });
             resolve(reformattedResponse);
           } else {
-            reject({});
+            reject(new Error(CONSTANT.externalRequestFailErrorMessage));
           }
         })
         .catch((error) => {
@@ -98,7 +99,7 @@ exports.DataPurchase = class DataPurchase {
             });
             resolve(reformattedResponse);
           } else {
-            reject({});
+            reject(new Error(CONSTANT.externalRequestFailErrorMessage));
           }
         })
         .catch((error) => {
@@ -113,18 +114,18 @@ exports.DataPurchase = class DataPurchase {
           reject(error);
         });
     });
-  buyDataPlans = (data) =>
+  buyDataPlans = (payload) =>
     new Promise(async (resolve, reject) => {
-      let userAmount = data?.amount;
-      let amountInNaira = convertToNaira(userAmount);
-      const { phoneNumber, provider, dataCode } = data;
+      // let userAmount = data?.amount;
+      // let amountInNaira = convertToNaira(userAmount);
+      // const { phoneNumber, provider, dataCode } = data;
       let AccessToken = "ResponseData.accessToken";
-      let payload = {
-        phone: phoneNumber,
-        amount: amountInNaira,
-        service_type: provider,
-        datacode: dataCode,
-      };
+      // let payload = {
+      //   phone: phoneNumber,
+      //   amount: amountInNaira,
+      //   service_type: provider,
+      //   datacode: dataCode,
+      // };
       console.log(payload, "payloadpayloadpayloadpayload");
       let endpoint = `${process.env.BillingURl}/v1/databundle`;
       handleAPICall(endpoint, "POST", "bearer", AccessToken, payload)
@@ -138,7 +139,7 @@ exports.DataPurchase = class DataPurchase {
           } else {
             let ResponseData = response?.data;
             JSON.stringify(ResponseData, "errorResponse");
-            reject({});
+            reject(new Error(CONSTANT.externalRequestFailErrorMessage));
           }
         })
         .catch((error) => {

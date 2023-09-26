@@ -30,7 +30,7 @@ module.exports = function (app) {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      productId: {
+      productListId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

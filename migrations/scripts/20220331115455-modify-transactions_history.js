@@ -5,14 +5,14 @@ module.exports = {
     return queryInterface.renameColumn(
       "transactions_history",
       "paymentListId",
-      "productId"
+      "productListId"
     );
   },
 
   down: (queryInterface, DataTypes) => {
     return queryInterface.renameColumn(
       "transactions_history",
-      "productId",
+      "productListId",
       "paymentListId"
     );
   },
