@@ -158,6 +158,7 @@ exports.BuyDataBundle = class BuyDataBundle {
       let additionalOrderDetails = {
         slackNotificationData: dataPurchasePaymentResponse,
         provider,
+        scheduleMeta: payload,
       };
       responseTransaction = {
         ...responseTransaction,

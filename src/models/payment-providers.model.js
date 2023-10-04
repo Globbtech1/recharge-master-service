@@ -52,6 +52,8 @@ module.exports = function (app) {
           options.raw = true;
         },
       },
+      Sequelize,
+      paranoid: true,
     }
   );
 

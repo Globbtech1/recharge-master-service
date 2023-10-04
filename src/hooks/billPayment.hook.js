@@ -15,6 +15,7 @@ const {
   getProviderSourceImage,
   compareHashData,
   removeSensitiveKeys,
+  calculateBillNextExecutionDate,
 } = require("../dependency/UtilityFunctions");
 
 const {
@@ -423,6 +424,59 @@ const getSingleProvidersV2 = async (providers, provider, productId) => {
   // paymentProviders = JSON.parse(paymentProviders);
   return PaymentProvidersDetails;
 };
+const scheduleUserPayment = (options = {}) => {
+  return async (context) => {
+    const { app, method, result, params, data, id, error } = context;
+    const sequelize = app.get("sequelizeClient");
+    const { quick_beneficiary, payment_providers, providers } =
+      sequelize.models;
+
+    console.log(result, "result");
+    console.log(data, "data");
+    let loggedInUserId = params?.user?.id;
+
+    const {
+      amount,
+      productId,
+      // saveBeneficiary,
+      // beneficiaryAlias = "No Name",
+      // uniqueTransIdentity,
+      // provider,
+      scheduleBill,
+      dayOfWeek,
+      frequency,
+      dayOfMonth,
+    } = data;
+    if (!scheduleBill) {
+      return context;
+    }
+    const { scheduleMeta } = result;
+    let lastExecution = null;
+    let nextDateData = {
+      frequency,
+      dayOfWeekString: dayOfWeek,
+      dayOfMonth,
+      lastExecution,
+    };
+    const nextExecutionDate = calculateBillNextExecutionDate(nextDateData);
+    const scheduledPayment = {
+      userId: loggedInUserId,
+      frequency: frequency, // Replace with the desired frequency
+      dayOfWeek: dayOfWeek, // Replace with the desired day of the week (0-6 for Sunday to Saturday)
+      dayOfMonth: dayOfMonth, // Replace with the desired day of the month (1-31)
+      PaymentMetaData: JSON.stringify(scheduleMeta),
+      productListId: productId,
+      lastExecution: lastExecution, // Replace with the last execution date and time
+      nextExecution: nextExecutionDate,
+      purchaseAmount: amount,
+    };
+
+    app
+      .service("schedulePayment/schedule-bills-payment")
+      .create(scheduledPayment);
+    return context;
+  };
+};
 module.exports = {
   checkAvailableBalance,
   debitUserAccount,
@@ -435,4 +489,5 @@ module.exports = {
   validateTransactionPin,
   getAllProvidersV2,
   getSingleProvidersV2,
+  scheduleUserPayment,
 };

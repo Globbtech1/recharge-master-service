@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const { CONSTANT } = require("./Config");
 const successMessage = (data, message = "") => {
   let reponse = { success: true, data: data, message: message };
   return reponse;
@@ -189,6 +190,94 @@ const removeSensitiveKeys = (data, keysToRemove) => {
 
   return newData; // Return the modified object
 };
+const calculateBillNextExecutionDate = (scheduledPayment) => {
+  const { frequency, dayOfWeekString, dayOfMonth, lastExecution } =
+    scheduledPayment;
+  let nextExecution;
+  const dayOfWeek = getDayOfWeek(dayOfWeekString);
+  // Convert the lastExecution date to a JavaScript Date object
+  const lastExecutionDate = lastExecution ? new Date(lastExecution) : null;
+
+  if (frequency === CONSTANT.scheduleFrequency.daily) {
+    console.log("enter daily");
+    if (!lastExecutionDate) {
+      // If it's the first execution, set the nextExecution to today
+      nextExecution = new Date();
+      const currentDate = new Date();
+      nextExecution.setDate(nextExecution.getDate() + 1); // Add one day to the current date
+      nextExecution.setHours(currentDate.getHours());
+      nextExecution.setMinutes(currentDate.getMinutes());
+    } else {
+      // If it's not the first execution, add one day to the lastExecution date
+      nextExecution = new Date(lastExecutionDate);
+      nextExecution.setDate(lastExecutionDate.getDate() + 1);
+    }
+  } else if (frequency === CONSTANT.scheduleFrequency.weekly) {
+    console.log("enter weekly");
+
+    if (!lastExecutionDate) {
+      // If it's the first execution, set the nextExecution to the next specified day of the week
+      nextExecution = new Date();
+      const currentDate = new Date();
+      if (currentDate.getDay() === dayOfWeek) {
+        // If today is the same as the specified day, add 7 days to go to next week
+        nextExecution.setDate(currentDate.getDate() + 7);
+      }
+      nextExecution.setHours(currentDate.getHours());
+      nextExecution.setMinutes(currentDate.getMinutes());
+      nextExecution.setDate(
+        nextExecution.getDate() + ((dayOfWeek - nextExecution.getDay() + 7) % 7)
+      );
+    } else {
+      // If it's not the first execution, add one week to the lastExecution date
+      nextExecution = new Date(lastExecutionDate);
+      nextExecution.setDate(
+        lastExecutionDate.getDate() +
+          ((dayOfWeek - lastExecutionDate.getDay() + 7) % 7) +
+          7
+      );
+    }
+  } else if (frequency === CONSTANT.scheduleFrequency.monthly) {
+    console.log("enter monthly");
+
+    if (!lastExecutionDate) {
+      // If it's the first execution, set the nextExecution to the specified day of the month
+      nextExecution = new Date();
+      const currentDate = new Date();
+      nextExecution.setMonth(currentDate.getMonth() + 1);
+      nextExecution.setHours(currentDate.getHours());
+      nextExecution.setMinutes(currentDate.getMinutes());
+      nextExecution.setDate(dayOfMonth);
+    } else {
+      // If it's not the first execution, add one month to the lastExecution date
+      nextExecution = new Date(lastExecutionDate);
+      nextExecution.setMonth(lastExecutionDate.getMonth() + 1);
+      nextExecution.setDate(dayOfMonth);
+    }
+  }
+
+  return nextExecution;
+};
+const getDayOfWeek = (dayName) => {
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const index = daysOfWeek.indexOf(dayName);
+
+  if (index !== -1) {
+    return index;
+  } else {
+    // Handle invalid day names here, e.g., return -1 or throw an error
+    return -1; // -1 indicates an invalid day name
+  }
+};
+
 module.exports = {
   successMessage,
   errorMessage,
@@ -209,4 +298,5 @@ module.exports = {
   successResp,
   failedResp,
   removeSensitiveKeys,
+  calculateBillNextExecutionDate,
 };

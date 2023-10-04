@@ -6,6 +6,7 @@ const {
   debitUserAccount,
   recordUserCashBack,
   recordQuickBeneficiary,
+  scheduleUserPayment,
 } = require("../../../hooks/billPayment.hook");
 const {
   sendSlackNotification,
@@ -50,6 +51,7 @@ module.exports = {
       // recordUserCashBack(),
       recordQuickBeneficiary(),
       // sendSlackNotification(),
+      scheduleUserPayment(),
       SendGeneralResponse({ message: CONSTANT.successMessage.dataPurchase }),
     ],
     update: [],
