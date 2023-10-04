@@ -59,13 +59,17 @@ const FundUserAccount = () => {
   return async (context) => {
     const { app, method, result, params, data } = context;
     const sequelize = app.get("sequelizeClient");
-    const { amount, loggedInUser } = data;
+    const { amount = 0, loggedInUser } = data;
+
+    console.log(data, "lllllll");
+    console.log(result, "result");
+    const { id } = result;
     const { account_balance } = sequelize.models;
     let availableBalance = 0;
     const account_balanceDetails = await account_balance.findOne({
       where: {
         deletedAt: null,
-        userId: loggedInUser,
+        userId: id,
       },
     });
     if (account_balanceDetails !== null) {
@@ -89,7 +93,7 @@ const FundUserAccount = () => {
       console.log(currentBalance, "currentBalance");
 
       let payload = {
-        userId: loggedInUser,
+        userId: id,
         balance: currentBalance,
         ledgerBalance: currentBalance,
       };

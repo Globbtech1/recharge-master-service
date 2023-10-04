@@ -127,6 +127,14 @@ const billsProviders = require("./bills/providers/providers.service.js");
 
 const billsProviderProducts = require("./bills/provider-products/provider-products.service.js");
 
+const schedulePaymentScheduleBillsPayment = require('./schedulePayment/schedule-bills-payment/schedule-bills-payment.service.js');
+
+const schedulePaymentProcessDuePayments = require('./schedulePayment/process-due-payments/process-due-payments.service.js');
+
+const integrationsSmsService = require('./integrations/sms-service/sms-service.service.js');
+
+const integrationsEmailService = require('./integrations/email-service/email-service.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -193,4 +201,8 @@ module.exports = function (app) {
   app.configure(providers);
   app.configure(billsProviders);
   app.configure(billsProviderProducts);
+  app.configure(schedulePaymentScheduleBillsPayment);
+  app.configure(schedulePaymentProcessDuePayments);
+  app.configure(integrationsSmsService);
+  app.configure(integrationsEmailService);
 };

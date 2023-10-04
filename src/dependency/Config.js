@@ -70,6 +70,16 @@ const CONSTANT = {
   },
   externalRequestFailErrorMessage:
     "The request failed due to an external provider's error.",
+
+  scheduleFrequency: {
+    daily: "Daily",
+    weekly: "Weekly",
+    monthly: "Monthly",
+  },
+  billsPaymentType: {
+    data: "Data_Plan",
+    airtime: "airtime",
+  },
 };
 
 module.exports = { CONSTANT };

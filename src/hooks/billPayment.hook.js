@@ -15,6 +15,7 @@ const {
   getProviderSourceImage,
   compareHashData,
   removeSensitiveKeys,
+  calculateBillNextExecutionDate,
 } = require("../dependency/UtilityFunctions");
 
 const {
@@ -423,6 +424,108 @@ const getSingleProvidersV2 = async (providers, provider, productId) => {
   // paymentProviders = JSON.parse(paymentProviders);
   return PaymentProvidersDetails;
 };
+const scheduleUserPayment = (options = {}) => {
+  return async (context) => {
+    const { app, method, result, params, data, id, error } = context;
+    const sequelize = app.get("sequelizeClient");
+    const { quick_beneficiary, payment_providers, providers } =
+      sequelize.models;
+
+    console.log(result, "result");
+    console.log(data, "data");
+    let loggedInUserId = params?.user?.id;
+
+    const {
+      amount,
+      productId,
+      // saveBeneficiary,
+      // beneficiaryAlias = "No Name",
+      // uniqueTransIdentity,
+      // provider,
+      scheduleBill,
+      dayOfWeek,
+      frequency,
+      dayOfMonth,
+    } = data;
+    if (!scheduleBill) {
+      return context;
+    }
+    const { scheduleMeta } = result;
+    let lastExecution = null;
+    let nextDateData = {
+      frequency,
+      dayOfWeekString: dayOfWeek,
+      dayOfMonth,
+      lastExecution,
+    };
+    const nextExecutionDate = calculateBillNextExecutionDate(nextDateData);
+    const scheduledPayment = {
+      userId: loggedInUserId,
+      frequency: frequency, // Replace with the desired frequency
+      dayOfWeek: dayOfWeek, // Replace with the desired day of the week (0-6 for Sunday to Saturday)
+      dayOfMonth: dayOfMonth, // Replace with the desired day of the month (1-31)
+      PaymentMetaData: JSON.stringify(scheduleMeta),
+      productListId: productId,
+      lastExecution: lastExecution, // Replace with the last execution date and time
+      nextExecution: nextExecutionDate,
+      purchaseAmount: amount,
+    };
+
+    app
+      .service("schedulePayment/schedule-bills-payment")
+      .create(scheduledPayment);
+    return context;
+  };
+};
+
+const FormatMobileNumber = (options = {}) => {
+  return async (context) => {
+    const { data } = context;
+    let { phoneNumber } = data;
+
+    if (!phoneNumber) {
+      throw new BadRequest("Phone number is required");
+    }
+
+    // If phoneNumber is an array, process each number individually
+    if (Array.isArray(phoneNumber)) {
+      const formattedPhoneNumbers = phoneNumber.map((number) => {
+        return formatSinglePhoneNumber(number);
+      });
+
+      // Update the context's phoneNumber property with the formatted array
+      context.data.phoneNumber = formattedPhoneNumbers;
+    } else {
+      // If phoneNumber is a single number, process it
+      context.data.phoneNumber = formatSinglePhoneNumber(phoneNumber);
+    }
+
+    return context;
+  };
+};
+
+function formatSinglePhoneNumber(phoneNumber) {
+  // Remove non-digit characters from the phone number
+  let cleanedUpPhoneNumber = phoneNumber.replace(/[^+\d]+/g, "");
+
+  // Check if the cleaned phone number starts with a country code
+  if (!cleanedUpPhoneNumber.startsWith("+")) {
+    // Assuming a default country code (e.g., +234 for Nigeria)
+    cleanedUpPhoneNumber = cleanedUpPhoneNumber.replace(/^0+/, "");
+
+    const defaultCountryCode = "+234"; // Replace with your desired default country code
+    phoneNumber = defaultCountryCode + cleanedUpPhoneNumber;
+  }
+
+  // Validate the remaining digits (excluding the country code)
+  const regex = /^(?:\+\d{1,3})?\d{10}$/; // Allow an optional country code and exactly 10 digits
+  if (!regex.test(phoneNumber)) {
+    throw new BadRequest("Invalid mobile number format");
+  }
+
+  return phoneNumber;
+}
+
 module.exports = {
   checkAvailableBalance,
   debitUserAccount,
@@ -435,4 +538,6 @@ module.exports = {
   validateTransactionPin,
   getAllProvidersV2,
   getSingleProvidersV2,
+  scheduleUserPayment,
+  FormatMobileNumber,
 };
