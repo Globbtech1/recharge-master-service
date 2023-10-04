@@ -76,7 +76,11 @@ exports.VerifyUserPhoneNumber = class VerifyUserPhoneNumber {
         type: CONSTANT.verificationType.phoneNumber, // 'type' field to distinguish email
         data: phoneNumber,
       });
-
+      let smsData = {
+        phoneNumber: phoneNumber,
+        message: `Your verification code is ${verification_reference}`,
+      };
+      this.app.service("integrations/sms-service").create(smsData);
       let resp = {
         verification_reference,
         data: phoneNumber,

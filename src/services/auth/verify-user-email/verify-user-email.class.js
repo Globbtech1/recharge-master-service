@@ -69,18 +69,23 @@ exports.VerifyUserEmail = class VerifyUserEmail {
         data: emailAddress,
       });
 
-      // let hasPinNumberSet = userDetails.securityPin === null ? false : true;
-      // if (hasPinNumberSet) {
-      //   return Promise.reject(new BadRequest("Transaction PIN already set"));
-      // }
-      // let hashedValue = await hashData(pinNumber);
-      // console.log(hashedValue, "hashedValue");
-      // userDetails.securityPin = hashedValue;
-      // await userDetails.save();
       let resp = {
         token,
         email: emailAddress,
       };
+      const verificationLink = `${process.env.WEBSITE_HOSTING}/email-verification?token=${token}`;
+      let EmailSendingData = {
+        receiverEmail: emailAddress,
+        subject: "Account Verification",
+        emailData: {
+          customerName: "",
+          customMessage: `To verify your email, please enter click on this link ${verificationLink} or copy it to your browser`,
+          mailTitle: "Please verify your account",
+        },
+        templateName: "default-email",
+      };
+
+      this.app.service("integrations/email-service").create(EmailSendingData);
       return resp;
     } catch (error) {
       logger.error("error", error);

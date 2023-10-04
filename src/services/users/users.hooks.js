@@ -78,7 +78,7 @@ module.exports = {
     create: [
       // insertIntoVerification(),
       FundUserAccount(),
-      proccessEmail({ mailtype: "userCreation" }),
+      // proccessEmail({ mailtype: "userCreation" }),
       SendGeneralResponse({
         message: CONSTANT.successMessage.userRegistrationSuccess,
       }),
