@@ -83,6 +83,7 @@ const validateVerificationInput = (options = {}) => {
     return context;
   };
 };
+
 module.exports = {
   sendVerificationEmail,
   validateEmailInput,
