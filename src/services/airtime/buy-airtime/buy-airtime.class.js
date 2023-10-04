@@ -167,6 +167,7 @@ exports.BuyAirtime = class BuyAirtime {
       let additionalOrderDetails = {
         slackNotificationData: airtimePaymentResponse,
         provider,
+        scheduleMeta: payload,
       };
       responseTransaction = {
         ...responseTransaction,

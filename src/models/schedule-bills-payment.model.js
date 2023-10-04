@@ -5,8 +5,8 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get("sequelizeClient");
-  const quickBeneficiary = sequelizeClient.define(
-    "quick_beneficiary",
+  const scheduleBillsPayment = sequelizeClient.define(
+    "schedule_bills_payment",
     {
       id: {
         allowNull: false,
@@ -16,26 +16,56 @@ module.exports = function (app) {
       },
       userId: {
         type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      sourceImage: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      uniqueNumber: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      nameAlias: {
-        type: DataTypes.STRING,
         allowNull: false,
+      },
+      frequency: {
+        type: DataTypes.ENUM("daily", "weekly", "monthly"),
+        allowNull: false,
+      },
+      dayOfWeek: {
+        type: DataTypes.ENUM(
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ),
+        allowNull: true,
+      },
+      dayOfMonth: {
+        type: DataTypes.INTEGER, // 1-31
+        allowNull: true,
+      },
+      PaymentMetaData: {
+        type: DataTypes.STRING(1234),
+        allowNull: true,
       },
       productListId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      metaData: {
-        type: DataTypes.STRING(1234),
+      purchaseAmount: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      lastExecution: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      nextExecution: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      retryCount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      lastExecutionPaymentStatus: {
+        type: DataTypes.ENUM("Failed", "Successful"),
         allowNull: true,
       },
       createdAt: {
@@ -64,12 +94,12 @@ module.exports = function (app) {
   );
 
   // eslint-disable-next-line no-unused-vars
-  quickBeneficiary.associate = function (models) {
-    const { product_list } = models;
+  scheduleBillsPayment.associate = function (models) {
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
-    quickBeneficiary.belongsTo(product_list);
+    const { product_list } = models;
+    scheduleBillsPayment.belongsTo(product_list);
   };
 
-  return quickBeneficiary;
+  return scheduleBillsPayment;
 };
