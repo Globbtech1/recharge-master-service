@@ -22,7 +22,7 @@ module.exports = {
       }),
       checkForExistingValues({
         fieldsToCheck: [
-          { fieldName: "productName", friendlyName: "product Name" },
+          // { fieldName: "productName", friendlyName: "product Name" },
           { fieldName: "slug", friendlyName: "slug Name" },
 
           // Add more fields to check as needed
