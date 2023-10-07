@@ -67,6 +67,7 @@ const CONSTANT = {
   verificationType: {
     email: "emailAddress",
     phoneNumber: "phoneNumber",
+    changeTransactionPin: "changeTransactionPin",
   },
   externalRequestFailErrorMessage:
     "The request failed due to an external provider's error.",

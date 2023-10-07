@@ -135,6 +135,12 @@ const integrationsSmsService = require('./integrations/sms-service/sms-service.s
 
 const integrationsEmailService = require('./integrations/email-service/email-service.service.js');
 
+const userTransactionPinInnitiateChangetransactionPin = require('./userTransactionPin/innitiate-changetransaction-pin/innitiate-changetransaction-pin.service.js');
+
+const utilityVerifyUserOtp = require('./utility/verify-user-otp/verify-user-otp.service.js');
+
+const userTransactionPinChangeUserTransactionPin = require('./userTransactionPin/change-user-transaction-pin/change-user-transaction-pin.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -205,4 +211,7 @@ module.exports = function (app) {
   app.configure(schedulePaymentProcessDuePayments);
   app.configure(integrationsSmsService);
   app.configure(integrationsEmailService);
+  app.configure(userTransactionPinInnitiateChangetransactionPin);
+  app.configure(utilityVerifyUserOtp);
+  app.configure(userTransactionPinChangeUserTransactionPin);
 };
