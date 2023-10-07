@@ -21,7 +21,7 @@ module.exports = function (app) {
       productName: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: false,
       },
       slug: {
         type: DataTypes.STRING,

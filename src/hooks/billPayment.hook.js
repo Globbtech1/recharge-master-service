@@ -525,7 +525,31 @@ function formatSinglePhoneNumber(phoneNumber) {
 
   return phoneNumber;
 }
+const includePaymentDetailsDetails = (options = {}) => {
+  return async (context) => {
+    const { app, method, result, params, data } = context;
+    const sequelize = app.get("sequelizeClient");
+    const { product_list, providers } = sequelize.models;
+    params.sequelize = {
+      include: [
+        {
+          model: product_list,
+          attributes: ["productName", "slug", "image"],
+          include: [
+            {
+              model: providers,
+              as: "provider", // Use the same alias you defined in the association
+              attributes: ["productName", "slug", "image", "id"],
+            },
+          ],
+        },
+      ],
+      raw: false,
+    };
 
+    return context;
+  };
+};
 module.exports = {
   checkAvailableBalance,
   debitUserAccount,
@@ -540,4 +564,5 @@ module.exports = {
   getSingleProvidersV2,
   scheduleUserPayment,
   FormatMobileNumber,
+  includePaymentDetailsDetails,
 };

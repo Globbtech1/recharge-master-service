@@ -141,6 +141,12 @@ const utilityVerifyUserOtp = require('./utility/verify-user-otp/verify-user-otp.
 
 const userTransactionPinChangeUserTransactionPin = require('./userTransactionPin/change-user-transaction-pin/change-user-transaction-pin.service.js');
 
+const utilityVerifyUserPassword = require('./utility/verify-user-password/verify-user-password.service.js');
+
+const userGetMyScheduledBills = require('./user/get-my-scheduled-bills/get-my-scheduled-bills.service.js');
+
+const userDeleteSchedulePayment = require('./user/delete-schedule-payment/delete-schedule-payment.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -214,4 +220,7 @@ module.exports = function (app) {
   app.configure(userTransactionPinInnitiateChangetransactionPin);
   app.configure(utilityVerifyUserOtp);
   app.configure(userTransactionPinChangeUserTransactionPin);
+  app.configure(utilityVerifyUserPassword);
+  app.configure(userGetMyScheduledBills);
+  app.configure(userDeleteSchedulePayment);
 };
