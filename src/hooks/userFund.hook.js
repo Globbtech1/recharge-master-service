@@ -244,12 +244,12 @@ const creditUserAccount = () => {
         userId: receiverAccountId,
       },
     });
-    const payment_listDetails = await payment_list.findOne({
-      where: {
-        deletedAt: null,
-        slug: CONSTANT.AccountFunding,
-      },
-    });
+    // const payment_listDetails = await payment_list.findOne({
+    //   where: {
+    //     deletedAt: null,
+    //     slug: CONSTANT.AccountFunding,
+    //   },
+    // });
 
     if (account_balanceDetails !== null) {
       availableBalance = account_balanceDetails?.balance;
@@ -286,7 +286,8 @@ const creditUserAccount = () => {
         amountAfter: convertToNaira(currentBalance),
         referenceNumber: transactionReference,
         metaData: JSON.stringify(metaData),
-        paymentListId: payment_listDetails?.id || 0,
+        // paymentListId: payment_listDetails?.id || 0,
+        productListId: 0,
         transactionDate: ShowCurrentDate(),
         amount: amountPaid,
         transactionStatus: CONSTANT.transactionStatus.success,
