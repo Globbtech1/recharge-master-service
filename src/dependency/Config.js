@@ -81,6 +81,10 @@ const CONSTANT = {
     data: "Data_Plan",
     airtime: "airtime",
   },
+  transactionInitiator: {
+    schedule: "Schedule Payment",
+    users: "Users",
+  },
 };
 
 module.exports = { CONSTANT };

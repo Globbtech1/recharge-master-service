@@ -95,6 +95,7 @@ const sendTransactionEmail = (options = {}) => {
       amount,
       referenceNumber,
       paymentType,
+      paidBy,
     } = data;
     const userDetails = await users.findOne({
       where: {
@@ -117,7 +118,10 @@ const sendTransactionEmail = (options = {}) => {
     const subject = `RechargeMaster Transaction Notification [${capitalizeFirstLetter(
       paymentType
     )}: ${formatAmount(amount)}]`;
-
+    let extraNote =
+      paidBy === CONSTANT.transactionInitiator.schedule
+        ? "This transaction was initiated as per your prior scheduling."
+        : "";
     let EmailSendingData = {
       receiverEmail: userEmail,
       subject: subject,
@@ -130,6 +134,7 @@ const sendTransactionEmail = (options = {}) => {
         amountAfter: formatAmount(amountAfter),
         transactionReference: referenceNumber,
         paymentType: capitalizeFirstLetter(paymentType),
+        extraNote,
       },
 
       templateName: "transaction-email",
