@@ -218,13 +218,16 @@ exports.ProcessDuePayments = class ProcessDuePayments {
     let purchase;
     let purchaseMetaData;
     let data;
-    let fundSource = "Schedule Payment";
+    let fundSource = CONSTANT.transactionInitiator.schedule;
     const balanceResult = await this.CheckAccountBalance(
       loggedInUserId,
       amount
     );
-    console.log(balanceResult, "balanceResult");
-
+    console.log(balanceResult, "<<<<<balanceResult>>>>>.....");
+    //  const userAccountBalance = await getUserAccountBalanceInfo(
+    //    account_balance,
+    //    loggedInUserId
+    //  );
     if (balanceResult.hasSufficientBalance) {
       const availableBalance = balanceResult.balance;
       if (transactionType === CONSTANT.billsPaymentType.data) {
@@ -293,7 +296,8 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             paidBy: fundSource,
           };
           this.app.service("transactions-history").create(transactionHistory);
-          return Promise.reject(new BadRequest(errorMessage));
+          // return Promise.reject(new BadRequest(errorMessage));
+          return false;
         }
       }
       if (transactionType === CONSTANT.billsPaymentType.airtime) {
@@ -358,7 +362,8 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             paidBy: fundSource,
           };
           this.app.service("transactions-history").create(transactionHistory);
-          return Promise.reject(new BadRequest(errorMessage));
+          // return Promise.reject(new BadRequest(errorMessage));
+          return false;
         }
       }
 
@@ -380,7 +385,7 @@ exports.ProcessDuePayments = class ProcessDuePayments {
           deletedAt: null,
         },
       });
-
+      console.log(accountBalance, "fetched Balance");
       if (accountBalance !== null) {
         const { balance } = accountBalance;
 
@@ -413,6 +418,7 @@ exports.ProcessDuePayments = class ProcessDuePayments {
     availableBalance,
     productId
   ) {
+    console.log(availableBalance, "availableBalance");
     let providerStatus = airtimePaymentResponse?.status;
     if (providerStatus != "success") {
       console.log("in Error Block");
@@ -516,15 +522,74 @@ exports.ProcessDuePayments = class ProcessDuePayments {
 
     if (account_balanceDetails !== null) {
       let availableBalance = account_balanceDetails?.balance;
+      console.log(availableBalance, "availableBalance");
+      console.log(amount, "amount");
       let currentBalance = parseFloat(availableBalance) - amount;
+      console.log(currentBalance, "currentBalance");
+
       let walletId = account_balanceDetails?.id;
       let Update_payload = {
         balance: currentBalance,
       };
-      this.app.service("account-balance").patch(walletId, Update_payload);
+      // await this.app.service("account-balance").patch(walletId, Update_payload);
+      // account_balance.patch(walletId, Update_payload);
+      await account_balance
+        .update(Update_payload, {
+          where: { id: walletId }, // Define the condition for the update
+        })
+        .then((updatedRecords) => {
+          console.log(`Updated ${updatedRecords[0]} record(s).`);
+        })
+        .catch((error) => {
+          console.error("Error updating record:", error);
+        });
     } else {
       console.log("unable to load user account balance details");
       //  return Promise.reject(new BadRequest("Unable to complete your request"));
+    }
+  }
+  async DebitUserAccount3333(loggedInUserId, amount) {
+    const sequelize = this.app.get("sequelizeClient");
+    const { account_balance } = sequelize.models;
+
+    try {
+      const transaction = await sequelize.transaction(); // Start a transaction
+
+      const account_balanceDetails = await account_balance.findOne({
+        where: {
+          deletedAt: null,
+          userId: loggedInUserId,
+        },
+        transaction, // Include the transaction in this query
+      });
+
+      if (account_balanceDetails !== null) {
+        let availableBalance = account_balanceDetails.balance;
+        console.log(availableBalance, "availableBalance");
+        console.log(amount, "amount");
+        let currentBalance = parseFloat(availableBalance) - amount;
+        console.log(currentBalance, "currentBalance");
+
+        let walletId = account_balanceDetails.id;
+        let Update_payload = {
+          balance: currentBalance,
+        };
+
+        await account_balance.update(Update_payload, {
+          where: { id: walletId },
+          transaction, // Include the transaction in this update
+        });
+
+        await transaction.commit(); // Commit the transaction
+
+        console.log(`Debited user account. Updated balance: ${currentBalance}`);
+      } else {
+        console.log("Unable to load user account balance details");
+        // Handle the case where account_balanceDetails is null
+      }
+    } catch (error) {
+      console.error("Error debiting user account:", error);
+      await transaction.rollback(); // Rollback the transaction in case of an error
     }
   }
 };

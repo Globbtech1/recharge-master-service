@@ -32,6 +32,7 @@ exports.EmailService = class EmailService {
       };
 
       const response = await this.sendGrid.send(msg);
+      // const response = true;
       return response;
     } catch (error) {
       console.log(error, "error");
