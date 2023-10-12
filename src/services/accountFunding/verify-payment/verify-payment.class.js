@@ -23,7 +23,8 @@ exports.VerifyPayment = class VerifyPayment {
     console.log(id);
     try {
       const sequelize = this.app.get("sequelizeClient");
-      const { users, fund_innitiator, account_balance } = sequelize.models;
+      const { users, fund_innitiator, account_balance, product_list } =
+        sequelize.models;
 
       const paymentDetails = await fund_innitiator.findOne({
         where: {
@@ -72,12 +73,12 @@ exports.VerifyPayment = class VerifyPayment {
           let transactionReference = reference;
 
           // if (transactionType === CONSTANT.RESERVED_ACCOUNT) {
-          // const payment_listDetails = await payment_list.findOne({
-          //   where: {
-          //     deletedAt: null,
-          //     slug: CONSTANT.AccountFunding,
-          //   },
-          // });
+          const product_listDetails = await product_list.findOne({
+            where: {
+              deletedAt: null,
+              slug: CONSTANT.AccountFunding,
+            },
+          });
           const accountDetailsDetails = await fund_innitiator.findOne({
             where: {
               deletedAt: null,
@@ -135,8 +136,7 @@ exports.VerifyPayment = class VerifyPayment {
               amountAfter: convertToNaira(currentBalance),
               referenceNumber: transactionReference,
               metaData: JSON.stringify(metaData),
-              // productId: payment_listDetails?.id || 0,
-              productId: 0,
+              productListId: product_listDetails?.id || 0,
               transactionDate: ShowCurrentDate(),
               amount: amountPaid,
               transactionStatus: CONSTANT.transactionStatus.success,

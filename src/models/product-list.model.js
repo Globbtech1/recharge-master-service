@@ -32,6 +32,11 @@ module.exports = function (app) {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      paymentType: {
+        type: DataTypes.ENUM("debit", "credit"),
+        allowNull: true,
+        defaultValue: "debit",
+      },
       allowedDiscount: {
         allowNull: false,
         type: DataTypes.DOUBLE,

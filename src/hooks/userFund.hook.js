@@ -231,7 +231,7 @@ const creditUserAccount = () => {
     const loggedInUserId = user?.id;
     const { amount } = data;
     const { receiverAccountId } = result;
-    const { account_balance, payment_list } = sequelize.models;
+    const { account_balance, product_list } = sequelize.models;
     let availableBalance = 0;
     let amountPaid = convertToNaira(amount);
     let AccountingFundingSource = "Wallet transfer";
@@ -244,12 +244,12 @@ const creditUserAccount = () => {
         userId: receiverAccountId,
       },
     });
-    // const payment_listDetails = await payment_list.findOne({
-    //   where: {
-    //     deletedAt: null,
-    //     slug: CONSTANT.AccountFunding,
-    //   },
-    // });
+    const product_listDetails = await product_list.findOne({
+      where: {
+        deletedAt: null,
+        slug: CONSTANT.AccountFunding,
+      },
+    });
 
     if (account_balanceDetails !== null) {
       availableBalance = account_balanceDetails?.balance;
@@ -286,8 +286,7 @@ const creditUserAccount = () => {
         amountAfter: convertToNaira(currentBalance),
         referenceNumber: transactionReference,
         metaData: JSON.stringify(metaData),
-        // paymentListId: payment_listDetails?.id || 0,
-        productListId: 0,
+        productListId: product_listDetails?.id || 0,
         transactionDate: ShowCurrentDate(),
         amount: amountPaid,
         transactionStatus: CONSTANT.transactionStatus.success,
@@ -296,18 +295,6 @@ const creditUserAccount = () => {
       app.service("account-funding").create(funding);
       app.service("transactions-history").create(fundingHistory);
     }
-    // else {
-    //   let currentBalance =
-    //     parseFloat(availableBalance) + parseFloat(convertToKobo(amount));
-    //   console.log(currentBalance, "currentBalance");
-
-    //   let payload = {
-    //     userId: loggedInUser,
-    //     balance: currentBalance,
-    //     ledgerBalance: currentBalance,
-    //   };
-    //   await account_balance.create(payload);
-    // }
     return context;
   };
 

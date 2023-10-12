@@ -22,7 +22,7 @@ exports.InnitiateRequest = class InnitiateRequest {
 
   async create(data, params) {
     const { user } = params;
-    const { walletId, amount } = data;
+    const { walletId } = data;
     logger.info("data", user);
     const loggedInUserId = user?.id;
     const sequelize = this.app.get("sequelizeClient");
@@ -51,32 +51,17 @@ exports.InnitiateRequest = class InnitiateRequest {
 
       let dataResponse = {
         accountName: userWalletDetails?.fullName,
-        transferAmount: amount,
       };
       return Promise.resolve(
-        successMessage(
-          dataResponse,
-          "Enter transaction pin to confirm transfer"
-        )
+        successMessage(dataResponse, "Wallet id Verified successfully")
       );
     } catch (error) {
       logger.error("error", error);
-
-      throw new Error(
+      const cachedError = new Error(
         `An error Occurred while trying to initiate fund transfer`
       );
-      // .reject(
-
-      //   // errorMessage(
-      //   //   "An error has occurred while saving the Transaction PIn",
-      //   //   error,
-      //   //   500
-      //   // )
-      //   // error
-      // );
+      return Promise.reject(cachedError);
     }
-
-    // return data;
   }
 
   async update(id, data, params) {
