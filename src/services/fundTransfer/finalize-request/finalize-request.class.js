@@ -36,7 +36,7 @@ exports.FinalizeRequest = class FinalizeRequest {
       // Promise.reject(new BadRequest("Enter user wallet Id "));
       throw new BadRequest(`Enter user wallet Id`);
     }
-    const { users, account_balance } = sequelize.models;
+    const { users, account_balance, product_list } = sequelize.models;
     try {
       const userWalletDetails = await users.findOne({
         where: {
@@ -58,17 +58,23 @@ exports.FinalizeRequest = class FinalizeRequest {
         const notFound = new BadRequest("You can not transfer to self wallet");
         return Promise.reject(notFound);
       }
+      const product_listDetails = await product_list.findOne({
+        where: {
+          deletedAt: null,
+          slug: CONSTANT.AccountFunding,
+        },
+      });
 
       const account_balanceDetails = await account_balance.findOne({
         where: {
           deletedAt: null,
-          userId: receiverAccountId,
+          userId: loggedInUserId,
         },
       });
       let dataResponse = {};
       if (account_balanceDetails !== null) {
         availableBalance = account_balanceDetails?.balance;
-        let currentBalance = parseFloat(availableBalance) + parseFloat(amount);
+        let currentBalance = parseFloat(availableBalance) - parseFloat(amount);
 
         let transactionReference = await generateRandomString();
 
@@ -93,7 +99,7 @@ exports.FinalizeRequest = class FinalizeRequest {
           amountAfter: convertToNaira(currentBalance),
           referenceNumber: transactionReference,
           metaData: JSON.stringify(metaData),
-          productListId: 0, //TODO change to wallet transfer id  // paymentId
+          productListId: product_listDetails?.id || 0,
           transactionDate: ShowCurrentDate(),
           amount: convertToNaira(amount),
           transactionStatus: CONSTANT.transactionStatus.success,
@@ -104,19 +110,12 @@ exports.FinalizeRequest = class FinalizeRequest {
           .create(transactionHistory);
       }
 
-      // return Promise.resolve(
-      //   successMessage(
-      //     dataResponse,
-      //     "Enter transaction pin to confirm transfer"
-      //   )
-      // );
       return dataResponse;
     } catch (error) {
-      logger.error("error", error);
-
-      throw new Error(
-        `An error Occurred while trying to initiate fund transfer`
+      const cachedError = new Error(
+        `An error Occurred while trying to transfer the fund`
       );
+      return Promise.reject(cachedError);
     }
 
     // return data;

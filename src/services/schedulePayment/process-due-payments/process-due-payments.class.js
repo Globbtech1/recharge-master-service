@@ -325,90 +325,6 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             availableBalance,
             productId
           );
-          // let providerStatus = airtimePaymentResponse?.status;
-          // if (providerStatus != "success") {
-          //   console.log("in Error Block");
-          //   let metaData = {
-          //     "Transaction ID": "nill",
-          //     "Phone Number": phoneNumber,
-          //     "Network Provider": provider.toUpperCase(),
-          //     "Paid By": fundSource,
-          //     Date: ShowCurrentDate(),
-          //     Amount: convertToNaira(amount),
-          //     Status: CONSTANT.transactionStatus.failed,
-          //   };
-
-          //   let transactionHistory = {
-          //     userId: loggedInUserId,
-          //     paymentType: "debit",
-          //     amountBefore: convertToNaira(availableBalance),
-          //     amountAfter: convertToNaira(availableBalance),
-          //     referenceNumber: "Nill",
-          //     metaData: JSON.stringify(metaData),
-          //     productListId: productId,
-          //     transactionDate: ShowCurrentDate(),
-          //     amount: convertToNaira(amount),
-          //     transactionStatus: CONSTANT.transactionStatus.failed,
-          //     paidBy: fundSource,
-          //   };
-          //   this.app.service("transactions-history").create(transactionHistory);
-
-          //   // return Promise.reject(
-          //   //   new BadRequest(
-          //   //     "Transaction was not successful, please try again."
-          //   //   )
-          //   // );
-
-          //   // await scheduledPayment.save();
-          //   return false;
-          //   // TODO we need to be sure the provider is not given the user the value.
-          //   // TODO this side need to be tested properly on live
-          // }
-          // let newBalance = parseFloat(availableBalance) - parseFloat(amount);
-          // let transactionReference = airtimePaymentResponse?.reference;
-          // let metaData = {
-          //   "Transaction ID": transactionReference,
-          //   "Phone Number": phoneNumber,
-          //   "Network Provider": provider.toUpperCase(),
-          //   "Paid By": fundSource,
-          //   Date: ShowCurrentDate(),
-          //   Amount: convertToNaira(amount),
-          //   Status: CONSTANT.transactionStatus.success,
-          // };
-
-          // let transactionHistory = {
-          //   userId: loggedInUserId,
-          //   paymentType: "debit",
-          //   amountBefore: convertToNaira(availableBalance),
-          //   amountAfter: convertToNaira(newBalance),
-          //   referenceNumber: transactionReference,
-          //   metaData: JSON.stringify(metaData),
-          //   productListId: productId,
-          //   transactionDate: ShowCurrentDate(),
-          //   amount: convertToNaira(amount),
-          //   transactionStatus: CONSTANT.transactionStatus.success,
-          //   paidBy: fundSource,
-          // };
-          // let responseTransaction = await this.app
-          //   .service("transactions-history")
-          //   .create(transactionHistory);
-
-          // // return Promise.resolve(
-          // //   successMessage(
-          // //     airtimePaymentResponse,
-          // //     CONSTANT.successMessage.airtimePurchase
-          // //   )
-          // // );
-          // let additionalOrderDetails = {
-          //   slackNotificationData: airtimePaymentResponse,
-          //   provider,
-          //   scheduleMeta: payload,
-          // };
-          // responseTransaction = {
-          //   ...responseTransaction,
-          //   ...additionalOrderDetails,
-          //   // ...data,
-          // };
 
           return response;
         } catch (error) {
@@ -536,7 +452,7 @@ exports.ProcessDuePayments = class ProcessDuePayments {
       // TODO we need to be sure the provider is not given the user the value.
       // TODO this side need to be tested properly on live
     }
-    this.DebitUserAccount(loggedInUserId, amount);
+    await this.DebitUserAccount(loggedInUserId, amount);
     let newBalance = parseFloat(availableBalance) - parseFloat(amount);
     let transactionReference = airtimePaymentResponse?.reference;
     let metaData = {
