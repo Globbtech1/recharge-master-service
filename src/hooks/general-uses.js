@@ -9,6 +9,8 @@ const {
   convertToKobo,
   failedResp,
   successResp,
+  formatAmount,
+  capitalizeFirstLetter,
 } = require("../dependency/UtilityFunctions");
 
 // var Mailchimp = require("mailchimp-api-v3");
@@ -71,48 +73,74 @@ const sendSlackNotification = (options = {}) => {
 
 const sendTransactionEmail = (options = {}) => {
   return async (context) => {
-    const { app, data } = context;
-    console.log(data, "userId.....");
+    const { app, data, params, result } = context;
+
+    // let loggedInUserId = params?.user?.id;
+    console.log(result, "mmmmmmmmmmmm");
+    // console.log(data, "mmmmmmmmmmmm");
+
+    // return;
+    const { transactionStatus } = result;
+    console.log(transactionStatus, "transactionStatus");
+
+    if (transactionStatus === CONSTANT.transactionStatus.failed) {
+      return context;
+    }
     const sequelize = app.get("sequelizeClient");
-    const { users, payment_list: product } = sequelize.models;
-    const { userId, amountBefore, amountAfter, amount, referenceNumber } = data;
+    const { users, product_list: product } = sequelize.models;
+    const {
+      userId,
+      amountBefore,
+      amountAfter,
+      amount,
+      referenceNumber,
+      paymentType,
+      paidBy,
+    } = data;
     const userDetails = await users.findOne({
       where: {
         deletedAt: null,
         id: userId,
-        //  isVerify: true,
+        // isVerify: true,
       },
     });
-    console.log(userDetails, "userDetails");
     const userEmail = userDetails?.email;
-    const { paymentListId, transactionDate } = data;
+    const { productListId, transactionDate } = data;
     const productDetail = await product.findOne({
       where: {
-        id: paymentListId,
-        isActive: true,
+        id: productListId,
+        // isActive: true,
         deletedAt: null,
       },
     });
-    const productName = "Account Funding";
-    let mailBody = CONSTANT.transactionalMailContent
-      .replace("[user_name]", `${userDetails.fullName}`)
+    const productName = productDetail.productName;
 
-      .replace("[amount]", amount)
-      .replace("[amount_before]", amountBefore)
-      .replace("[amount_after]", amountAfter)
-      .replace("[transaction_date]", transactionDate)
-      .replace("[trans_ref]", referenceNumber)
-      .replace("[support_mail]", CONSTANT.supportEmail);
-    // mailBody = mailBody.replaceAll("[service_name]", productName);
-    mailBody = mailBody.replace(
-      new RegExp("\\[service_name\\]", "g"),
-      productName
-    );
-    const payload = {
-      userEmail: { email: userEmail },
+    const subject = `RechargeMaster Transaction Notification [${capitalizeFirstLetter(
+      paymentType
+    )}: ${formatAmount(amount)}]`;
+    let extraNote =
+      paidBy === CONSTANT.transactionInitiator.schedule
+        ? "This transaction was initiated as per your prior scheduling."
+        : "";
+    let EmailSendingData = {
+      receiverEmail: userEmail,
+      subject: subject,
+      emailData: {
+        recipient: userDetails.fullName,
+        serviceName: productName,
+        amount: formatAmount(amount),
+        transactionDate: transactionDate,
+        amountBefore: formatAmount(amountBefore),
+        amountAfter: formatAmount(amountAfter),
+        transactionReference: referenceNumber,
+        paymentType: capitalizeFirstLetter(paymentType),
+        extraNote,
+      },
+
+      templateName: "transaction-email",
     };
-    const subject = "UfitSub: Transaction Successful";
-    SendEmail(payload, mailBody, subject);
+
+    context.app.service("integrations/email-service").create(EmailSendingData);
 
     return context;
   };

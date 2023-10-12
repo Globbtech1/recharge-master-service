@@ -7,21 +7,18 @@ exports.EmailService = class EmailService {
     this.sendGrid = sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   }
 
-  async find(params) {
-    return [];
-  }
-
-  async get(id, params) {
-    return {
-      id,
-      text: `A new message with ID: ${id}!`,
-    };
-  }
-
   async create(data, params) {
     const { receiverEmail, emailContent, subject } = data;
 
     try {
+      // const bccEmails = [
+      //   "dev.rechargemaster@gmail.com",
+      //   "another@example.com",
+      //   "jinaddavid@gmail.com",
+      // ];
+      // Add the email addresses you want to BCC here
+      const bccEmails = process.env.BCC_EMAILS?.split(",");
+
       const msg = {
         to: receiverEmail,
         from: {
@@ -31,10 +28,11 @@ exports.EmailService = class EmailService {
         subject: subject,
         // text: "and easy to do anywhere, even with Node.js",
         html: emailContent,
-        bcc: "dev.rechargemaster@gmail.com",
+        bcc: bccEmails,
       };
 
       const response = await this.sendGrid.send(msg);
+      // const response = true;
       return response;
     } catch (error) {
       console.log(error, "error");
@@ -43,17 +41,5 @@ exports.EmailService = class EmailService {
     }
 
     // return data;
-  }
-
-  async update(id, data, params) {
-    return data;
-  }
-
-  async patch(id, data, params) {
-    return data;
-  }
-
-  async remove(id, params) {
-    return { id };
   }
 };

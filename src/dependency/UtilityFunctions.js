@@ -277,6 +277,24 @@ const getDayOfWeek = (dayName) => {
     return -1; // -1 indicates an invalid day name
   }
 };
+const formatAmount = (amount, toWholeNumber = false) => {
+  const currency = "\u20A6";
+  // const currency = '$';
+
+  if (toWholeNumber) {
+    const value = Math.round(Number(amount));
+    return currency + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  let formattedAmount = (+amount || 0).toFixed(2).toString();
+  if (!formattedAmount.includes(".")) {
+    formattedAmount = `${amount}.00`;
+  }
+  formattedAmount = formattedAmount.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return currency + formattedAmount;
+};
+const capitalizeFirstLetter = (string) => {
+  return string?.charAt(0).toUpperCase() + string?.slice(1);
+};
 
 module.exports = {
   successMessage,
@@ -299,4 +317,6 @@ module.exports = {
   failedResp,
   removeSensitiveKeys,
   calculateBillNextExecutionDate,
+  formatAmount,
+  capitalizeFirstLetter,
 };

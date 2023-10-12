@@ -46,13 +46,14 @@ const checkAvailableBalance = (options = {}) => {
     });
     // console.log(accountBalance, "submissionData");
     if (accountBalance !== null) {
-      // console.log(accountBalance, "accountBalance");
+      console.log(accountBalance, "accountBalance");
       const { balance } = accountBalance;
       const { amount } = data;
       if (amount > balance) {
         const insufficient = new BadRequest(
-          "insufficient balance , please top up your account"
+          "Insufficient balance , please top up your account"
         );
+        return Promise.reject(insufficient);
       }
       let additionalOrderDetails = {
         availableBalance: balance,
@@ -106,6 +107,7 @@ const debitUserAccount = (options = {}) => {
     const { account_balance } = sequelize.models;
     const { amount } = data;
     let loggedInUserId = params?.user?.id;
+    console.log(loggedInUserId, "loggedInUserId");
     const account_balanceDetails = await account_balance.findOne({
       where: {
         deletedAt: null,
