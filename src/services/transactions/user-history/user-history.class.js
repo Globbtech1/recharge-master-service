@@ -20,8 +20,10 @@ exports.UserHistory = class UserHistory {
       const paymentId = query?.paymentId;
       const fundingSource = query?.fundingSource;
       const transactionStatus = query?.transactionStatus;
-      let filters = {};
+      let filters = { ...query };
       if (startDate && endDate) {
+        delete filters.startDate;
+        delete filters.endDate;
         filters = {
           ...filters,
           ...{
@@ -57,6 +59,8 @@ exports.UserHistory = class UserHistory {
         };
       }
       // let filters = {};
+      delete filters.startDate;
+      delete filters.endDate;
 
       let allQueries = {
         $sort: {
