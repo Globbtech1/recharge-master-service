@@ -518,6 +518,7 @@ const InitiateResetPassword = () => {
     let additionalOrderDetails = {
       code: resetCode,
       userId: userId,
+      userDetails,
     };
     let currentDate = ShowCurrentDate();
     const updateVerification = await initiate_reset_pwd.update(

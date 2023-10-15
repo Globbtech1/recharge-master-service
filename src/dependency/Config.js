@@ -85,6 +85,7 @@ const CONSTANT = {
     schedule: "Schedule Payment",
     users: "Users",
   },
+  internalProvider: "internal",
 };
 
 module.exports = { CONSTANT };

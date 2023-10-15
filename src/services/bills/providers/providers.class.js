@@ -1,3 +1,4 @@
+const { CONSTANT } = require("../../../dependency/Config");
 const { successMessage } = require("../../../dependency/UtilityFunctions");
 
 /* eslint-disable no-unused-vars */
@@ -14,9 +15,11 @@ exports.Providers = class Providers {
       query: {
         deletedAt: null,
         $select: ["id", "productName", "slug", "image", "createdAt"],
+        slug: {
+          $ne: CONSTANT.internalProvider,
+        },
       },
     });
-
     return Promise.resolve(successMessage(result, "Available providers"));
   }
 
