@@ -53,24 +53,35 @@ const sendInitiatePasswordResetEmail = (options = {}) => {
     const { data } = context;
     console.log(data, "data");
     // const verificationLink = `${process.env.WEBSITE_HOSTING}/email-verification?token=${token}`;
-    const { email, code } = data;
-    // Define the email data
-    const emailData = {
-      receiverEmail: email,
-      subject: "Forgot Password ",
-      emailData: {
-        customerName: "", // Replace with the user's name if available
-        customMessage: ` We just received a request from you to reset your login password\n
+    const { code, userDetails } = data;
+    console.log(userDetails, "userDetails");
+    const { phoneNumber, email } = userDetails;
+    if (phoneNumber) {
+      let smsData = {
+        phoneNumber: phoneNumber,
+        message: `Your verification code is ${code}`,
+      };
+      context.app.service("integrations/sms-service").create(smsData);
+    }
+    if (email) {
+      const emailData = {
+        receiverEmail: email,
+        subject: "Forgot Password ",
+        emailData: {
+          customerName: "", // Replace with the user's name if available
+          customMessage: ` We just received a request from you to reset your login password\n
         please kindly use this code  - ( ${code}) to reset your login details
         `,
-        mailTitle: "Reset login credential",
-      },
-      templateName: "default-email", // Specify the email template
-    };
+          mailTitle: "Reset login credential",
+        },
+        templateName: "default-email", // Specify the email template
+      };
 
-    // Send the verification email using the email service
-    // try {
-    await context.app.service("integrations/email-service").create(emailData);
+      // Send the verification email using the email service
+      // try {
+      await context.app.service("integrations/email-service").create(emailData);
+    }
+
     // } catch (error) {
     //   // Handle email sending error
     //   console.error("Error sending verification email:", error);
