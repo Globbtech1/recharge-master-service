@@ -64,7 +64,8 @@ exports.UserHistory = class UserHistory {
 
       let allQueries = {
         $sort: {
-          transactionDate: -1,
+          // transactionDate: -1,
+          id: -1,
         },
         userId: loggedInUserId,
         ...filters,
