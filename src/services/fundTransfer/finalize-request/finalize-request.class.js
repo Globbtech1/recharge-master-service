@@ -15,17 +15,6 @@ exports.FinalizeRequest = class FinalizeRequest {
     this.app = app || {};
   }
 
-  async find(params) {
-    return [];
-  }
-
-  async get(id, params) {
-    return {
-      id,
-      text: `A new message with ID: ${id}!`,
-    };
-  }
-
   async create(data, params) {
     const { user } = params;
     const { walletId, amount, transactionPin } = data;
