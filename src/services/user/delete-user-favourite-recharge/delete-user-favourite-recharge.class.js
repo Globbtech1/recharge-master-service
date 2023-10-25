@@ -26,7 +26,6 @@ exports.DeleteUserFavouriteRecharge = class DeleteUserFavouriteRecharge {
   async remove(id, params) {
     const sequelize = this.app.get("sequelizeClient");
     const { user, query } = params;
-    console.log(query, "parameter");
     const loggedInUserId = user?.id;
     let result = await this.app.service("user-favourite-recharge").remove(id);
     return Promise.resolve(

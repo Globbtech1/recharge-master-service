@@ -153,6 +153,14 @@ const userGetFavouriteRecharges = require("./user/get-favourite-recharges/get-fa
 
 const userDeleteUserFavouriteRecharge = require('./user/delete-user-favourite-recharge/delete-user-favourite-recharge.service.js');
 
+const adminCouponManagement = require('./admin/coupon-management/coupon-management.service.js');
+
+const adminCouponUserCategory = require('./admin/coupon-user-category/coupon-user-category.service.js');
+
+const userEligibleCoupons = require('./user/eligible-coupons/eligible-coupons.service.js');
+
+const userRedemCoupon = require('./user/redem-coupon/redem-coupon.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -232,4 +240,8 @@ module.exports = function (app) {
   app.configure(userFavouriteRecharge);
   app.configure(userGetFavouriteRecharges);
   app.configure(userDeleteUserFavouriteRecharge);
+  app.configure(adminCouponManagement);
+  app.configure(adminCouponUserCategory);
+  app.configure(userEligibleCoupons);
+  app.configure(userRedemCoupon);
 };

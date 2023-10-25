@@ -1,3 +1,27 @@
+const userCategories = [
+  {
+    id: "new-users",
+    name: "New users",
+    description: "Users less than 1 day on rechargeMaster",
+  },
+  {
+    id: "inactive-users",
+    name: "Inactive users",
+    description:
+      "Users that have not transacted on the portal since onboarding",
+  },
+  {
+    id: "active-users",
+    name: "Active Users",
+    description: "Users with a minimum of 1 transaction per month",
+  },
+  {
+    id: "all-users",
+    name: "All users",
+    description: "Every user that has an account with RechargeMaster",
+  },
+];
+
 const CONSTANT = {
   status: {
     pending: 2,
@@ -86,6 +110,7 @@ const CONSTANT = {
     users: "Users",
   },
   internalProvider: "internal",
+  userCategories,
 };
 
 module.exports = { CONSTANT };

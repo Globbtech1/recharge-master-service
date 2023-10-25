@@ -14,24 +14,6 @@ exports.Users = class Users extends Service {
     const newUser = await super.create(data, params);
     console.log(newUser, "newUser");
     const { email, fullName } = newUser;
-    // Send a welcome email to the new user
-    // const emailService = this.app.service("integrations/email-service");
-
-    // const emailData = {
-    //   receiverEmail: newUser.email, // User's email address
-    //   subject: "Welcome to Our Platform",
-    //   emailContent: "<p>...</p>", // HTML content for the welcome email
-    // };
-
-    // // Call the email service to send the welcome email
-    // await emailService.create(emailData);
-
-    //   const { email, code } = data;
-
-    // //   userEmail: result?.email,
-    // //     customerName: `${result?.fullName}`,
-    // //     verificationCode: data?.verificationCode,
-
     // Define the email data
     const emailData = {
       receiverEmail: email,
