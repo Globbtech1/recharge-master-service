@@ -15,6 +15,7 @@ const {
   userEmailVerifyValidator,
 } = require("../validations/auth.validation");
 const { ReserveBankAccount } = require("./general-uses");
+const Joi = require("joi");
 
 // eslint-disable-next-line no-unused-vars
 
@@ -537,6 +538,90 @@ const InitiateResetPassword = () => {
     return context;
   };
 };
+const validateCouponCode = () => {
+  return async (context) => {
+    const { app, method, result, params, data } = context;
+    const sequelize = app.get("sequelizeClient");
+    const { coupon_management, generateaccount } = sequelize.models;
+    const { couponCode, productAmount } = data;
+
+    let discountedPrice = 0;
+    const schema = Joi.object({
+      couponCode: Joi.string().required(),
+      productAmount: Joi.number().required().min(1), // Minimum value is 1
+    });
+
+    // Validate the data
+    const { error } = schema.validate(data);
+
+    if (error) {
+      // If there's a validation error, throw a BadRequest with the validation message
+      let joiError = new BadRequest(error.details[0].message);
+      return Promise.reject(joiError);
+    }
+    // const userDetails = await users.findOne({
+    //   where: {
+    //     deletedAt: null,
+    //     id: loggedInUserId,
+    //   },
+    // });
+    // if (userDetails === null) {
+    //   throw new NotFound("User not found, please try again");
+    // }
+
+    // Find the coupon with the provided code
+    const coupon = await coupon_management.findOne({
+      where: {
+        couponCode,
+        validity: { [Sequelize.Op.gte]: new Date() },
+        deletedAt: null,
+      },
+    });
+
+    if (coupon) {
+      let minimumRecharge = coupon?.minimumRecharge;
+      let maximumRecharge = coupon?.maximumRecharge;
+      if (productAmount < minimumRecharge) {
+        const error = new BadRequest(
+          `Minimum amount for this coupon code is ${minimumRecharge}`
+        );
+        return Promise.reject(error);
+      }
+      if (productAmount > maximumRecharge) {
+        const error = new BadRequest(
+          `Maximum amount for this coupon code is ${maximumRecharge}`
+        );
+        return Promise.reject(error);
+      }
+      if (coupon.valueIsPercentage) {
+        // Calculate the discount percentage and apply it
+        const discount = (coupon?.couponValue / 100) * productAmount;
+        discountedPrice = productAmount - discount;
+      } else {
+        // Apply the fixed amount discount
+        discountedPrice = productAmount - coupon?.couponValue;
+      }
+      if (discountedPrice < 0) {
+        discountedPrice = 0;
+      }
+      let res = {
+        amountToPay: discountedPrice,
+        originalAmount: productAmount,
+      };
+      let AdditionalData = {
+        couponDetails: res,
+      };
+
+      context.data = { ...context.data, ...AdditionalData };
+    } else {
+      const error = new BadRequest("Coupon not found or expired");
+      return Promise.reject(error);
+    }
+
+    return context;
+  };
+};
+
 module.exports = {
   checkIfsubmissionisongoing,
   checkIfTsubmissionExist,
@@ -548,4 +633,5 @@ module.exports = {
   FormatResponseProfile,
   getUserNecessaryInformation,
   InitiateResetPassword,
+  validateCouponCode,
 };
