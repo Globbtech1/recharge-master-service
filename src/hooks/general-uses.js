@@ -395,7 +395,7 @@ const checkForExistingValues = (options = {}) => {
       });
       if (existingUser?.data.length > 0) {
         // Value already exists; prevent the user from being created
-        throw new Error(`${friendlyName} is already registered`);
+        throw new Error(`${friendlyName} is already Exist`);
       }
     }
     return context;
