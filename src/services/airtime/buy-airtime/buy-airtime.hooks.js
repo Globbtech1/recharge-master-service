@@ -7,6 +7,7 @@ const {
   recordQuickBeneficiary,
   validateTransactionPin,
   scheduleUserPayment,
+  addToFavoriteRecharge,
 } = require("../../../hooks/billPayment.hook");
 const {
   SendGeneralResponse,
@@ -55,6 +56,7 @@ module.exports = {
       recordQuickBeneficiary(),
       // sendSlackNotification(),
       scheduleUserPayment(),
+      addToFavoriteRecharge(),
       SendGeneralResponse({ message: CONSTANT.successMessage.airtimePurchase }),
     ],
     update: [],
