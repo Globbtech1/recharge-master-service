@@ -552,6 +552,75 @@ const includePaymentDetailsDetails = (options = {}) => {
     return context;
   };
 };
+const addToFavoriteRecharge = (options = {}) => {
+  return async (context) => {
+    const { app, method, result, params, data, id, error } = context;
+    const sequelize = app.get("sequelizeClient");
+    const { user_favourite_recharge, payment_providers, providers } =
+      sequelize.models;
+    const {
+      amount,
+      productId,
+      addToFavorite,
+      beneficiaryAlias = "No Name",
+      uniqueTransIdentity,
+      provider,
+      name,
+    } = data;
+    let paymentProviders = await getAllProvidersV2(providers);
+    let providerDetails = getProviderSourceImage(paymentProviders, provider);
+    console.log(data, "data....");
+    console.log(providerDetails, "providerDetails");
+    let loggedInUserId = params?.user?.id;
+    let providerImage = providerDetails?.image || "";
+    let productName = "";
+    let amountInNaira = convertToNaira(amount);
+    if (!name) {
+      productName = `${providerDetails?.productName} Airtime`;
+    } else {
+      productName = name;
+    }
+    if (addToFavorite) {
+      const isAddedToFavorite = await user_favourite_recharge.findOne({
+        where: {
+          deletedAt: null,
+          userId: loggedInUserId,
+          productListId: productId,
+          uniqueNumber: uniqueTransIdentity,
+          nameAlias: productName,
+          amount: amountInNaira,
+        },
+      });
+      // const isAddedToFavorite = null;
+      if (isAddedToFavorite == null) {
+        const keysToRemove = [
+          "userPin",
+          "saveBeneficiary",
+          "scheduleBill",
+          "uniqueTransIdentity",
+          "availableBalance",
+          "frequency",
+          "dayOfMonth",
+          "dayOfWeek",
+        ];
+
+        const sanitizedData = removeSensitiveKeys(data, keysToRemove);
+        const userFavoriteRecharge = {
+          userId: loggedInUserId,
+          sourceImage: providerImage,
+          nameAlias: productName,
+          productListId: productId,
+          metaData: JSON.stringify(sanitizedData),
+          uniqueNumber: uniqueTransIdentity,
+          amount: amountInNaira,
+        };
+        app.service("user-favourite-recharge").create(userFavoriteRecharge);
+      }
+    }
+    return context;
+  };
+};
+
 module.exports = {
   checkAvailableBalance,
   debitUserAccount,
@@ -567,4 +636,5 @@ module.exports = {
   scheduleUserPayment,
   FormatMobileNumber,
   includePaymentDetailsDetails,
+  addToFavoriteRecharge,
 };

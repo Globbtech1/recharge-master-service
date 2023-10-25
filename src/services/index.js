@@ -127,25 +127,31 @@ const billsProviders = require("./bills/providers/providers.service.js");
 
 const billsProviderProducts = require("./bills/provider-products/provider-products.service.js");
 
-const schedulePaymentScheduleBillsPayment = require('./schedulePayment/schedule-bills-payment/schedule-bills-payment.service.js');
+const schedulePaymentScheduleBillsPayment = require("./schedulePayment/schedule-bills-payment/schedule-bills-payment.service.js");
 
-const schedulePaymentProcessDuePayments = require('./schedulePayment/process-due-payments/process-due-payments.service.js');
+const schedulePaymentProcessDuePayments = require("./schedulePayment/process-due-payments/process-due-payments.service.js");
 
-const integrationsSmsService = require('./integrations/sms-service/sms-service.service.js');
+const integrationsSmsService = require("./integrations/sms-service/sms-service.service.js");
 
-const integrationsEmailService = require('./integrations/email-service/email-service.service.js');
+const integrationsEmailService = require("./integrations/email-service/email-service.service.js");
 
-const userTransactionPinInnitiateChangetransactionPin = require('./userTransactionPin/innitiate-changetransaction-pin/innitiate-changetransaction-pin.service.js');
+const userTransactionPinInnitiateChangetransactionPin = require("./userTransactionPin/innitiate-changetransaction-pin/innitiate-changetransaction-pin.service.js");
 
-const utilityVerifyUserOtp = require('./utility/verify-user-otp/verify-user-otp.service.js');
+const utilityVerifyUserOtp = require("./utility/verify-user-otp/verify-user-otp.service.js");
 
-const userTransactionPinChangeUserTransactionPin = require('./userTransactionPin/change-user-transaction-pin/change-user-transaction-pin.service.js');
+const userTransactionPinChangeUserTransactionPin = require("./userTransactionPin/change-user-transaction-pin/change-user-transaction-pin.service.js");
 
-const utilityVerifyUserPassword = require('./utility/verify-user-password/verify-user-password.service.js');
+const utilityVerifyUserPassword = require("./utility/verify-user-password/verify-user-password.service.js");
 
-const userGetMyScheduledBills = require('./user/get-my-scheduled-bills/get-my-scheduled-bills.service.js');
+const userGetMyScheduledBills = require("./user/get-my-scheduled-bills/get-my-scheduled-bills.service.js");
 
-const userDeleteSchedulePayment = require('./user/delete-schedule-payment/delete-schedule-payment.service.js');
+const userDeleteSchedulePayment = require("./user/delete-schedule-payment/delete-schedule-payment.service.js");
+
+const userFavouriteRecharge = require("./user-favourite-recharge/user-favourite-recharge.service.js");
+
+const userGetFavouriteRecharges = require("./user/get-favourite-recharges/get-favourite-recharges.service.js");
+
+const userDeleteUserFavouriteRecharge = require('./user/delete-user-favourite-recharge/delete-user-favourite-recharge.service.js');
 
 module.exports = function (app) {
   app.configure(users);
@@ -223,4 +229,7 @@ module.exports = function (app) {
   app.configure(utilityVerifyUserPassword);
   app.configure(userGetMyScheduledBills);
   app.configure(userDeleteSchedulePayment);
+  app.configure(userFavouriteRecharge);
+  app.configure(userGetFavouriteRecharges);
+  app.configure(userDeleteUserFavouriteRecharge);
 };
