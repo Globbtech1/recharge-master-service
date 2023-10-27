@@ -44,9 +44,18 @@ exports.Bundles = class Bundles {
 
       let dataPurchase = new DataPurchase();
       let databundles = await dataPurchase.getBundleListList(provider);
+
+      const dataWithValidityType = databundles.map((item) => {
+        const validity = item.validity;
+        const validityType = validityMapping[validity] || "unknown"; // Set a default for unknown cases
+        return {
+          ...item,
+          ValidityType: validityType,
+        };
+      });
       return Promise.resolve(
         successMessage(
-          databundles,
+          dataWithValidityType,
           `Data bundles retrieved successfully ${provider}`
         )
       );
@@ -83,3 +92,24 @@ exports.Bundles = class Bundles {
     return { id };
   }
 };
+const validityMapping = {
+  "1 day": "daily",
+  "2 days": "daily",
+  "5 days": "daily",
+  "7 days": "weekly",
+  "14 days": "weekly", // You may need to adjust this mapping
+  "30 days": "monthly",
+  "90 days": "monthly",
+  "120 days": "monthly",
+  "365 days": "yearly",
+  //Specific For Mtn
+  Daily: "daily",
+  Weekly: "weekly",
+  Monthly: "monthly",
+  "60Days": "monthly",
+  "90Days": "monthly",
+  "180Days": "monthly",
+  "1Year": "yearly",
+};
+
+// Add ValidityType based on the mapping
