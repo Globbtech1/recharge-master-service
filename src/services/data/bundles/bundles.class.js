@@ -46,7 +46,7 @@ exports.Bundles = class Bundles {
       let databundles = await dataPurchase.getBundleListList(provider);
 
       const dataWithValidityType = databundles.map((item) => {
-        const validity = item.validity;
+        const validity = item.validity?.toLowerCase();
         const validityType = validityMapping[validity] || "unknown"; // Set a default for unknown cases
         return {
           ...item,
@@ -103,13 +103,13 @@ const validityMapping = {
   "120 days": "monthly",
   "365 days": "yearly",
   //Specific For Mtn
-  Daily: "daily",
-  Weekly: "weekly",
-  Monthly: "monthly",
-  "60Days": "monthly",
-  "90Days": "monthly",
-  "180Days": "monthly",
-  "1Year": "yearly",
+  daily: "daily",
+  weekly: "weekly",
+  monthly: "monthly",
+  "60days": "monthly",
+  "90days": "monthly",
+  "180days": "monthly",
+  "1year": "yearly",
 };
 
 // Add ValidityType based on the mapping
