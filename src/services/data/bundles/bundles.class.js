@@ -2,6 +2,8 @@ const { BadRequest, NotFound } = require("@feathersjs/errors");
 const { successMessage } = require("../../../dependency/UtilityFunctions");
 const { DataPurchase } = require("../../../interfaces/dataPurchase");
 const logger = require("../../../logger");
+const { BaxiIntegration } = require("../../../interfaces/baxiIntegration");
+const { customLog } = require("../../../dependency/customLoggers");
 
 /* eslint-disable no-unused-vars */
 exports.Bundles = class Bundles {
@@ -42,8 +44,9 @@ exports.Bundles = class Bundles {
       const { provider: providerDetails, slug, productName } = productDetails;
       const { slug: provider } = providerDetails;
 
-      let dataPurchase = new DataPurchase();
-      let databundles = await dataPurchase.getBundleListList(provider);
+      // let dataPurchase = new DataPurchase();
+      let baxiService = new BaxiIntegration();
+      let databundles = await baxiService.getBundleListList(provider);
 
       const dataWithValidityType = databundles.map((item) => {
         const validity = item.validity?.toLowerCase();

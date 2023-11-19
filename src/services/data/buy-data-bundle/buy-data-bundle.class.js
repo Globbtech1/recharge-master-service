@@ -9,6 +9,8 @@ const {
 const { pushSlackNotification } = require("../../../hooks/general-uses");
 const { DataPurchase } = require("../../../interfaces/dataPurchase");
 const logger = require("../../../logger");
+const { BaxiIntegration } = require("../../../interfaces/baxiIntegration");
+const { customLog } = require("../../../dependency/customLoggers");
 exports.BuyDataBundle = class BuyDataBundle {
   constructor(options, app) {
     this.options = options || {};
@@ -63,7 +65,7 @@ exports.BuyDataBundle = class BuyDataBundle {
       );
       return Promise.reject(notFound);
     }
-    console.log(productDetails, "productDetails");
+    customLog(productDetails, "productDetails");
     const { provider: providerDetails, slug, productName } = productDetails;
     console.log(providerDetails, slug, productName, "productName");
     const { slug: provider } = providerDetails;
@@ -79,10 +81,8 @@ exports.BuyDataBundle = class BuyDataBundle {
     };
 
     try {
-      let dataPurchase = new DataPurchase();
-      let dataPurchasePaymentResponse = await dataPurchase.buyDataPlans(
-        payload
-      );
+      let baxiService = new BaxiIntegration();
+      let dataPurchasePaymentResponse = await baxiService.buyDataPlans(payload);
       console.log(dataPurchasePaymentResponse, "dataPurchasePaymentResponse");
       let providerStatus = dataPurchasePaymentResponse?.status;
       if (providerStatus != "success") {

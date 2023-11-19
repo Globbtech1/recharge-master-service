@@ -362,22 +362,22 @@ const SendGeneralResponse = (options = {}) => {
 };
 
 const pushSlackNotification = (information, notificationType) => {
-  let slackChannel = process.env.SLACK_WEBHOOK;
-  let stringifyMessage = JSON.stringify(information);
-  // let stringifyMessage = stringify(information);
-  const logger = winston.createLogger({
-    level: "info",
-    transports: [
-      new SlackHook({
-        webhookUrl: slackChannel,
-      }),
-    ],
-  });
-  logger.log({
-    // private: true,
-    level: notificationType,
-    message: stringifyMessage,
-  });
+  // let slackChannel = process.env.SLACK_WEBHOOK;
+  // let stringifyMessage = JSON.stringify(information);
+  // // let stringifyMessage = stringify(information);
+  // const logger = winston.createLogger({
+  //   level: "info",
+  //   transports: [
+  //     new SlackHook({
+  //       webhookUrl: slackChannel,
+  //     }),
+  //   ],
+  // });
+  // logger.log({
+  //   // private: true,
+  //   level: notificationType,
+  //   message: stringifyMessage,
+  // });
   console.log(stringifyMessage, notificationType);
 };
 

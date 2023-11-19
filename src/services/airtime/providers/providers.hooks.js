@@ -6,7 +6,7 @@ const { authenticate } = require("@feathersjs/authentication").hooks;
 module.exports = {
   before: {
     all: [],
-    find: [getAllProviders(), verifyRequestProvider("airtime-purchase")],
+    // find: [getAllProviders(), verifyRequestProvider("airtime-purchase")],
     get: [],
     create: [authenticate("jwt")],
     update: [],
