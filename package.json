@@ -56,6 +56,7 @@
     "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.0.3",
     "feathers-authentication-hooks": "^1.0.2",
     "feathers-authentication-jwt": "^0.3.2",
@@ -68,6 +69,7 @@
     "js-sha512": "^0.8.0",
     "mailchimp-api-v3": "^1.15.0",
     "mailgun-js": "^0.22.0",
+    "moment": "^2.29.4",
     "mysql2": "^2.3.3",
     "node-cron": "^3.0.2",
     "nodemon": "^2.0.20",
@@ -79,6 +81,7 @@
     "serve-favicon": "^2.5.0",
     "twilio": "^4.17.0",
     "winston": "^3.8.2",
+    "winston-loggly-bulk": "^3.3.0",
     "winston-slack-webhook-transport": "^2.2.2"
   },
   "devDependencies": {
