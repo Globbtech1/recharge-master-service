@@ -9,6 +9,7 @@ const {
 const { pushSlackNotification } = require("../../../hooks/general-uses");
 const { AirtimePurchase } = require("../../../interfaces/airtimePurchase");
 const logger = require("../../../logger");
+const { BaxiIntegration } = require("../../../interfaces/baxiIntegration");
 
 /* eslint-disable no-unused-vars */
 exports.BuyAirtime = class BuyAirtime {
@@ -93,7 +94,9 @@ exports.BuyAirtime = class BuyAirtime {
     // return;
     try {
       let airtimePurchase = new AirtimePurchase();
-      let airtimePaymentResponse = await airtimePurchase.buyAirtime(payload);
+      let airtimeBaxi = new BaxiIntegration();
+      // let airtimePaymentResponse = await airtimePurchase.buyAirtime(payload);
+      let airtimePaymentResponse = await airtimeBaxi.buyAirtime(payload);
       console.log(airtimePaymentResponse, "airtimePaymentResponse");
       let providerStatus = airtimePaymentResponse?.status;
       if (providerStatus != "success") {
@@ -179,8 +182,7 @@ exports.BuyAirtime = class BuyAirtime {
     } catch (error) {
       console.log(error, "pppppp");
       let errorMessage =
-        error?.response?.data?.error?.message ||
-        "Unable to process your request";
+        error?.response?.data?.message || "Unable to process your request";
       console.error("An error occurred: ", error.message);
       pushSlackNotification(error?.response?.data, "error");
       let metaData = {

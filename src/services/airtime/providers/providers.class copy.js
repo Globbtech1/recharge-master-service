@@ -39,7 +39,7 @@ exports.Providers = class Providers {
       // const { data } = params;
       // const { paymentProviders } = data;
       // console.log(params, "paymentProviders");
-      // let paymentProviders = await getAllProvidersV2(payment_providers);
+      let paymentProviders = await getAllProvidersV2(payment_providers);
       let airtimePurchase = new AirtimePurchase();
       // let airtimeProviders = await airtimePurchase.getProviderList(
       //   paymentProviders,
@@ -47,11 +47,10 @@ exports.Providers = class Providers {
       // );
 
       let airtimeBaxi = new BaxiIntegration();
-      let airtimeProviders = await airtimeBaxi
-        .airTimeProviders
-        // paymentProviders,
-        // paymentId
-        ();
+      let airtimeProviders = await airtimeBaxi.airTimeProviders(
+        paymentProviders,
+        paymentId
+      );
       return Promise.resolve(
         successMessage(
           airtimeProviders,

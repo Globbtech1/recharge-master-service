@@ -1,5 +1,8 @@
 const bcrypt = require("bcrypt");
 const { CONSTANT } = require("./Config");
+const moment = require("moment");
+const CryptoJS = require("crypto-js");
+
 const successMessage = (data, message = "") => {
   let reponse = { success: true, data: data, message: message };
   return reponse;
@@ -295,6 +298,49 @@ const formatAmount = (amount, toWholeNumber = false) => {
 const capitalizeFirstLetter = (string) => {
   return string?.charAt(0).toUpperCase() + string?.slice(1);
 };
+const getBaxiAuthHeader = (httpMethod, requestUrl, requestBody) => {
+  const CLIENT_KEY = "baxi_capricorn";
+  const SECRET_KEY = "usertest1a";
+
+  let requestPath = requestUrl;
+  if (httpMethod === "GET") {
+    requestBody = "";
+  } else {
+    requestBody = JSON.stringify(requestBody);
+  }
+
+  let hashedPayload;
+  if (requestBody) {
+    hashedPayload = CryptoJS.SHA256(requestBody).toString(CryptoJS.enc.Base64);
+  } else {
+    hashedPayload = "";
+  }
+
+  const currentTime = new Date().toUTCString();
+
+  const timestamp = moment(currentTime).unix();
+  const requestData = httpMethod + requestPath + timestamp + hashedPayload;
+
+  const hmacDigest = CryptoJS.HmacSHA1(requestData, SECRET_KEY);
+
+  const authHeader =
+    "Baxi " + CLIENT_KEY + ":" + hmacDigest.toString(CryptoJS.enc.Base64);
+
+  // Assuming you want to set the x-msp-date environment variable
+  // postman.setEnvironmentVariable('x-msp-date', currentTime);
+
+  console.log(requestUrl); // This line is for debugging purposes
+
+  return authHeader;
+};
+const generateTransactionReference = () => {
+  const constantPart = "ash_";
+  const randomPart = Math.floor(Math.random() * 1000000); // You can adjust the range as needed
+  const timestampPart = new Date().getTime();
+
+  const transactionReference = constantPart + randomPart + "_" + timestampPart;
+  return transactionReference;
+};
 
 module.exports = {
   successMessage,
@@ -319,4 +365,6 @@ module.exports = {
   calculateBillNextExecutionDate,
   formatAmount,
   capitalizeFirstLetter,
+  getBaxiAuthHeader,
+  generateTransactionReference,
 };
