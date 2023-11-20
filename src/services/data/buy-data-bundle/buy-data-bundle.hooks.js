@@ -15,6 +15,7 @@ const {
   checkIfNotExisting,
 } = require("../../../hooks/general-uses");
 const { validateBuyDataUserInput } = require("../../../hooks/rule.validator");
+const { validateCouponCode } = require("../../../hooks/userManagement.hook");
 
 const { authenticate } = require("@feathersjs/authentication").hooks;
 
@@ -35,6 +36,7 @@ module.exports = {
       }),
 
       validateMobileNumber(),
+      validateCouponCode(),
       checkAvailableBalance(),
       validateTransactionPin(),
     ],

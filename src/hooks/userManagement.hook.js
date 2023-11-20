@@ -8,6 +8,8 @@ const {
   successMessage,
   generateRandomString,
   ShowCurrentDate,
+  convertToNaira,
+  convertToKobo,
 } = require("../dependency/UtilityFunctions");
 
 const {
@@ -543,85 +545,128 @@ const validateCouponCode = () => {
     const { app, method, result, params, data } = context;
     const sequelize = app.get("sequelizeClient");
     const { coupon_management, generateaccount } = sequelize.models;
-    const { couponCode, productAmount } = data;
+    const { couponCode, amount: productAmount } = data;
+    if (couponCode) {
+      let discountedPrice = 0;
+      // const schema = Joi.object({
+      //   couponCode: Joi.string().required(),
+      //   // productAmount: Joi.number().required().min(1), // Minimum value is 1
+      //   amount: Joi.number().required().min(1), // Minimum value is 1
+      // });
 
-    let discountedPrice = 0;
-    const schema = Joi.object({
-      couponCode: Joi.string().required(),
-      productAmount: Joi.number().required().min(1), // Minimum value is 1
-    });
+      // // Validate the data
+      // const { error } = schema.validate(data);
 
-    // Validate the data
-    const { error } = schema.validate(data);
+      // if (error) {
+      //   // If there's a validation error, throw a BadRequest with the validation message
+      //   let joiError = new BadRequest(error.details[0].message);
+      //   return Promise.reject(joiError);
+      // }
+      // const userDetails = await users.findOne({
+      //   where: {
+      //     deletedAt: null,
+      //     id: loggedInUserId,
+      //   },
+      // });
+      // if (userDetails === null) {
+      //   throw new NotFound("User not found, please try again");
+      // }
 
-    if (error) {
-      // If there's a validation error, throw a BadRequest with the validation message
-      let joiError = new BadRequest(error.details[0].message);
-      return Promise.reject(joiError);
-    }
-    // const userDetails = await users.findOne({
-    //   where: {
-    //     deletedAt: null,
-    //     id: loggedInUserId,
-    //   },
-    // });
-    // if (userDetails === null) {
-    //   throw new NotFound("User not found, please try again");
-    // }
+      // Find the coupon with the provided code
+      const coupon = await coupon_management.findOne({
+        where: {
+          couponCode,
+          validity: { [Sequelize.Op.gte]: new Date() },
+          deletedAt: null,
+        },
+      });
 
-    // Find the coupon with the provided code
-    const coupon = await coupon_management.findOne({
-      where: {
-        couponCode,
-        validity: { [Sequelize.Op.gte]: new Date() },
-        deletedAt: null,
-      },
-    });
+      if (coupon) {
+        let minimumRecharge = coupon?.minimumRecharge;
+        let maximumRecharge = coupon?.maximumRecharge;
+        let productAmountInNaira = convertToNaira(productAmount);
+        if (productAmountInNaira < minimumRecharge) {
+          const error = new BadRequest(
+            `Minimum amount for this coupon code is ${minimumRecharge}`
+          );
+          return Promise.reject(error);
+        }
+        if (productAmountInNaira > maximumRecharge) {
+          const error = new BadRequest(
+            `Maximum amount for this coupon code is ${maximumRecharge}`
+          );
+          return Promise.reject(error);
+        }
+        if (coupon.valueIsPercentage) {
+          // Calculate the discount percentage and apply it
+          const discount = (coupon?.couponValue / 100) * productAmountInNaira;
+          discountedPrice = productAmountInNaira - discount;
+        } else {
+          // Apply the fixed amount discount
+          discountedPrice = productAmountInNaira - coupon?.couponValue;
+        }
+        if (discountedPrice < 0) {
+          discountedPrice = 0;
+        }
+        let discountedAmountInKobo = convertToKobo(discountedPrice);
+        let res = {
+          amountToPay: discountedAmountInKobo,
+          originalAmount: productAmount,
+        };
+        let AdditionalData = {
+          couponDetails: res,
+          productAmount: productAmount,
+          amountToPay: discountedAmountInKobo,
+        };
 
-    if (coupon) {
-      let minimumRecharge = coupon?.minimumRecharge;
-      let maximumRecharge = coupon?.maximumRecharge;
-      if (productAmount < minimumRecharge) {
-        const error = new BadRequest(
-          `Minimum amount for this coupon code is ${minimumRecharge}`
-        );
-        return Promise.reject(error);
-      }
-      if (productAmount > maximumRecharge) {
-        const error = new BadRequest(
-          `Maximum amount for this coupon code is ${maximumRecharge}`
-        );
-        return Promise.reject(error);
-      }
-      if (coupon.valueIsPercentage) {
-        // Calculate the discount percentage and apply it
-        const discount = (coupon?.couponValue / 100) * productAmount;
-        discountedPrice = productAmount - discount;
+        context.data = { ...context.data, ...AdditionalData };
       } else {
-        // Apply the fixed amount discount
-        discountedPrice = productAmount - coupon?.couponValue;
+        const error = new BadRequest("Coupon not found or expired");
+        return Promise.reject(error);
       }
-      if (discountedPrice < 0) {
-        discountedPrice = 0;
-      }
-      let res = {
-        amountToPay: discountedPrice,
-        originalAmount: productAmount,
-      };
+    } else {
       let AdditionalData = {
-        couponDetails: res,
+        couponDetails: {},
+        productAmount: productAmount,
+        amountToPay: productAmount,
       };
 
       context.data = { ...context.data, ...AdditionalData };
-    } else {
-      const error = new BadRequest("Coupon not found or expired");
-      return Promise.reject(error);
     }
 
     return context;
   };
 };
+const LoginAfterSignup = () => {
+  return async (context) => {
+    const { app, method, result, params, data } = context;
+    const sequelize = app.get("sequelizeClient");
+    // const { amount = 0, loggedInUser } = data;
 
+    console.log(data, "lllllll");
+    console.log(result, "result");
+    const { id } = result;
+    const { account_balance } = sequelize.models;
+    let loginDetails = {
+      phoneNumber: "08090502267",
+      password: "password123!@",
+      strategy: "local",
+    };
+    const loginResponse = await app
+      .service("authentication")
+      .create(loginDetails);
+
+    let AdditionalData = {
+      loginData: loginResponse,
+    };
+
+    context.result = { ...context.result, ...AdditionalData };
+
+    return context;
+  };
+
+  ////////////////////////////
+};
 module.exports = {
   checkIfsubmissionisongoing,
   checkIfTsubmissionExist,
@@ -634,4 +679,5 @@ module.exports = {
   getUserNecessaryInformation,
   InitiateResetPassword,
   validateCouponCode,
+  LoginAfterSignup,
 };

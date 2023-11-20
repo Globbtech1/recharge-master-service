@@ -21,6 +21,7 @@ const {
 const { setField } = require("feathers-authentication-hooks");
 const {
   getUserNecessaryInformation,
+  LoginAfterSignup,
 } = require("../../hooks/userManagement.hook");
 const {
   FundUserAccount,
@@ -50,8 +51,8 @@ module.exports = {
         ],
       }),
       validateReferByLink(),
-      hashPassword("password"),
       generateWalletId(),
+      hashPassword("password"),
       generateReferLink(),
     ],
     update: [hashPassword("password"), authenticate("jwt")],
@@ -79,9 +80,10 @@ module.exports = {
       // insertIntoVerification(),
       FundUserAccount(),
       // proccessEmail({ mailtype: "userCreation" }),
-      SendGeneralResponse({
-        message: CONSTANT.successMessage.userRegistrationSuccess,
-      }),
+      // SendGeneralResponse({
+      //   message: CONSTANT.successMessage.userRegistrationSuccess,
+      // }),
+      // LoginAfterSignup(),
     ],
     update: [],
     patch: [],

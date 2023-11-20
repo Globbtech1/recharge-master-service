@@ -38,6 +38,10 @@ exports.BuyAirtime = class BuyAirtime {
       fundSource = "self",
       availableBalance,
       productId,
+      productAmount,
+      amountToPay, // this will be minus  the discounted value  if applicable
+      paymentMethod,
+      byPassWallet,
     } = data;
     let loggedInUserId = params?.user?.id;
 
@@ -93,7 +97,7 @@ exports.BuyAirtime = class BuyAirtime {
     };
     // return;
     try {
-      let airtimePurchase = new AirtimePurchase();
+      // let airtimePurchase = new AirtimePurchase();
       let airtimeBaxi = new BaxiIntegration();
       // let airtimePaymentResponse = await airtimePurchase.buyAirtime(payload);
       let airtimePaymentResponse = await airtimeBaxi.buyAirtime(payload);
@@ -108,6 +112,8 @@ exports.BuyAirtime = class BuyAirtime {
           "Paid By": fundSource,
           Date: ShowCurrentDate(),
           Amount: convertToNaira(amount),
+          amountPaid: convertToNaira(0),
+          paymentMethod: paymentMethod,
           Status: CONSTANT.transactionStatus.failed,
         };
 
@@ -121,8 +127,10 @@ exports.BuyAirtime = class BuyAirtime {
           productListId: productId,
           transactionDate: ShowCurrentDate(),
           amount: convertToNaira(amount),
+          amountPaid: convertToNaira(0),
           transactionStatus: CONSTANT.transactionStatus.failed,
           paidBy: fundSource,
+          paymentMethod: paymentMethod,
         };
         this.app.service("transactions-history").create(transactionHistory);
 
@@ -132,8 +140,16 @@ exports.BuyAirtime = class BuyAirtime {
         // TODO we need to be sure the provider is not given the user the value.
         // TODO this side need to be tested properly on live
       }
-      let newBalance = parseFloat(availableBalance) - parseFloat(amount);
-      let transactionReference = airtimePaymentResponse?.reference;
+      let newBalance = 0;
+      if (paymentMethod === "paystack") {
+        newBalance = parseFloat(availableBalance);
+      } else if (paymentMethod === "wallet") {
+        newBalance = parseFloat(availableBalance) - parseFloat(amountToPay);
+      }
+
+      let transactionReference =
+        airtimePaymentResponse?.reference ||
+        airtimePaymentResponse?.transactionReference;
       let metaData = {
         "Transaction ID": transactionReference,
         "Phone Number": phoneNumber,
@@ -141,6 +157,8 @@ exports.BuyAirtime = class BuyAirtime {
         "Paid By": fundSource,
         Date: ShowCurrentDate(),
         Amount: convertToNaira(amount),
+        amountPaid: convertToNaira(amountToPay),
+        paymentMethod: paymentMethod,
         Status: CONSTANT.transactionStatus.success,
       };
 
@@ -154,8 +172,10 @@ exports.BuyAirtime = class BuyAirtime {
         productListId: productId,
         transactionDate: ShowCurrentDate(),
         amount: convertToNaira(amount),
+        amountPaid: convertToNaira(amountToPay),
         transactionStatus: CONSTANT.transactionStatus.success,
         paidBy: fundSource,
+        paymentMethod: paymentMethod,
       };
       let responseTransaction = await this.app
         .service("transactions-history")
@@ -192,6 +212,8 @@ exports.BuyAirtime = class BuyAirtime {
         "Paid By": fundSource,
         Date: ShowCurrentDate(),
         Amount: convertToNaira(amount),
+        amountPaid: convertToNaira(0),
+        paymentMethod: paymentMethod,
         Status: CONSTANT.transactionStatus.failed,
       };
 
@@ -205,8 +227,10 @@ exports.BuyAirtime = class BuyAirtime {
         productListId: productId,
         transactionDate: ShowCurrentDate(),
         amount: convertToNaira(amount),
+        amountPaid: convertToNaira(0),
         transactionStatus: CONSTANT.transactionStatus.failed,
         paidBy: fundSource,
+        paymentMethod: paymentMethod,
       };
       this.app.service("transactions-history").create(transactionHistory);
       return Promise.reject(new BadRequest(errorMessage));

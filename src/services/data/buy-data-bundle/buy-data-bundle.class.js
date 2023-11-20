@@ -45,6 +45,9 @@ exports.BuyDataBundle = class BuyDataBundle {
       dataCode,
       name,
       productId,
+      productAmount,
+      amountToPay, // this will be minus  the discounted value  if applicable
+      paymentMethod,
     } = data;
     let loggedInUserId = params?.user?.id;
     const productDetails = await product_list.findOne({
@@ -95,6 +98,7 @@ exports.BuyDataBundle = class BuyDataBundle {
           "Paid By": fundSource,
           Date: ShowCurrentDate(),
           Amount: convertToNaira(amount),
+          paymentMethod: paymentMethod,
           Status: CONSTANT.transactionStatus.failed,
         };
 
@@ -110,6 +114,7 @@ exports.BuyDataBundle = class BuyDataBundle {
           amount: convertToNaira(amount),
           transactionStatus: CONSTANT.transactionStatus.failed,
           paidBy: fundSource,
+          paymentMethod: paymentMethod,
         };
         this.app.service("transactions-history").create(transactionHistory);
 
@@ -119,8 +124,17 @@ exports.BuyDataBundle = class BuyDataBundle {
         // TODO we need to be sure the provider is not given the user the value.
         // TODO this side need to be tested properly on live
       }
-      let newBalance = parseFloat(availableBalance) - parseFloat(amount);
-      let transactionReference = dataPurchasePaymentResponse?.reference;
+      // let newBalance = parseFloat(availableBalance) - parseFloat(amountToPay);
+      let newBalance = 0;
+      if (paymentMethod === "paystack") {
+        newBalance = parseFloat(availableBalance);
+      } else if (paymentMethod === "wallet") {
+        newBalance = parseFloat(availableBalance) - parseFloat(amountToPay);
+      }
+
+      let transactionReference =
+        dataPurchasePaymentResponse?.reference ||
+        dataPurchasePaymentResponse?.transactionReference;
       let metaData = {
         "Transaction ID": transactionReference,
         "Phone Number": phoneNumber,
@@ -129,6 +143,8 @@ exports.BuyDataBundle = class BuyDataBundle {
         "Paid By": fundSource,
         Date: ShowCurrentDate(),
         Amount: convertToNaira(amount),
+        amountPaid: convertToNaira(amountToPay),
+        paymentMethod: paymentMethod,
         Status: CONSTANT.transactionStatus.success,
       };
 
@@ -142,8 +158,10 @@ exports.BuyDataBundle = class BuyDataBundle {
         productListId: productId,
         transactionDate: ShowCurrentDate(),
         amount: convertToNaira(amount),
+        amountPaid: convertToNaira(amountToPay),
         transactionStatus: CONSTANT.transactionStatus.success,
         paidBy: fundSource,
+        paymentMethod: paymentMethod,
       };
       let responseTransaction = await this.app
         .service("transactions-history")
@@ -181,7 +199,9 @@ exports.BuyDataBundle = class BuyDataBundle {
         "Paid By": fundSource,
         Date: ShowCurrentDate(),
         Amount: convertToNaira(amount),
+        amountPaid: convertToNaira(0),
         Status: CONSTANT.transactionStatus.failed,
+        paymentMethod: paymentMethod,
       };
 
       let transactionHistory = {
@@ -194,8 +214,10 @@ exports.BuyDataBundle = class BuyDataBundle {
         productListId: productId,
         transactionDate: ShowCurrentDate(),
         amount: convertToNaira(amount),
+        amountPaid: convertToNaira(0),
         transactionStatus: CONSTANT.transactionStatus.failed,
         paidBy: fundSource,
+        paymentMethod: paymentMethod,
       };
       this.app.service("transactions-history").create(transactionHistory);
       return Promise.reject(new BadRequest(errorMessage));
