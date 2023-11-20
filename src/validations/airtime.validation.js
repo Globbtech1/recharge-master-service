@@ -14,6 +14,12 @@ const buyAirtimeValidator = (data) => {
     saveBeneficiary: Joi.boolean().required(),
     beneficiaryAlias: Joi.string().optional().trim().min(2).allow(null, ""),
     userPin: Joi.string().trim().min(2).required(),
+    paymentMethod: Joi.string().valid("wallet", "paystack").required(),
+    paymentReference: Joi.when("paymentMethod", {
+      is: "paystack",
+      then: Joi.string().trim().min(2).required(),
+      otherwise: Joi.optional(),
+    }),
   });
   return schema.validate(data, { allowUnknown: true });
 };

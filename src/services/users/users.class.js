@@ -1,4 +1,5 @@
 const { Service } = require("feathers-sequelize");
+const { customLog } = require("../../dependency/customLoggers");
 
 exports.Users = class Users extends Service {
   //   console.log("hey here");
@@ -11,6 +12,7 @@ exports.Users = class Users extends Service {
   }
 
   async create(data, params) {
+    customLog(data, "data...");
     const newUser = await super.create(data, params);
     console.log(newUser, "newUser");
     const { email, fullName } = newUser;
@@ -29,7 +31,16 @@ exports.Users = class Users extends Service {
     // Send the verification email using the email service
     // try {
     await this.app.service("integrations/email-service").create(emailData);
-
+    const { phoneNumber, userPassword } = data;
+    let loginDetails = {
+      phoneNumber: phoneNumber,
+      password: userPassword,
+      strategy: "local",
+    };
+    const loginResponse = await this.app
+      .service("authentication")
+      .create(loginDetails);
+    newUser.loginData = loginResponse;
     return newUser;
   }
 };

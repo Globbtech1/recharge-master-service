@@ -378,7 +378,7 @@ const pushSlackNotification = (information, notificationType) => {
   //   level: notificationType,
   //   message: stringifyMessage,
   // });
-  console.log(stringifyMessage, notificationType);
+  // console.log(stringifyMessage, notificationType);
 };
 
 const checkForExistingValues = (options = {}) => {

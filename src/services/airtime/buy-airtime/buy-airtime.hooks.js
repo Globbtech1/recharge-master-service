@@ -39,7 +39,7 @@ module.exports = {
       }),
 
       validateMobileNumber(),
-      // validateCouponCode(),
+      validateCouponCode(),
       checkAvailableBalance(),
       validateTransactionPin(),
     ],
