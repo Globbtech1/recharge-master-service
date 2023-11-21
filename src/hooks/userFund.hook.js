@@ -9,6 +9,7 @@ const {
   convertToNaira,
   ShowCurrentDate,
   generateRandomString,
+  normalizePhoneNumber,
 } = require("../dependency/UtilityFunctions");
 
 const ReserveBankAccount = async (Info, record = true) => {
@@ -166,12 +167,19 @@ const generateWalletId = () => {
     const { app, method, result, params, data } = context;
     // console.log(params, "params");
     // console.log(result, "result");
+    const { password, phoneNumber } = data;
+
     const sequelize = app.get("sequelizeClient");
     const { users } = sequelize.models;
     let walletId = await generateRandomNumber(users, "walletId", 12);
+    const normalizedPhoneNumber = normalizePhoneNumber(phoneNumber);
     let AdditionalData = {
-      walletId: walletId,
+      // walletId: walletId,
+      walletId: normalizedPhoneNumber,
+      userPassword: password,
+      userPassword2: "password",
     };
+
     context.data = { ...context.data, ...AdditionalData };
     return context;
   };
@@ -199,7 +207,7 @@ const validateReferByLink = () => {
     console.log(result, "result");
     const sequelize = app.get("sequelizeClient");
     const { users } = sequelize.models;
-    const { invitedBy } = data;
+    const { invitedBy, password } = data;
     if (invitedBy) {
       const account_balanceDetails = await users.findOne({
         where: {
@@ -210,7 +218,10 @@ const validateReferByLink = () => {
       if (account_balanceDetails == null) {
         throw new Error("Invalid referral code supply");
       }
+      console.log(password, ".....password");
       let AdditionalData = {
+        userPassword: password,
+        userPassword2: "password",
         refererLink: invitedBy,
       };
       context.data = { ...context.data, ...AdditionalData };

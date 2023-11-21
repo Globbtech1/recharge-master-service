@@ -60,6 +60,14 @@ module.exports = function (app) {
         allowNull: false,
         default: "self",
       },
+      amountPaid: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
+      paymentMethod: {
+        type: DataTypes.ENUM("wallet", "paystack", "others"),
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

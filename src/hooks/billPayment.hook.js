@@ -24,6 +24,9 @@ const {
 } = require("../validations/auth.validation");
 const { ReserveBankAccount, pushSlackNotification } = require("./general-uses");
 const { getUserAccountBalanceInfo } = require("./userFund.hook");
+const { customLog } = require("../dependency/customLoggers");
+const { CONSTANT } = require("../dependency/Config");
+var paystack = require("paystack")(process.env.PAYSTACK_SECRET_KEY);
 
 // eslint-disable-next-line no-unused-vars
 
@@ -33,37 +36,169 @@ const checkAvailableBalance = (options = {}) => {
     const sequelize = app.get("sequelizeClient");
     // console.log(params, "dataSent.........");
     // console.log(params.user, "dataSent.........");
-    const { account_balance } = sequelize.models;
     let loggedInUserId = params?.user?.id;
-    // debugger;
-    // return Promise.reject(params);
-    // console.log(loggedInUserId, "loggedInUserIds");
-    const accountBalance = await account_balance.findOne({
-      where: {
-        userId: loggedInUserId,
-        deletedAt: null,
-      },
-    });
-    // console.log(accountBalance, "submissionData");
-    if (accountBalance !== null) {
-      console.log(accountBalance, "accountBalance");
-      const { balance } = accountBalance;
-      const { amount } = data;
-      if (amount > balance) {
-        const insufficient = new BadRequest(
-          "Insufficient balance , please top up your account"
-        );
-        return Promise.reject(insufficient);
+    const { account_balance } = sequelize.models;
+
+    const { paymentMethod, amountToPay } = data;
+    if (paymentMethod === "paystack") {
+      const { paymentReference } = data;
+      let verifyResponse = await paystack.transaction.verify(paymentReference);
+      console.log(verifyResponse, "verifyResponse");
+      const { status, data: paystackData, message } = verifyResponse;
+      customLog(status, paystackData, message);
+
+      if (status) {
+        console.log(data, "ppppppppppp");
+        const {
+          status: transactionStatus,
+          amount,
+          authorization,
+          reference,
+          channel: paymentMethod,
+        } = paystackData;
+        console.log(transactionStatus, "pooppoopop");
+        if (transactionStatus === CONSTANT.payStackPaymentStatus.success) {
+          let nairaAmount = convertToNaira(amount);
+          let amountToPayInNaira = convertToNaira(amountToPay);
+          console.log(nairaAmount, "nairaAmount");
+          console.log(amountToPayInNaira, "amountToPayInNaira");
+          let amountSettled = nairaAmount;
+          let amountPaid = nairaAmount;
+          let transactionReference = reference;
+          if (nairaAmount < amountToPayInNaira) {
+            return Promise.reject(
+              new BadRequest("Amount paid is less than the value")
+            );
+          }
+
+          //  const accountDetailsDetails = await fund_innitiator.findOne({
+          //    where: {
+          //      deletedAt: null,
+          //      reference: reference,
+          //    },
+          //  });
+          //  if (accountDetailsDetails === null) {
+          //    const notFound = new NotFound("User not found at the moment");
+          //    return Promise.reject(notFound);
+          //  }
+          //  let accountOwnerId = accountDetailsDetails?.userId;
+          const account_balanceDetails = await account_balance.findOne({
+            where: {
+              deletedAt: null,
+              userId: loggedInUserId,
+            },
+          });
+
+          let availableBalance = 0;
+
+          if (account_balanceDetails !== null) {
+            availableBalance = account_balanceDetails?.balance;
+
+            // this.app.service("account-balance").patch(walletId, Update_payload);
+            // this.app
+            //   .service("accountFunding/fund-innitiator")
+            //   .patch(accountDetailsDetails?.id, {
+            //     status: CONSTANT.transactionStatus.success,
+            //   });
+
+            // let funding = {
+            //   userId: accountOwnerId,
+            //   amount: amountSettled,
+            //   amountBefore: convertToNaira(availableBalance),
+            //   amountAfter: convertToNaira(currentBalance),
+            //   source: `${paymentMethod} ||| ${transactionReference}`,
+            // };
+            // let metaData = {
+            //   amount: amountPaid,
+            //   paymentMethod: paymentMethod,
+            //   // ...accountDetails,
+            //   transactionDate: ShowCurrentDate(),
+            // };
+            // let fundingHistory = {
+            //   userId: accountOwnerId,
+            //   paymentType: "credit",
+            //   amountBefore: convertToNaira(availableBalance),
+            //   amountAfter: convertToNaira(currentBalance),
+            //   referenceNumber: transactionReference,
+            //   metaData: JSON.stringify(metaData),
+            //   productListId: product_listDetails?.id || 0,
+            //   transactionDate: ShowCurrentDate(),
+            //   amount: amountPaid,
+            //   transactionStatus: CONSTANT.transactionStatus.success,
+            //   paidBy: "self",
+            // };
+            // let ResponseData = {
+            //   accountFundingData: funding,
+            //   ...data,
+            //   payHistory: fundingHistory,
+            // };
+            let additionalOrderDetails = {
+              availableBalance: availableBalance,
+              byPassWallet: true,
+            };
+            context.data = { ...data, ...additionalOrderDetails };
+            // return ResponseData;
+          }
+          // else {
+          // }
+          // }
+
+          // return Promise.resolve(
+          //   successMessage(
+          //     verifyResponse,
+          //     "Your donation has been received successfully"
+          //   )
+          // );
+        } else {
+          return Promise.reject(
+            new BadRequest(
+              "Unable to determine payment status. please contact admin"
+            )
+          );
+        }
+
+        // resolve(successResp(data));
+      } else {
+        console.log(verifyResponse, "body..........");
+        // reject(failedResp(message));
+        // const notfound = new BadRequest(message);
+
+        // return Promise.reject(errorMessage(message));
+        return Promise.reject(new BadRequest(message));
       }
-      let additionalOrderDetails = {
-        availableBalance: balance,
-      };
-      context.data = { ...data, ...additionalOrderDetails };
-    } else {
-      const notFound = new BadRequest(
-        "Can not complete request, please check your user account"
-      );
-      return Promise.reject(notFound);
+    } else if (paymentMethod === "wallet") {
+      // const { account_balance } = sequelize.models;
+      // let loggedInUserId = params?.user?.id;
+      // debugger;
+      // return Promise.reject(params);
+      // console.log(loggedInUserId, "loggedInUserIds");
+      const accountBalance = await account_balance.findOne({
+        where: {
+          userId: loggedInUserId,
+          deletedAt: null,
+        },
+      });
+      // console.log(accountBalance, "submissionData");
+      if (accountBalance !== null) {
+        console.log(accountBalance, "accountBalance");
+        const { balance } = accountBalance;
+        const { amountToPay: amount } = data; // use the applied discounted amount from coupon validation
+        if (amount > balance) {
+          const insufficient = new BadRequest(
+            "Insufficient balance , please top up your account"
+          );
+          return Promise.reject(insufficient);
+        }
+        let additionalOrderDetails = {
+          availableBalance: balance,
+        };
+        context.data = { ...data, ...additionalOrderDetails };
+      } else {
+        const notFound = new BadRequest(
+          "Can not complete request, please check your user account"
+        );
+        return Promise.reject(notFound);
+      }
     }
 
     return context;
@@ -77,7 +212,6 @@ const validateMobileNumber = (options = {}) => {
     let cleanedUpPhoneNumber = phoneNumber?.replace(/[^+\d]+/g, "");
     let regex = new RegExp(/(0|91)?[6-9][0-9]{9}/); // if phoneNumber // is empty return false
     if (cleanedUpPhoneNumber == null) {
-      //TODO Make All phone number start with 0 instead of country code
       const error = new BadRequest(
         "Invalid mobile Number , Please check and try again "
       );
@@ -105,7 +239,10 @@ const debitUserAccount = (options = {}) => {
     const sequelize = app.get("sequelizeClient");
 
     const { account_balance } = sequelize.models;
-    const { amount } = data;
+    const { amountToPay: amount, paymentMethod } = data;
+    if (paymentMethod === "paystack") {
+      return context;
+    }
     let loggedInUserId = params?.user?.id;
     console.log(loggedInUserId, "loggedInUserId");
     const account_balanceDetails = await account_balance.findOne({

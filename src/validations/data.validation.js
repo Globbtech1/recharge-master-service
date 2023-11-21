@@ -14,6 +14,12 @@ const buyDataValidator = (data) => {
     userPin: Joi.string().trim().min(2).required(),
     dataCode: Joi.string().trim().min(2).required(),
     name: Joi.string().trim().min(2).required(),
+    paymentMethod: Joi.string().valid("wallet", "paystack").required(),
+    paymentReference: Joi.when("paymentMethod", {
+      is: "paystack",
+      then: Joi.string().trim().min(2).required(),
+      otherwise: Joi.optional(),
+    }),
   });
 
   return schema.validate(data, { allowUnknown: true });

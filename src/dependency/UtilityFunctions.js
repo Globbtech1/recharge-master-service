@@ -20,7 +20,7 @@ const errorMessage = (message = "", reason = "", statusCode = 400) => {
   // throw new Error(message);
 };
 const errorMessageV2 = (message = "", data = null) => {
-  let response = { success: false, data: data, message: message };
+  let response = { success: false, message: message, data: data };
   return response;
 };
 
@@ -341,6 +341,12 @@ const generateTransactionReference = () => {
   const transactionReference = constantPart + randomPart + "_" + timestampPart;
   return transactionReference;
 };
+const normalizePhoneNumber = (phoneNumber) => {
+  // Remove leading zero, +234, or 234
+  const normalizedNumber = phoneNumber.replace(/^0|^(\+?234)|^234/, "");
+
+  return normalizedNumber;
+};
 
 module.exports = {
   successMessage,
@@ -367,4 +373,5 @@ module.exports = {
   capitalizeFirstLetter,
   getBaxiAuthHeader,
   generateTransactionReference,
+  normalizePhoneNumber,
 };
