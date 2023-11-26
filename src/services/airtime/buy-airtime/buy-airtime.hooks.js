@@ -8,6 +8,7 @@ const {
   validateTransactionPin,
   scheduleUserPayment,
   addToFavoriteRecharge,
+  sendResultBackToFrontEnd,
 } = require("../../../hooks/billPayment.hook");
 const {
   SendGeneralResponse,
@@ -59,7 +60,10 @@ module.exports = {
       // sendSlackNotification(),
       scheduleUserPayment(),
       addToFavoriteRecharge(),
-      SendGeneralResponse({ message: CONSTANT.successMessage.airtimePurchase }),
+      sendResultBackToFrontEnd({
+        message: CONSTANT.successMessage.airtimePurchase,
+      }),
+      // SendGeneralResponse({ message: CONSTANT.successMessage.airtimePurchase }),
     ],
     update: [],
     patch: [],
