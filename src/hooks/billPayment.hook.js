@@ -37,11 +37,26 @@ const checkAvailableBalance = (options = {}) => {
     // console.log(params, "dataSent.........");
     // console.log(params.user, "dataSent.........");
     let loggedInUserId = params?.user?.id;
-    const { account_balance } = sequelize.models;
+    const { account_balance, transactions_history } = sequelize.models;
 
-    const { paymentMethod, amountToPay } = data;
+    const { paymentMethod, amountToPay, paymentReference } = data;
     if (paymentMethod === "paystack") {
-      const { paymentReference } = data;
+      const validatePaymentReference = await transactions_history.findOne({
+        where: {
+          deletedAt: null,
+          referenceNumber: paymentReference,
+          paymentMethod: "paystack",
+        },
+      });
+
+      if (validatePaymentReference !== null) {
+        return Promise.reject(
+          new BadRequest(
+            "Payment reference in use please contact customer support "
+          )
+        );
+      }
+
       let verifyResponse = await paystack.transaction.verify(paymentReference);
       console.log(verifyResponse, "verifyResponse");
       const { status, data: paystackData, message } = verifyResponse;
@@ -757,6 +772,16 @@ const addToFavoriteRecharge = (options = {}) => {
     return context;
   };
 };
+const sendResultBackToFrontEnd = (options = {}) => {
+  return async (context) => {
+    const { app, method, result, params, data, id, error } = context;
+    const { message } = options;
+    const sequelize = app.get("sequelizeClient");
+    const responseResult = context.result;
+    context.result = successMessage(responseResult, message);
+    return context;
+  };
+};
 
 module.exports = {
   checkAvailableBalance,
@@ -774,4 +799,5 @@ module.exports = {
   FormatMobileNumber,
   includePaymentDetailsDetails,
   addToFavoriteRecharge,
+  sendResultBackToFrontEnd,
 };

@@ -161,6 +161,10 @@ const userEligibleCoupons = require('./user/eligible-coupons/eligible-coupons.se
 
 const userRedemCoupon = require('./user/redem-coupon/redem-coupon.service.js');
 
+const userMyBeneficiaries = require('./user/my-beneficiaries/my-beneficiaries.service.js');
+
+const userMyReferers = require('./user/my-referers/my-referers.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -244,4 +248,6 @@ module.exports = function (app) {
   app.configure(adminCouponUserCategory);
   app.configure(userEligibleCoupons);
   app.configure(userRedemCoupon);
+  app.configure(userMyBeneficiaries);
+  app.configure(userMyReferers);
 };
