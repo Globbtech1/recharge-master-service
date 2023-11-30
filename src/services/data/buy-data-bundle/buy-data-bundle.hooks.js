@@ -26,7 +26,7 @@ module.exports = {
     find: [],
     get: [],
     create: [
-      validateBuyDataUserInput(),
+      //validateBuyDataUserInput(),
       checkIfNotExisting({
         fieldsToCheck: [
           { fieldName: "id", value: "productId", friendlyName: "Product id" },
