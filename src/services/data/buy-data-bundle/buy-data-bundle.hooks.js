@@ -8,6 +8,7 @@ const {
   recordQuickBeneficiary,
   scheduleUserPayment,
   addToFavoriteRecharge,
+  sendResultBackToFrontEnd,
 } = require("../../../hooks/billPayment.hook");
 const {
   sendSlackNotification,
@@ -25,7 +26,7 @@ module.exports = {
     find: [],
     get: [],
     create: [
-      validateBuyDataUserInput(),
+      //validateBuyDataUserInput(),
       checkIfNotExisting({
         fieldsToCheck: [
           { fieldName: "id", value: "productId", friendlyName: "Product id" },
@@ -56,7 +57,10 @@ module.exports = {
       // sendSlackNotification(),
       addToFavoriteRecharge(),
       scheduleUserPayment(),
-      SendGeneralResponse({ message: CONSTANT.successMessage.dataPurchase }),
+      sendResultBackToFrontEnd({
+        message: CONSTANT.successMessage.dataPurchase,
+      }),
+      // SendGeneralResponse({ message: CONSTANT.successMessage.dataPurchase }),
     ],
     update: [],
     patch: [],
