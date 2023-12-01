@@ -16,111 +16,21 @@ env:
   RUN_REGION: europe-west3
   SERVICE_NAME: recharge-master
 
-  # Allow manual trigger
-  workflow_dispatch:
-
 jobs:
-  variables:
-    name: Set variables
+  pullFile:
     runs-on: ubuntu-latest
-    outputs:
-      branch: ${{ steps.vars.outputs.branch }}
-      sha_short: ${{ steps.vars.outputs.sha_short }}
-      tag_name: ${{ steps.vars.outputs.tag_name }}
-      env: ${{ steps.vars.outputs.env }}
-      cluster: ${{ steps.vars.outputs.cluster }}
-      cluster_zone: ${{ steps.vars.outputs.cluster_zone }}
-      service: ${{ steps.vars.outputs.service }}
-      version: 4.0.0
 
     steps:
-      - uses: actions/checkout@v2
-
-
-      - name: Set Variables
-        id: vars
-        shell: bash
-        run: |
-          BRANCH=$(echo ${GITHUB_REF#refs/heads/})
-          if [[ $BRANCH == "dev" ]]; then ENV="dev" CLUSTR="boon-dev-k8s-1" CLUSTR_ZN="europe-west3-a"; elif [[ $BRANCH == "staging" ]]; then ENV="stag" CLUSTR="boon-prod-k8s-1" CLUSTR_ZN="europe-west4"; elif [[ $BRANCH == "master" ]]; then ENV="prod" CLUSTR="boon-prod-k8s-1" CLUSTR_ZN="europe-west4"; else echo No environment for branch: $BRANCH && exit 1; fi;
-          echo "::set-output name=branch::$BRANCH"
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=tag_name::$(date +"%Y%m%d")-$(git rev-parse --short HEAD)"
-          declare ENV
-          echo "::set-output name=env::$ENV"
-          echo "::set-output name=cluster::$CLUSTR"
-          echo "::set-output name=cluster_zone::$CLUSTR_ZN"
-          echo "::set-output name=service::$SERVICE_NAME"
-  build-docker:
-    name: Build docker
-    runs-on: ubuntu-latest
-    needs: [variables]
-
-    steps:
-      - uses: actions/checkout@v2
-
-      # Configure Cloud SDK
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          service_account_key: ${{ secrets.GCLOUD_KEY }}
-          project_id: ${{ env.PROJECT_ID }}
-          export_default_credentials: true
-
-      # Run composer install.
-      - name: Run composer update
-        run: |-
-          composer install -q --ignore-platform-reqs --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
-      # Get env file
-      - name: Get remote .env file
-        run: |-
-          gsutil cp gs://${{ needs.variables.outputs.env }}-conf/${{ needs.variables.outputs.service }}/${{ needs.variables.outputs.service }}-${{ needs.variables.outputs.env }} ./.env
-          gsutil -m cp -r gs://${{ needs.variables.outputs.env }}-conf/${{ needs.variables.outputs.service }}/keys/* ./storage
-      # Create Dockerfile on the fly
-      - name: Create docker file
-        run: |-
-          echo -e 'FROM eu.gcr.io/${{ env.PROJECT_ID }}/fbis-php8-base:1.0.6 \nLABEL maintainer="Olagoke Olasebikan <olagoke.olasebikan@gmail.com>" \nENV GOOGLE_APPLICATION_CREDENTIALS="./storage/sa-key.json" \nWORKDIR /var/www/html \nCOPY . /var/www/html  \nENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"] \nEXPOSE 80' > Dockerfile
-
-      # Configure Docker to use the gcloud command-line tool as a credential helper for authentication
-      - name: Configure docker for gcloud
-        run: gcloud --quiet auth configure-docker
-
-      # Build, tag and push image
-      - name: Build, tag and push docker image
-        run: |-
-          docker build -t "eu.gcr.io/$PROJECT_ID/$SERVICE_NAME-${{ needs.variables.outputs.env }}:${{ needs.variables.outputs.version }}-${{ needs.variables.outputs.tag_name }}" -t "eu.gcr.io/$PROJECT_ID/$SERVICE_NAME-${{ needs.variables.outputs.env }}:${{ needs.variables.outputs.tag_name }}" .
-          docker push "eu.gcr.io/$PROJECT_ID/$SERVICE_NAME-${{ needs.variables.outputs.env }}:${{ needs.variables.outputs.version }}-${{ needs.variables.outputs.tag_name }}"
-  deploy-kube:
-    name: Deploy kube
-    runs-on: ubuntu-latest
-    needs: [variables, build-docker]
-
-    steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      # Configure Cloud SDK
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v0
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          service_account_key: ${{ secrets.GCLOUD_KEY }}
-          project_id: ${{ env.PROJECT_ID }}
-          export_default_credentials: true
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: AWS_REGION
 
-      # Configure Cloud GKE SDK.
-      - name: Setup GKE CLI
-        uses: google-github-actions/get-gke-credentials@v1
-        with:
-          cluster_name: ${{ needs.variables.outputs.cluster }}
-          location: ${{ needs.variables.outputs.cluster_zone }}
-
-      # Prepare config
-      - name: Prep deployment
-        run: |-
-          gsutil cp gs://ops-templates/configs/${{ needs.variables.outputs.env }}/k8s-template-2  ./tpl.yaml
-          perl -i -pe's/serviceID/${{ needs.variables.outputs.service }}/g' tpl.yaml
-          perl -i -pe's/${{ needs.variables.outputs.service }}-imageID/${{ needs.variables.outputs.service }}-${{ needs.variables.outputs.env }}:${{ needs.variables.outputs.version }}-${{ needs.variables.outputs.tag_name }}/g' tpl.yaml
-      # Run deployments.
-      - name: Run deployments
-        run: |-
-          kubectl apply -f tpl.yaml -n ${{ needs.variables.outputs.env }}
+      - name: Pull File from S3 Bucket
+        run: |
+          aws s3 cp s3://recharge-master/main/recharge-master-main ./.env
