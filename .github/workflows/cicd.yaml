@@ -50,7 +50,8 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY  }}
-          IMAGE_TAG: v1.0.0-$(date +"%Y%m%d")-$(git rev-parse --short HEAD)
+          VERSION: v1.0.0
         run: |
+          IMAGE_TAG=echo $VERSION-$(date +"%Y%m%d")-$(git rev-parse --short HEAD)
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
