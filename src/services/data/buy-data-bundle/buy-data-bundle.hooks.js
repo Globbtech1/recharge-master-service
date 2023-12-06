@@ -16,7 +16,11 @@ const {
   checkIfNotExisting,
 } = require("../../../hooks/general-uses");
 const { validateBuyDataUserInput } = require("../../../hooks/rule.validator");
-const { validateCouponCode } = require("../../../hooks/userManagement.hook");
+const {
+  validateCouponCode,
+  checkForAccountStatus,
+  checkForAmountSpent,
+} = require("../../../hooks/userManagement.hook");
 
 const { authenticate } = require("@feathersjs/authentication").hooks;
 
@@ -26,7 +30,8 @@ module.exports = {
     find: [],
     get: [],
     create: [
-      //validateBuyDataUserInput(),
+      validateBuyDataUserInput(),
+      checkForAccountStatus(),
       checkIfNotExisting({
         fieldsToCheck: [
           { fieldName: "id", value: "productId", friendlyName: "Product id" },
@@ -57,6 +62,7 @@ module.exports = {
       // sendSlackNotification(),
       addToFavoriteRecharge(),
       scheduleUserPayment(),
+      checkForAmountSpent(),
       sendResultBackToFrontEnd({
         message: CONSTANT.successMessage.dataPurchase,
       }),

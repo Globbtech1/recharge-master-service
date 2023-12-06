@@ -18,7 +18,11 @@ const {
 const {
   validateBuyAirtimeUserInput,
 } = require("../../../hooks/rule.validator");
-const { validateCouponCode } = require("../../../hooks/userManagement.hook");
+const {
+  validateCouponCode,
+  checkForAccountStatus,
+  checkForAmountSpent,
+} = require("../../../hooks/userManagement.hook");
 
 const { authenticate } = require("@feathersjs/authentication").hooks;
 
@@ -30,6 +34,7 @@ module.exports = {
     create: [
       // getAllProviders(),
       validateBuyAirtimeUserInput(),
+      checkForAccountStatus(),
       checkIfNotExisting({
         fieldsToCheck: [
           { fieldName: "id", value: "productId", friendlyName: "Product id" },
@@ -60,6 +65,7 @@ module.exports = {
       // sendSlackNotification(),
       scheduleUserPayment(),
       addToFavoriteRecharge(),
+      checkForAmountSpent(),
       sendResultBackToFrontEnd({
         message: CONSTANT.successMessage.airtimePurchase,
       }),

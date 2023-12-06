@@ -83,6 +83,21 @@ module.exports = function (app) {
         allowNull: true,
         defaultValue: false,
       },
+      isPhoneNumberVerify: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+      },
+      isAccountLocked: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      reasonForAccountLock: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: "",
+      },
       address: {
         type: DataTypes.STRING,
         allowNull: true,

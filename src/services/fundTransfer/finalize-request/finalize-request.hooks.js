@@ -6,6 +6,7 @@ const {
 } = require("../../../hooks/billPayment.hook");
 const { SendGeneralResponse } = require("../../../hooks/general-uses");
 const { creditUserAccount } = require("../../../hooks/userFund.hook");
+const { checkForAccountStatus } = require("../../../hooks/userManagement.hook");
 
 const { authenticate } = require("@feathersjs/authentication").hooks;
 
@@ -14,7 +15,11 @@ module.exports = {
     all: [authenticate("jwt")],
     find: [],
     get: [],
-    create: [checkAvailableBalance(), validateTransactionPin()],
+    create: [
+      checkForAccountStatus(),
+      checkAvailableBalance(),
+      validateTransactionPin(),
+    ],
     update: [],
     patch: [],
     remove: [],
