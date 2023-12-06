@@ -111,6 +111,7 @@ const CONSTANT = {
   },
   internalProvider: "internal",
   userCategories,
+  maximumAmountForUnverifiedAccount: 4000,
 };
 
 module.exports = { CONSTANT };
