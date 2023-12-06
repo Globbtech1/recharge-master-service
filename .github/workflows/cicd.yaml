@@ -52,6 +52,6 @@ jobs:
           REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY  }}
           VERSION: v1.0.0
         run: |
-          echo "IMAGE_TAG=echo $VERSION-$(date +"%Y%m%d"-git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "IMAGE_TAG=echo $VERSION-$(date +"%Y%m%d"-$GITHUB_SHA | cut -c 1-6))" >> $GITHUB_ENV
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
