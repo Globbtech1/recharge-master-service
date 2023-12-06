@@ -36,9 +36,11 @@ jobs:
           aws s3 cp s3://prod-conf/recharge-master/recharge-master-main ./.env
           aws s3 cp s3://prod-conf/recharge-master/config ./src/config/config.json 
           aws s3 cp s3://prod-conf/recharge-master/sequelize ./sequelizerc 
-          ls -ltra .
+          cat .env
           echo "==============="
-          ls -ltra ./src/config/
+          cat ./src/config/config.json 
+          echo "==============="
+          cat ./sequelizerc  
 
       - name: Create docker file
         run: |-
