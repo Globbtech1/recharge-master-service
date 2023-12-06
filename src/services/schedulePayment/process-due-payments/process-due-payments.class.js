@@ -294,6 +294,8 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             amount: convertToNaira(amount),
             transactionStatus: CONSTANT.transactionStatus.failed,
             paidBy: fundSource,
+            paymentMethod: "wallet",
+            amountPaid: convertToNaira(amount),
           };
           this.app.service("transactions-history").create(transactionHistory);
           // return Promise.reject(new BadRequest(errorMessage));
@@ -360,6 +362,8 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             amount: convertToNaira(amount),
             transactionStatus: CONSTANT.transactionStatus.failed,
             paidBy: fundSource,
+            paymentMethod: "wallet",
+            amountPaid: convertToNaira(amount),
           };
           this.app.service("transactions-history").create(transactionHistory);
           // return Promise.reject(new BadRequest(errorMessage));
@@ -444,6 +448,8 @@ exports.ProcessDuePayments = class ProcessDuePayments {
         amount: convertToNaira(amount),
         transactionStatus: CONSTANT.transactionStatus.failed,
         paidBy: fundSource,
+        paymentMethod: "wallet",
+        amountPaid: convertToNaira(amount),
       };
       this.app.service("transactions-history").create(transactionHistory);
 
@@ -483,6 +489,8 @@ exports.ProcessDuePayments = class ProcessDuePayments {
       amount: convertToNaira(amount),
       transactionStatus: CONSTANT.transactionStatus.success,
       paidBy: fundSource,
+      paymentMethod: "wallet",
+      amountPaid: convertToNaira(amount),
     };
     let responseTransaction = await this.app
       .service("transactions-history")
