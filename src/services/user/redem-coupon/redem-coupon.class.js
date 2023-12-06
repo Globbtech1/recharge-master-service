@@ -1,7 +1,10 @@
 const { NotFound, BadRequest } = require("@feathersjs/errors");
 const Joi = require("joi");
 const { Sequelize } = require("sequelize");
-const { successMessage } = require("../../../dependency/UtilityFunctions");
+const {
+  successMessage,
+  convertToNaira,
+} = require("../../../dependency/UtilityFunctions");
 
 /* eslint-disable no-unused-vars */
 exports.RedemCoupon = class RedemCoupon {
@@ -29,10 +32,15 @@ exports.RedemCoupon = class RedemCoupon {
     const { users, coupon_management } = sequelize.models;
 
     try {
-      // Return the new discounted product amount
-      return Promise.resolve(
-        successMessage(couponDetails, "Discount Calculated")
-      );
+      console.log(couponDetails, "couponDetails");
+      const { amountToPay = 0, originalAmount = 0 } = couponDetails;
+      let amountToPayInNaira = convertToNaira(amountToPay);
+      let originalAmountInNaira = convertToNaira(originalAmount);
+      const resp = {
+        amountToPay: amountToPayInNaira,
+        originalAmount: originalAmountInNaira,
+      };
+      return Promise.resolve(successMessage(resp, "Discount Calculated"));
     } catch (error) {
       console.error("error", error);
       let catchError = new BadRequest(

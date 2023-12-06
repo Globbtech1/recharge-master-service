@@ -62,6 +62,9 @@ exports.AccountVaerification = class AccountVaerification {
       }
       if (platform === CONSTANT.verificationType.phoneNumber) {
         userDetails.isPhoneNumberVerify = true;
+        userDetails.isVerify = true;
+        userDetails.isAccountLocked = false;
+        userDetails.reasonForAccountLock = "";
         userDetails.phoneNumber = userUpdatedData;
       }
 

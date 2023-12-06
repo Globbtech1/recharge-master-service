@@ -311,7 +311,17 @@ const creditUserAccount = () => {
 
   ////////////////////////////
 };
+const getTotalAmountSpent = async (userId, transactions_historyModel) => {
+  // const sequelize = this.app.get("sequelizeClient");
 
+  // const { transactions_history } = sequelize.models;
+  // const sequelize = this.Model.sequelize;
+  const result = await transactions_historyModel.sum("amountPaid", {
+    where: { userId },
+  });
+
+  return result || 0;
+};
 module.exports = {
   FundUserAccount,
   ReserveBankAccount,
@@ -322,4 +332,5 @@ module.exports = {
   generateReferLink,
   validateReferByLink,
   creditUserAccount,
+  getTotalAmountSpent,
 };

@@ -18,6 +18,8 @@ const {
 } = require("../validations/auth.validation");
 const { ReserveBankAccount } = require("./general-uses");
 const Joi = require("joi");
+const { getTotalAmountSpent } = require("./userFund.hook");
+const { CONSTANT } = require("../dependency/Config");
 
 // eslint-disable-next-line no-unused-vars
 
@@ -618,6 +620,7 @@ const validateCouponCode = () => {
           productAmount: productAmount,
           amountToPay: discountedAmountInKobo,
         };
+        console.log(AdditionalData, "cccAdditionalData");
 
         context.data = { ...context.data, ...AdditionalData };
       } else {
@@ -633,7 +636,7 @@ const validateCouponCode = () => {
 
       context.data = { ...context.data, ...AdditionalData };
     }
-
+    // console.log(AdditionalData, "vvvAdditionalData");
     return context;
   };
 };
@@ -667,6 +670,80 @@ const LoginAfterSignup = () => {
 
   ////////////////////////////
 };
+const checkForAccountStatus = () => {
+  return async (context) => {
+    const { app, method, result, params, data } = context;
+    const sequelize = app.get("sequelizeClient");
+    const { users, transactions_history } = sequelize.models;
+
+    const { couponCode, amount: productAmount } = data;
+    let loggedInUserId = params?.user?.id;
+    // const userId = 1; // Replace with the actual userId
+    // const totalAmountSpent = await app
+    //   .service("transactions-history")
+    //   .getTotalAmountSpent(loggedInUserId);
+    // console.log(totalAmountSpent);
+    const totalAmountSpent = await getTotalAmountSpent(
+      loggedInUserId,
+      transactions_history
+    );
+    console.log(totalAmountSpent, "totalAmountSpent");
+    const userDetails = await users.findOne({
+      where: {
+        id: loggedInUserId,
+        deletedAt: null,
+      },
+    });
+    if (userDetails !== null) {
+      const { isAccountLocked, reasonForAccountLock } = userDetails;
+      if (isAccountLocked) {
+        const accountStatus = new BadRequest(
+          `Account temporary locked  \n reason: ${reasonForAccountLock}`
+        );
+        return Promise.reject(accountStatus);
+      }
+    } else {
+      const notFound = new BadRequest(
+        "Can not process your request  request, please contact support"
+      );
+      return Promise.reject(notFound);
+    }
+    return context;
+  };
+};
+const checkForAmountSpent = () => {
+  return async (context) => {
+    const { app, method, result, params, data } = context;
+    const sequelize = app.get("sequelizeClient");
+    const { users, transactions_history } = sequelize.models;
+    let loggedInUserId = params?.user?.id;
+    const userDetails = await users.findOne({
+      where: {
+        id: loggedInUserId,
+        deletedAt: null,
+      },
+    });
+    if (userDetails !== null) {
+      const { isVerify } = userDetails;
+
+      if (!isVerify) {
+        const totalAmountSpent = await getTotalAmountSpent(
+          loggedInUserId,
+          transactions_history
+        );
+        console.log(totalAmountSpent, "totalAmountSpent");
+
+        if (totalAmountSpent >= CONSTANT.maximumAmountForUnverifiedAccount) {
+          userDetails.isAccountLocked = true;
+          userDetails.reasonForAccountLock = "Account verification is required";
+          await userDetails.save();
+        }
+      }
+    }
+
+    return context;
+  };
+};
 module.exports = {
   checkIfsubmissionisongoing,
   checkIfTsubmissionExist,
@@ -680,4 +757,6 @@ module.exports = {
   InitiateResetPassword,
   validateCouponCode,
   LoginAfterSignup,
+  checkForAccountStatus,
+  checkForAmountSpent,
 };

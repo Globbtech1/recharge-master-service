@@ -93,6 +93,8 @@ exports.FinalizeRequest = class FinalizeRequest {
           amount: convertToNaira(amount),
           transactionStatus: CONSTANT.transactionStatus.success,
           paidBy: "self",
+          paymentMethod: "wallet",
+          amountPaid: convertToNaira(amount),
         };
         let responseTransaction = await this.app
           .service("transactions-history")
@@ -101,6 +103,7 @@ exports.FinalizeRequest = class FinalizeRequest {
 
       return dataResponse;
     } catch (error) {
+      console.log(error, "error");
       const cachedError = new Error(
         `An error Occurred while trying to transfer the fund`
       );
