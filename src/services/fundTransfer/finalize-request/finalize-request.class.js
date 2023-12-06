@@ -96,6 +96,7 @@ exports.FinalizeRequest = class FinalizeRequest {
           paymentMethod: "wallet",
           amountPaid: convertToNaira(amount),
         };
+        console.log(transactionHistory, "transactionHistory");
         let responseTransaction = await this.app
           .service("transactions-history")
           .create(transactionHistory);

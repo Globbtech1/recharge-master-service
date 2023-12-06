@@ -275,6 +275,7 @@ const creditUserAccount = () => {
           deletedAt: null,
         },
       };
+      console.log(Update_payload, "Update_payload");
       await account_balance.update(Update_payload, condition);
 
       let funding = {
@@ -301,7 +302,9 @@ const creditUserAccount = () => {
         transactionDate: ShowCurrentDate(),
         amount: amountPaid,
         transactionStatus: CONSTANT.transactionStatus.success,
-        paidBy: "self",
+        paidBy: "Wallet Transfer",
+        paymentMethod: "wallet",
+        amountPaid: convertToNaira(0),
       };
       app.service("account-funding").create(funding);
       app.service("transactions-history").create(fundingHistory);
@@ -322,6 +325,22 @@ const getTotalAmountSpent = async (userId, transactions_historyModel) => {
 
   return result || 0;
 };
+const transformFinalizeAccountFundingData = () => {
+  return async (context) => {
+    const { app, method, result, params, data } = context;
+    const sequelize = app.get("sequelizeClient");
+    const { users, transactions_history } = sequelize.models;
+
+    const { amount } = data;
+    let additionalOrderDetails = {
+      amountToPay: amount,
+      paymentMethod: "wallet",
+    };
+    context.data = { ...context.data, ...additionalOrderDetails };
+
+    return context;
+  };
+};
 module.exports = {
   FundUserAccount,
   ReserveBankAccount,
@@ -333,4 +352,5 @@ module.exports = {
   validateReferByLink,
   creditUserAccount,
   getTotalAmountSpent,
+  transformFinalizeAccountFundingData,
 };
