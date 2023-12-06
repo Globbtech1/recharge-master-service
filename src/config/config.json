@@ -2,8 +2,8 @@
   "development": {
     "username": "root",
     "password": "",
-    "database": "rechargeMaster",
-    "host": "127.0.0.1",
+    "database": "rechargemaster",
+    "host": "localhost",
     "dialect": "mysql",
       "logging": false,
       "define": {

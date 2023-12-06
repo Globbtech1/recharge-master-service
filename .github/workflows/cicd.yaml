@@ -17,7 +17,7 @@ env:
   SERVICE_NAME: recharge-master
 
 jobs:
-  get-env:
+  build-docker:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,4 +33,13 @@ jobs:
 
       - name: Get env variables
         run: |
-          aws s3 cp s3://recharge-master/main/recharge-master-main ./.env
+          aws s3 cp s3://prod-conf/recharge-master/recharge-master-main ./.env
+          aws s3 cp s3://prod-conf/recharge-master/config ./src/config/config.json 
+          aws s3 cp s3://prod-conf/recharge-master/sequelize ./sequelizerc 
+          ls -ltra .
+          echo "==============="
+          ls -ltra ./src/config/
+
+      - name: Create docker file
+        run: |-
+          echo -e 'FROM node:16 \nLABEL maintainer="Hayio Technologies LTD <hayio0.tech@gmail.com>" \nWORKDIR  /app \nCOPY . /app  \nCMD ["npm", "start"] \nEXPOSE 3000' > Dockerfile
