@@ -254,6 +254,7 @@ const debitUserAccount = (options = {}) => {
     const sequelize = app.get("sequelizeClient");
 
     const { account_balance } = sequelize.models;
+    console.log(data, "data");
     const { amountToPay: amount, paymentMethod } = data;
     if (paymentMethod === "paystack") {
       return context;
@@ -270,10 +271,12 @@ const debitUserAccount = (options = {}) => {
     if (account_balanceDetails !== null) {
       let availableBalance = account_balanceDetails?.balance;
       let currentBalance = parseFloat(availableBalance) - amount;
+      console.log(currentBalance, "currentBalance");
       let walletId = account_balanceDetails?.id;
       let Update_payload = {
         balance: currentBalance,
       };
+      console.log(Update_payload, "Update_payload....ppppp");
       app.service("account-balance").patch(walletId, Update_payload);
     } else {
       return Promise.reject(new BadRequest("Unable to complete your request"));
