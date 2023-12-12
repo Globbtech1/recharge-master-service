@@ -79,7 +79,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
-          kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=$REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG
+          cat ~/.kube/config
+          kubectl config  get-contexts
       # - name: Deploy.
       #   uses: cancue/eks-action@v0.0.2
       #   env:
