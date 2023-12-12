@@ -68,7 +68,7 @@ jobs:
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
           echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker build -t $REGISTRY/$REPOSITORY:${{env.VERSION}}-$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:${{env.VERSION}}-$IMAGE_TAG
 
       - name: Update kube config
