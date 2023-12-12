@@ -79,8 +79,9 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
-          cat ~/.kube/config
-          kubectl config  get-contexts
+          echo ${{ secrets.K8S_CONFIG }} | base64 --decode > tpl.yaml
+          perl -i -pe's/imageID/$REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG/g' tpl.yaml
+          kubectl apply -f tpl.yaml -n dev
       # - name: Deploy.
       #   uses: cancue/eks-action@v0.0.2
       #   env:
