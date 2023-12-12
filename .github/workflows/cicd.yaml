@@ -80,7 +80,7 @@ jobs:
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
           kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=$REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG
-      # - name: Deploy
+      # - name: Deploy.
       #   uses: cancue/eks-action@v0.0.2
       #   env:
       #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
