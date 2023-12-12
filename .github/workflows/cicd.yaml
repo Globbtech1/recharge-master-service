@@ -72,6 +72,11 @@ jobs:
           docker push $REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG
           echo "ECR_IMAGE=$REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG" >> $GITHUB_ENV
 
+      - name: Prepare k8s config
+        run: |
+          echo ${{ secrets.K8S_CONFIG }} | base64 --decode > tpl.yaml
+          perl -i -pe's/imageID/$ECR_IMAGE/g' tpl.yaml
+
       - name: Update kube config
         run: aws eks update-kubeconfig --name ${{secrets.EKS_CLUSTER_NAME}} --region ${{ secrets.AWS_REGION }}
     
@@ -80,9 +85,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
-          echo ${{ secrets.K8S_CONFIG }} | base64 --decode > tpl.yaml
+          kubectl config use-context globbtech-dev
 
-          perl -i -pe's/imageID/$ECR_IMAGE/g' tpl.yaml
           kubectl apply -f tpl.yaml -n dev
       # - name: Deploy.
       #   uses: cancue/eks-action@v0.0.2
