@@ -68,6 +68,7 @@ jobs:
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
           echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+          echo "ECR_IMAGE=$($REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG)" >> $GITHUB_ENV
           docker build -t $REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG
 
@@ -80,7 +81,8 @@ jobs:
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
           echo ${{ secrets.K8S_CONFIG }} | base64 --decode > tpl.yaml
-          perl -i -pe's/imageID/$REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG/g' tpl.yaml
+
+          perl -i -pe's/imageID/$ECR_IMAGE/g' tpl.yaml
           kubectl apply -f tpl.yaml -n dev
       # - name: Deploy.
       #   uses: cancue/eks-action@v0.0.2
