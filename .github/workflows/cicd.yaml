@@ -89,7 +89,7 @@ jobs:
           kubectl config use-context ${{secrets.K8S_CONTEXT}}
 
           kubectl apply -f tpl.yaml -n dev
-      # - name: Deploy
+      # - name: Deploy.
       #   uses: cancue/eks-action@v0.0.2
       #   env:
       #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
