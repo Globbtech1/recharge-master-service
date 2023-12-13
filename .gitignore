@@ -110,4 +110,4 @@ $RECYCLE.BIN/
 # Others
 lib/
 Dockerfile
-eks-connector-clusterrole.yaml
+eks*
