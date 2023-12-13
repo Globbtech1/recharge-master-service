@@ -24,6 +24,9 @@ exports.BuyAirtime = class BuyAirtime {
 
   async create(data, params) {
     console.log(params, "params");
+    let paidByPhoneNumber = params?.user?.phoneNumber;
+
+    console.log(paidByPhoneNumber, "paidByPhoneNumber");
     const { headers } = params;
     console.log(JSON.stringify(headers), "params");
     // return;
@@ -42,6 +45,7 @@ exports.BuyAirtime = class BuyAirtime {
       amountToPay, // this will be minus  the discounted value  if applicable
       paymentMethod,
       byPassWallet,
+      platform,
     } = data;
     let loggedInUserId = params?.user?.id;
 
@@ -63,6 +67,7 @@ exports.BuyAirtime = class BuyAirtime {
       );
       return Promise.reject(notFound);
     }
+    // let paidByPhoneNumber = params?.user?.phoneNumber;
     console.log(productDetails, "productDetails");
     const { provider: providerDetails, slug, productName } = productDetails;
     console.log(providerDetails, slug, productName, "productName");
@@ -109,7 +114,8 @@ exports.BuyAirtime = class BuyAirtime {
           "Transaction ID": "nill",
           "Phone Number": phoneNumber,
           "Network Provider": provider.toUpperCase(),
-          "Paid By": fundSource,
+          // "Paid By": fundSource,
+          "Paid By": paidByPhoneNumber,
           Date: ShowCurrentDate(),
           Amount: convertToNaira(amount),
           amountPaid: convertToNaira(0),
@@ -129,8 +135,11 @@ exports.BuyAirtime = class BuyAirtime {
           amount: convertToNaira(amount),
           amountPaid: convertToNaira(0),
           transactionStatus: CONSTANT.transactionStatus.failed,
-          paidBy: fundSource,
+          // paidBy: fundSource,
+          paidBy: paidByPhoneNumber,
           paymentMethod: paymentMethod,
+          transactionType: CONSTANT.transactionType.airtime,
+          platform: platform,
         };
         this.app.service("transactions-history").create(transactionHistory);
 
@@ -154,7 +163,9 @@ exports.BuyAirtime = class BuyAirtime {
         "Transaction ID": transactionReference,
         "Phone Number": phoneNumber,
         "Network Provider": provider.toUpperCase(),
-        "Paid By": fundSource,
+        // "Paid By": fundSource,
+        "Paid By": paidByPhoneNumber,
+
         Date: ShowCurrentDate(),
         Amount: convertToNaira(amount),
         amountPaid: convertToNaira(amountToPay),
@@ -174,8 +185,12 @@ exports.BuyAirtime = class BuyAirtime {
         amount: convertToNaira(amount),
         amountPaid: convertToNaira(amountToPay),
         transactionStatus: CONSTANT.transactionStatus.success,
-        paidBy: fundSource,
+        // paidBy: fundSource,
+        paidBy: paidByPhoneNumber,
+
         paymentMethod: paymentMethod,
+        transactionType: CONSTANT.transactionType.airtime,
+        platform: platform,
       };
       let responseTransaction = await this.app
         .service("transactions-history")
@@ -209,7 +224,8 @@ exports.BuyAirtime = class BuyAirtime {
         "Transaction ID": "nill",
         "Phone Number": phoneNumber,
         "Network Provider": provider.toUpperCase(),
-        "Paid By": fundSource,
+        // "Paid By": fundSource,
+        "Paid By": paidByPhoneNumber,
         Date: ShowCurrentDate(),
         Amount: convertToNaira(amount),
         amountPaid: convertToNaira(0),
@@ -229,8 +245,11 @@ exports.BuyAirtime = class BuyAirtime {
         amount: convertToNaira(amount),
         amountPaid: convertToNaira(0),
         transactionStatus: CONSTANT.transactionStatus.failed,
-        paidBy: fundSource,
+        // paidBy: fundSource,
+        paidBy: paidByPhoneNumber,
         paymentMethod: paymentMethod,
+        transactionType: CONSTANT.transactionType.airtime,
+        platform: platform,
       };
       this.app.service("transactions-history").create(transactionHistory);
       return Promise.reject(new BadRequest(errorMessage));

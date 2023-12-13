@@ -305,6 +305,7 @@ const creditUserAccount = () => {
         paidBy: "Wallet Transfer",
         paymentMethod: "wallet",
         amountPaid: convertToNaira(0),
+        transactionType: CONSTANT.transactionType.walletTransfer,
       };
       app.service("account-funding").create(funding);
       app.service("transactions-history").create(fundingHistory);
