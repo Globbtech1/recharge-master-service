@@ -87,10 +87,11 @@ jobs:
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
           kubectl config use-context ${{secrets.K8S_CONTEXT}}
+          echo $ECR_IMAGE
 
           cat tpl.yaml
 
-          kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=$ECR_IMAGE
+          kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=$REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG
           # kubectl apply -f tpl.yaml -n dev
       # - name: Deploy
       #   uses: cancue/eks-action@v0.0.2
