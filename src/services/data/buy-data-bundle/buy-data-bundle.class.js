@@ -29,7 +29,7 @@ exports.BuyDataBundle = class BuyDataBundle {
   }
 
   async create(data, params) {
-    console.log(data, "please");
+    let paidByPhoneNumber = params?.user?.phoneNumber;
 
     const sequelize = this.app.get("sequelizeClient");
     // const { users, initiate_reset_pwd, payment_list } = sequelize.models;
@@ -48,6 +48,7 @@ exports.BuyDataBundle = class BuyDataBundle {
       productAmount,
       amountToPay, // this will be minus  the discounted value  if applicable
       paymentMethod,
+      platform = "auto",
     } = data;
     let loggedInUserId = params?.user?.id;
     const productDetails = await product_list.findOne({
@@ -95,7 +96,8 @@ exports.BuyDataBundle = class BuyDataBundle {
           "Phone Number": phoneNumber,
           "Network Provider": provider.toUpperCase(),
           "Data Bundle": name,
-          "Paid By": fundSource,
+          // "Paid By": fundSource,
+          "Paid By": paidByPhoneNumber,
           Date: ShowCurrentDate(),
           Amount: convertToNaira(amount),
           paymentMethod: paymentMethod,
@@ -113,8 +115,11 @@ exports.BuyDataBundle = class BuyDataBundle {
           transactionDate: ShowCurrentDate(),
           amount: convertToNaira(amount),
           transactionStatus: CONSTANT.transactionStatus.failed,
-          paidBy: fundSource,
+          // paidBy: fundSource,
+          paidBy: paidByPhoneNumber,
           paymentMethod: paymentMethod,
+          transactionType: CONSTANT.transactionType.data,
+          platform: platform,
         };
         this.app.service("transactions-history").create(transactionHistory);
 
@@ -140,7 +145,8 @@ exports.BuyDataBundle = class BuyDataBundle {
         "Phone Number": phoneNumber,
         "Network Provider": provider?.toUpperCase(),
         "Data Bundle": name,
-        "Paid By": fundSource,
+        // "Paid By": fundSource,
+        "Paid By": paidByPhoneNumber,
         Date: ShowCurrentDate(),
         Amount: convertToNaira(amount),
         amountPaid: convertToNaira(amountToPay),
@@ -160,8 +166,11 @@ exports.BuyDataBundle = class BuyDataBundle {
         amount: convertToNaira(amount),
         amountPaid: convertToNaira(amountToPay),
         transactionStatus: CONSTANT.transactionStatus.success,
-        paidBy: fundSource,
+        // paidBy: fundSource,
+        paidBy: paidByPhoneNumber,
         paymentMethod: paymentMethod,
+        transactionType: CONSTANT.transactionType.airtime,
+        platform: platform,
       };
       let responseTransaction = await this.app
         .service("transactions-history")
@@ -196,7 +205,8 @@ exports.BuyDataBundle = class BuyDataBundle {
         "Phone Number": phoneNumber,
         "Network Provider": provider.toUpperCase(),
         "Data Bundle": name,
-        "Paid By": fundSource,
+        // "Paid By": fundSource,
+        "Paid By": paidByPhoneNumber,
         Date: ShowCurrentDate(),
         Amount: convertToNaira(amount),
         amountPaid: convertToNaira(0),
@@ -216,8 +226,11 @@ exports.BuyDataBundle = class BuyDataBundle {
         amount: convertToNaira(amount),
         amountPaid: convertToNaira(0),
         transactionStatus: CONSTANT.transactionStatus.failed,
-        paidBy: fundSource,
+        // paidBy: fundSource,
+        paidBy: paidByPhoneNumber,
         paymentMethod: paymentMethod,
+        transactionType: CONSTANT.transactionType.data,
+        platform: platform,
       };
       this.app.service("transactions-history").create(transactionHistory);
       return Promise.reject(new BadRequest(errorMessage));

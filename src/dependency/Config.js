@@ -112,6 +112,18 @@ const CONSTANT = {
   internalProvider: "internal",
   userCategories,
   maximumAmountForUnverifiedAccount: 100000,
+  transactionType: {
+    airtime: "Airtime",
+    data: "Data-Bundle",
+    walletTransfer: "walletTransfer",
+    AccountFunding: "AccountFunding",
+    error: "null",
+  },
+  platforms: {
+    mobile: "mobile",
+    web: "web",
+    schedule: "schedule",
+  },
 };
 
 module.exports = { CONSTANT };
