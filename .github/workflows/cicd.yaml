@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -40,7 +40,7 @@ jobs:
           echo "NOW=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Install Node modules
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: "16"
 
@@ -56,7 +56,7 @@ jobs:
 
       - name: Create docker file
         run: |-
-          echo -e 'FROM node:16 \nLABEL maintainer="Hayio Technologies LTD <hayio0.tech@gmail.com>" \nWORKDIR  /app \nCOPY . /app  \nCMD ["npm", "start"] \nEXPOSE 3000' > Dockerfile
+          echo -e 'FROM node:16 \nLABEL maintainer="Hayio Technologies LTD <hayio0.tech@gmail.com>" \nWORKDIR  /app \nCOPY . /app \nENV NODE_ENV=production  \nCMD ["npm", "start"] \nEXPOSE 3000' > Dockerfile
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -90,8 +90,8 @@ jobs:
           echo $ECR_IMAGE
 
           cat tpl.yaml
-
-          kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=$REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG
+          # 313472484012.dkr.ecr.us-west-2.amazonaws.com/recharge-master-prod:v1.0.0-2023-12-13T00-58-11-1d4da9e
+          kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=313472484012.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_REPOSITORY  }}:${{env.VERSION}}-$NOW-$IMAGE_TAG
           # kubectl apply -f tpl.yaml -n dev
       # - name: Deploy
       #   uses: cancue/eks-action@v0.0.2
