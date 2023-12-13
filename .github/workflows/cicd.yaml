@@ -34,9 +34,9 @@ jobs:
 
       - name: Get env variables
         run: |
-          aws s3 cp s3://prod-conf/recharge-master/recharge-master-main ./.env
-          aws s3 cp s3://prod-conf/recharge-master/config ./src/config/config.json 
-          aws s3 cp s3://prod-conf/recharge-master/sequelize ./sequelizerc 
+          aws s3 cp s3://prod-conf/$SERVICE_NAME/$SERVICE_NAME-main ./.env
+          aws s3 cp s3://prod-conf/$SERVICE_NAME/config ./src/config/config.json 
+          aws s3 cp s3://prod-conf/$SERVICE_NAME/sequelize ./sequelizerc 
           echo "NOW=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Install Node modules
@@ -88,7 +88,10 @@ jobs:
         run: |
           kubectl config use-context ${{secrets.K8S_CONTEXT}}
 
-          kubectl apply -f tpl.yaml -n dev
+          cat tpl.yaml
+
+          kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=$ECR_IMAGE
+          # kubectl apply -f tpl.yaml -n dev
       # - name: Deploy
       #   uses: cancue/eks-action@v0.0.2
       #   env:
