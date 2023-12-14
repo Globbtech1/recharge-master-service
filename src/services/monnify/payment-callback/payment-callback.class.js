@@ -31,7 +31,7 @@ exports.PaymentCallback = class PaymentCallback {
 
   async create(data, params) {
     const { user } = params;
-    const { securityNumber, confirmSecurityNumber } = data;
+    const { securityNumber, confirmSecurityNumber, platform = "auto" } = data;
     logger.info("params", params);
     const { headers } = params;
     const monnifyRequestSignature = headers["monnify-signature"];
@@ -130,6 +130,9 @@ exports.PaymentCallback = class PaymentCallback {
             amount: amountPaid,
             transactionStatus: CONSTANT.transactionStatus.success,
             paidBy: "self",
+            paymentMethod: paymentMethod,
+            transactionType: CONSTANT.transactionType.AccountFunding,
+            platform: platform,
           };
           data = {
             accountFundingData: funding,

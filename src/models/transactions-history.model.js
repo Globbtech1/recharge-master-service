@@ -68,6 +68,16 @@ module.exports = function (app) {
         type: DataTypes.ENUM("wallet", "paystack", "others"),
         allowNull: false,
       },
+      transactionType: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        default: "",
+      },
+      platform: {
+        type: DataTypes.ENUM("web", "mobile", "schedule", "auto"),
+        allowNull: true,
+        defaultValue: "auto",
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

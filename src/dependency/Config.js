@@ -73,7 +73,7 @@ const CONSTANT = {
     Best regards,
     UfitSub`,
 
-  supportEmail: "support@ufitsub.com",
+  supportEmail: "support@rechargemaster.com",
   monnifyPaymentStatus: { paid: "PAID", expired: "EXPIRED" },
   monnifyBillTypes: {
     airtime: "Airtime",
@@ -112,6 +112,24 @@ const CONSTANT = {
   internalProvider: "internal",
   userCategories,
   maximumAmountForUnverifiedAccount: 100000,
+  transactionType: {
+    airtime: "airtime",
+    data: "dataBundle",
+    walletTransfer: "walletTransfer",
+    AccountFunding: "accountFunding",
+    error: "null",
+  },
+  platforms: {
+    mobile: "mobile",
+    web: "web",
+    schedule: "schedule",
+  },
+
+  paymentMethod: {
+    wallet: "wallet",
+    paystack: "paystack",
+    others: "others",
+  },
 };
 
 module.exports = { CONSTANT };
