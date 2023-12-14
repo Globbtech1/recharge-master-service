@@ -343,7 +343,7 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             error?.response?.data?.error?.message ||
             "Unable to process your request";
           console.error("An error occurred: ", error.message);
-          pushSlackNotification(error?.response?.data, "error");
+          // pushSlackNotification(error?.response?.data, "error");
           let metaData = {
             "Transaction ID": "nill",
             "Phone Number": phoneNumber,
@@ -429,6 +429,7 @@ exports.ProcessDuePayments = class ProcessDuePayments {
     productId,
     transactionType
   ) {
+    console.log(airtimePaymentResponse, "airtimePaymentResponse,,,,,,,");
     console.log(availableBalance, "availableBalance");
     let providerStatus = airtimePaymentResponse?.status;
     if (providerStatus != "success") {

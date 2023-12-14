@@ -140,9 +140,11 @@ exports.VerifyPayment = class VerifyPayment {
               productListId: product_listDetails?.id || 0,
               transactionDate: ShowCurrentDate(),
               amount: amountPaid,
+              amountPaid: amountPaid,
               transactionStatus: CONSTANT.transactionStatus.success,
               paidBy: "self",
-              paymentMethod: paymentMethod,
+              // paymentMethod: paymentMethod,
+              paymentMethod: CONSTANT.paymentMethod.paystack,
               platform: platform,
               transactionType: CONSTANT.transactionType.AccountFunding,
             };

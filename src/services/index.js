@@ -165,6 +165,8 @@ const userMyBeneficiaries = require('./user/my-beneficiaries/my-beneficiaries.se
 
 const userMyReferers = require('./user/my-referers/my-referers.service.js');
 
+const globalserviceAllEnums = require('./globalservice/all-enums/all-enums.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -250,4 +252,5 @@ module.exports = function (app) {
   app.configure(userRedemCoupon);
   app.configure(userMyBeneficiaries);
   app.configure(userMyReferers);
+  app.configure(globalserviceAllEnums);
 };

@@ -169,7 +169,7 @@ exports.BuyDataBundle = class BuyDataBundle {
         // paidBy: fundSource,
         paidBy: paidByPhoneNumber,
         paymentMethod: paymentMethod,
-        transactionType: CONSTANT.transactionType.airtime,
+        transactionType: CONSTANT.transactionType.data,
         platform: platform,
       };
       let responseTransaction = await this.app

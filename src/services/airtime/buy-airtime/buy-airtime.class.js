@@ -45,7 +45,7 @@ exports.BuyAirtime = class BuyAirtime {
       amountToPay, // this will be minus  the discounted value  if applicable
       paymentMethod,
       byPassWallet,
-      platform,
+      platform = "auto",
     } = data;
     let loggedInUserId = params?.user?.id;
 
@@ -192,6 +192,8 @@ exports.BuyAirtime = class BuyAirtime {
         transactionType: CONSTANT.transactionType.airtime,
         platform: platform,
       };
+      console.log(transactionHistory, "transactionHistory");
+      // return;
       let responseTransaction = await this.app
         .service("transactions-history")
         .create(transactionHistory);
@@ -214,6 +216,7 @@ exports.BuyAirtime = class BuyAirtime {
       };
 
       return responseTransaction;
+      // return transactionHistory;
     } catch (error) {
       console.log(error, "pppppp");
       let errorMessage =
