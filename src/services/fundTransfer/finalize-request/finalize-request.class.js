@@ -17,7 +17,9 @@ exports.FinalizeRequest = class FinalizeRequest {
 
   async create(data, params) {
     const { user } = params;
-    const { walletId, amount, transactionPin } = data;
+    let paidByPhoneNumber = user?.phoneNumber;
+
+    const { walletId, amount, transactionPin, platform = "auto" } = data;
     logger.info("data", user);
     const loggedInUserId = user?.id;
     const sequelize = this.app.get("sequelizeClient");
@@ -92,9 +94,14 @@ exports.FinalizeRequest = class FinalizeRequest {
           transactionDate: ShowCurrentDate(),
           amount: convertToNaira(amount),
           transactionStatus: CONSTANT.transactionStatus.success,
-          paidBy: "self",
-          paymentMethod: "wallet",
+          // paidBy: "self",
+          paymentMethod: CONSTANT.paymentMethod.wallet,
           amountPaid: convertToNaira(amount),
+          // paidBy: fundSource,
+          paidBy: paidByPhoneNumber,
+
+          transactionType: CONSTANT.transactionType.walletTransfer,
+          platform: platform,
         };
         console.log(transactionHistory, "transactionHistory");
         let responseTransaction = await this.app

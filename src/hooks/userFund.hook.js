@@ -240,7 +240,9 @@ const creditUserAccount = () => {
     // console.log(params, "params");
     const { user } = params;
     const loggedInUserId = user?.id;
-    const { amount } = data;
+    let paidByPhoneNumber = user?.phoneNumber;
+
+    const { amount, platform = "auto" } = data;
     const { receiverAccountId } = result;
     const { account_balance, product_list } = sequelize.models;
     let availableBalance = 0;
@@ -302,10 +304,14 @@ const creditUserAccount = () => {
         transactionDate: ShowCurrentDate(),
         amount: amountPaid,
         transactionStatus: CONSTANT.transactionStatus.success,
-        paidBy: "Wallet Transfer",
-        paymentMethod: "wallet",
+        // paidBy: "Wallet Transfer",
+        paidBy: paidByPhoneNumber,
+        // paymentMethod: "wallet",
+        paymentMethod: CONSTANT.paymentMethod.wallet,
+
         amountPaid: convertToNaira(0),
-        transactionType: CONSTANT.transactionType.walletTransfer,
+        transactionType: CONSTANT.transactionType.AccountFunding,
+        platform: platform,
       };
       app.service("account-funding").create(funding);
       app.service("transactions-history").create(fundingHistory);
