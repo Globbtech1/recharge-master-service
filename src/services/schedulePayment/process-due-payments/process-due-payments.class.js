@@ -261,7 +261,8 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             loggedInUserId,
             amount,
             availableBalance,
-            productId
+            productId,
+            CONSTANT.transactionType.data
           );
 
           return response;
@@ -294,6 +295,10 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             amount: convertToNaira(amount),
             transactionStatus: CONSTANT.transactionStatus.failed,
             paidBy: fundSource,
+            paymentMethod: "wallet",
+            amountPaid: convertToNaira(amount),
+            transactionType: CONSTANT.transactionType.data,
+            platforms: CONSTANT.platforms.schedule,
           };
           this.app.service("transactions-history").create(transactionHistory);
           // return Promise.reject(new BadRequest(errorMessage));
@@ -327,7 +332,8 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             loggedInUserId,
             amount,
             availableBalance,
-            productId
+            productId,
+            CONSTANT.transactionType.airtime
           );
 
           return response;
@@ -337,7 +343,7 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             error?.response?.data?.error?.message ||
             "Unable to process your request";
           console.error("An error occurred: ", error.message);
-          pushSlackNotification(error?.response?.data, "error");
+          // pushSlackNotification(error?.response?.data, "error");
           let metaData = {
             "Transaction ID": "nill",
             "Phone Number": phoneNumber,
@@ -360,6 +366,10 @@ exports.ProcessDuePayments = class ProcessDuePayments {
             amount: convertToNaira(amount),
             transactionStatus: CONSTANT.transactionStatus.failed,
             paidBy: fundSource,
+            paymentMethod: "wallet",
+            amountPaid: convertToNaira(amount),
+            transactionType: CONSTANT.transactionType.airtime,
+            platforms: CONSTANT.platforms.schedule,
           };
           this.app.service("transactions-history").create(transactionHistory);
           // return Promise.reject(new BadRequest(errorMessage));
@@ -416,8 +426,10 @@ exports.ProcessDuePayments = class ProcessDuePayments {
     loggedInUserId,
     amount,
     availableBalance,
-    productId
+    productId,
+    transactionType
   ) {
+    console.log(airtimePaymentResponse, "airtimePaymentResponse,,,,,,,");
     console.log(availableBalance, "availableBalance");
     let providerStatus = airtimePaymentResponse?.status;
     if (providerStatus != "success") {
@@ -444,6 +456,10 @@ exports.ProcessDuePayments = class ProcessDuePayments {
         amount: convertToNaira(amount),
         transactionStatus: CONSTANT.transactionStatus.failed,
         paidBy: fundSource,
+        paymentMethod: "wallet",
+        amountPaid: convertToNaira(amount),
+        transactionType: transactionType,
+        platforms: CONSTANT.platforms.schedule,
       };
       this.app.service("transactions-history").create(transactionHistory);
 
@@ -483,6 +499,10 @@ exports.ProcessDuePayments = class ProcessDuePayments {
       amount: convertToNaira(amount),
       transactionStatus: CONSTANT.transactionStatus.success,
       paidBy: fundSource,
+      paymentMethod: "wallet",
+      amountPaid: convertToNaira(amount),
+      transactionType: transactionType,
+      platforms: CONSTANT.platforms.schedule,
     };
     let responseTransaction = await this.app
       .service("transactions-history")
@@ -548,48 +568,48 @@ exports.ProcessDuePayments = class ProcessDuePayments {
       //  return Promise.reject(new BadRequest("Unable to complete your request"));
     }
   }
-  async DebitUserAccount3333(loggedInUserId, amount) {
-    const sequelize = this.app.get("sequelizeClient");
-    const { account_balance } = sequelize.models;
+  // async DebitUserAccount3333(loggedInUserId, amount) {
+  //   const sequelize = this.app.get("sequelizeClient");
+  //   const { account_balance } = sequelize.models;
 
-    try {
-      const transaction = await sequelize.transaction(); // Start a transaction
+  //   try {
+  //     const transaction = await sequelize.transaction(); // Start a transaction
 
-      const account_balanceDetails = await account_balance.findOne({
-        where: {
-          deletedAt: null,
-          userId: loggedInUserId,
-        },
-        transaction, // Include the transaction in this query
-      });
+  //     const account_balanceDetails = await account_balance.findOne({
+  //       where: {
+  //         deletedAt: null,
+  //         userId: loggedInUserId,
+  //       },
+  //       transaction, // Include the transaction in this query
+  //     });
 
-      if (account_balanceDetails !== null) {
-        let availableBalance = account_balanceDetails.balance;
-        console.log(availableBalance, "availableBalance");
-        console.log(amount, "amount");
-        let currentBalance = parseFloat(availableBalance) - amount;
-        console.log(currentBalance, "currentBalance");
+  //     if (account_balanceDetails !== null) {
+  //       let availableBalance = account_balanceDetails.balance;
+  //       console.log(availableBalance, "availableBalance");
+  //       console.log(amount, "amount");
+  //       let currentBalance = parseFloat(availableBalance) - amount;
+  //       console.log(currentBalance, "currentBalance");
 
-        let walletId = account_balanceDetails.id;
-        let Update_payload = {
-          balance: currentBalance,
-        };
+  //       let walletId = account_balanceDetails.id;
+  //       let Update_payload = {
+  //         balance: currentBalance,
+  //       };
 
-        await account_balance.update(Update_payload, {
-          where: { id: walletId },
-          transaction, // Include the transaction in this update
-        });
+  //       await account_balance.update(Update_payload, {
+  //         where: { id: walletId },
+  //         transaction, // Include the transaction in this update
+  //       });
 
-        await transaction.commit(); // Commit the transaction
+  //       await transaction.commit(); // Commit the transaction
 
-        console.log(`Debited user account. Updated balance: ${currentBalance}`);
-      } else {
-        console.log("Unable to load user account balance details");
-        // Handle the case where account_balanceDetails is null
-      }
-    } catch (error) {
-      console.error("Error debiting user account:", error);
-      await transaction.rollback(); // Rollback the transaction in case of an error
-    }
-  }
+  //       console.log(`Debited user account. Updated balance: ${currentBalance}`);
+  //     } else {
+  //       console.log("Unable to load user account balance details");
+  //       // Handle the case where account_balanceDetails is null
+  //     }
+  //   } catch (error) {
+  //     console.error("Error debiting user account:", error);
+  //     await transaction.rollback(); // Rollback the transaction in case of an error
+  //   }
+  // }
 };

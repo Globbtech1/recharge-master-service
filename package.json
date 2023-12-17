@@ -27,7 +27,7 @@
     "lint": "eslint src/. test/. --config .eslintrc.json --fix",
     "dev": "sequelize db:migrate && nodemon src/",
     "start": "node src/",
-    "startAndMigrate": "sequelize db:migrate &&  node src/",
+    "startWithMigration": "sequelize db:migrate &&  node src/",
     "start-v2": "node src/",
     "mocha": "mocha test/ --recursive --exit",
     "pdth": "git push heroku staging:master || true",
