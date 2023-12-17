@@ -87,14 +87,12 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
-          # kubectl config use-context ${{secrets.K8S_CONTEXT}}
           echo $ECR_IMAGE
-
           cat tpl.yaml
-          # 313472484012.dkr.ecr.us-west-2.amazonaws.com/recharge-master-prod:v1.0.0-2023-12-13T00-58-11-1d4da9e
-          # kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=313472484012.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_REPOSITORY  }}:${{env.VERSION}}-$NOW-$IMAGE_TAG
           kubectl apply -f tpl.yaml -n dev
       # - name: Deploy.
+      #  # kubectl config use-context ${{secrets.K8S_CONTEXT}}
+      # # kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=313472484012.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_REPOSITORY  }}:${{env.VERSION}}-$NOW-$IMAGE_TAG
       #   uses: cancue/eks-action@v0.0.2
       #   env:
       #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
