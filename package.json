@@ -28,6 +28,7 @@
     "dev": "sequelize db:migrate && nodemon src/",
     "start": "node src/",
     "startWithMigration": "sequelize db:migrate &&  node src/",
+    "start-v2": "node src/",
     "mocha": "mocha test/ --recursive --exit",
     "pdth": "git push heroku staging:master || true",
     "resetPort": "sudo lsof -i :3030",
