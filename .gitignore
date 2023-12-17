@@ -109,3 +109,5 @@ $RECYCLE.BIN/
 
 # Others
 lib/
+.env
+node_modules/
