@@ -221,7 +221,7 @@ const validateReferByLink = () => {
       console.log(password, ".....password");
       let AdditionalData = {
         userPassword: password,
-        userPassword2: "password",
+        // userPassword2: "password",
         refererLink: invitedBy,
       };
       context.data = { ...context.data, ...AdditionalData };
