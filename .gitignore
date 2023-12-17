@@ -109,9 +109,6 @@ $RECYCLE.BIN/
 
 # Others
 lib/
-<<<<<<< HEAD
 .env
 node_modules/
-=======
 Dockerfile
->>>>>>> 2ac1511373c1d96bc254803edde7c4ef15b6bbf3
