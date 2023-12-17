@@ -5,7 +5,10 @@ const {
   debitUserAccount,
 } = require("../../../hooks/billPayment.hook");
 const { SendGeneralResponse } = require("../../../hooks/general-uses");
-const { creditUserAccount } = require("../../../hooks/userFund.hook");
+const {
+  creditUserAccount,
+  transformFinalizeAccountFundingData,
+} = require("../../../hooks/userFund.hook");
 const { checkForAccountStatus } = require("../../../hooks/userManagement.hook");
 
 const { authenticate } = require("@feathersjs/authentication").hooks;
@@ -17,6 +20,7 @@ module.exports = {
     get: [],
     create: [
       checkForAccountStatus(),
+      transformFinalizeAccountFundingData(),
       checkAvailableBalance(),
       validateTransactionPin(),
     ],

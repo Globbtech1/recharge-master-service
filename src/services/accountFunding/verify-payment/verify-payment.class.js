@@ -63,6 +63,7 @@ exports.VerifyPayment = class VerifyPayment {
           authorization,
           reference,
           channel: paymentMethod,
+          platform = "auto",
         } = data;
         console.log(transactionStatus, "pooppoopop");
         if (transactionStatus === CONSTANT.payStackPaymentStatus.success) {
@@ -139,8 +140,13 @@ exports.VerifyPayment = class VerifyPayment {
               productListId: product_listDetails?.id || 0,
               transactionDate: ShowCurrentDate(),
               amount: amountPaid,
+              amountPaid: amountPaid,
               transactionStatus: CONSTANT.transactionStatus.success,
               paidBy: "self",
+              // paymentMethod: paymentMethod,
+              paymentMethod: CONSTANT.paymentMethod.paystack,
+              platform: platform,
+              transactionType: CONSTANT.transactionType.AccountFunding,
             };
             let ResponseData = {
               accountFundingData: funding,
