@@ -109,6 +109,6 @@ $RECYCLE.BIN/
 
 # Others
 lib/
-.env
-node_modules/
 Dockerfile
+eks*
+.env
