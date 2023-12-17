@@ -2,8 +2,13 @@
   "development": {
     "username": "root",
     "password": "",
+<<<<<<< HEAD
     "database": "rechargeMaster",
     "host": "127.0.0.1",
+=======
+    "database": "rechargemaster",
+    "host": "localhost",
+>>>>>>> 2ac1511373c1d96bc254803edde7c4ef15b6bbf3
     "dialect": "mysql",
       "logging": false,
       "define": {
@@ -21,9 +26,15 @@
     }
   },
   "staging": {
+<<<<<<< HEAD
     "username": "prudence_ufit_coreUser",
     "password": "rHyeJQ6#FvH9",
     "database": "prudence_ufitsubcore",
+=======
+    "username": "igbohoma__portalUser",
+    "password": "jF0fAmkhtj@7",
+    "database": "igbohoma_rmaster",
+>>>>>>> 2ac1511373c1d96bc254803edde7c4ef15b6bbf3
     "host": "127.0.0.1",
     "dialect": "mysql",
     "logging": true,

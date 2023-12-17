@@ -1,0 +1,103 @@
+# This is a the workflow file for Recharge-master Service
+name: Recharge-master Service
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Environment files.
+env:
+  # PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  RUN_REGION: europe-west3
+  SERVICE_NAME: recharge-master
+  VERSION: v1.0.0
+
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get env variables
+        run: |
+          aws s3 cp s3://prod-conf/recharge-master/recharge-master-main ./.env
+          aws s3 cp s3://prod-conf/recharge-master/config ./src/config/config.json 
+          aws s3 cp s3://prod-conf/recharge-master/sequelize ./sequelizerc 
+
+      - name: Install Node modules
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16"
+
+      - name: Set short git commit SHA
+        id: commit
+        uses: prompt/actions-commit-hash@v2
+
+      - name: Node install Dependencies
+        run: |-
+          npm install
+          
+
+      - name: Create docker file
+        run: |-
+          echo -e 'FROM node:16 \nLABEL maintainer="Hayio Technologies LTD <hayio0.tech@gmail.com>" \nWORKDIR  /app \nCOPY . /app  \nCMD ["npm", "start"] \nEXPOSE 3000' > Dockerfile
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+  
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY  }}
+          IMAGE_TAG: ${{ steps.commit.outputs.short }}
+        run: |
+          echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+          docker build -t $REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG
+          echo "ECR_IMAGE=$REGISTRY/$REPOSITORY:${{env.VERSION}}-$NOW-$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Prepare k8s config
+        run: |
+          echo ${{ secrets.K8S_CONFIG }} | base64 --decode > tpl.yaml
+          perl -i -pe's/imageID/$ECR_IMAGE/g' tpl.yaml
+
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_CLUSTER_NAME}} --region ${{ secrets.AWS_REGION }}
+    
+      - name: Deploy to EKS
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
+          IMAGE_TAG: ${{ steps.commit.outputs.short }}
+        run: |
+          kubectl config use-context globbtech-dev
+
+          kubectl apply -f tpl.yaml -n dev
+      # - name: Deploy.
+      #   uses: cancue/eks-action@v0.0.2
+      #   env:
+      #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws_region: ${{ secrets.AWS_REGION }}
+      #     cluster_name: ${{secrets.EKS_CLUSTER_NAME}} 
+      #   with:
+      #     args: |
+      #       kubectl set image deployment $K8S_DEPLOYMENT -n $K8S_NAMESPACE
+      #       $K8S_DEPLOYMENT=$DOCKER_IMAGE:$DOCKER_TAG &&
+      #       kubectl rollout status deployment/$K8S_DEPLOYMENT -n $K8S_NAMESPACE
+      
