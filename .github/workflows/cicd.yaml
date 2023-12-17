@@ -88,7 +88,7 @@ jobs:
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
           echo $ECR_IMAGE
-          perl -i -pe's/imageID/${{env.ECR_IMAGE}}/g' tpl.yaml
+          perl -i -pe's/imageID/"${{env.ECR_IMAGE}}"/g' tpl.yaml
           cat tpl.yaml
           kubectl apply -f tpl.yaml -n dev
       # - name: Deploy.
