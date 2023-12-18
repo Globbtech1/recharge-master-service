@@ -167,6 +167,10 @@ const userMyReferers = require('./user/my-referers/my-referers.service.js');
 
 const globalserviceAllEnums = require('./globalservice/all-enums/all-enums.service.js');
 
+const notifications = require('./notifications/notifications.service.js');
+
+const userNotification = require('./user-notification/user-notification.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -253,4 +257,6 @@ module.exports = function (app) {
   app.configure(userMyBeneficiaries);
   app.configure(userMyReferers);
   app.configure(globalserviceAllEnums);
+  app.configure(notifications);
+  app.configure(userNotification);
 };

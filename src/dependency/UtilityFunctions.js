@@ -347,7 +347,12 @@ const normalizePhoneNumber = (phoneNumber) => {
 
   return normalizedNumber;
 };
-
+const replaceVariablesInSentence = (message, variables) => {
+  return message.replace(
+    /%\w+%/g,
+    (match) => variables[match.slice(1, -1)] || match
+  );
+};
 module.exports = {
   successMessage,
   errorMessage,
@@ -374,4 +379,5 @@ module.exports = {
   getBaxiAuthHeader,
   generateTransactionReference,
   normalizePhoneNumber,
+  replaceVariablesInSentence,
 };

@@ -6,6 +6,8 @@ const {
   convertToNaira,
   ShowCurrentDate,
   generateRandomString,
+  replaceVariablesInSentence,
+  formatAmount,
 } = require("../../../dependency/UtilityFunctions");
 const { CONSTANT } = require("../../../dependency/Config");
 
@@ -107,6 +109,24 @@ exports.FinalizeRequest = class FinalizeRequest {
         let responseTransaction = await this.app
           .service("transactions-history")
           .create(transactionHistory);
+
+        ////////////Notification Start/////////////////////
+        let stringData = JSON.stringify(metaData);
+        const notificationMessage = replaceVariablesInSentence(
+          CONSTANT.notificationInfoObject.accountDebit.message,
+          {
+            TRANSACTION_AMOUNT: formatAmount(convertToNaira(amount)),
+          }
+        );
+
+        let notificationData = {
+          userId: loggedInUserId,
+          notificationMessage: notificationMessage,
+          data: stringData,
+          action: CONSTANT.notificationInfoObject?.accountDebit?.actions,
+        };
+        await this.app.service("notifications").create(notificationData);
+        ////////////Notification End /////////////////////
       }
 
       return dataResponse;

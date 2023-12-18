@@ -5,6 +5,8 @@ const {
   successMessage,
   convertToNaira,
   ShowCurrentDate,
+  formatAmount,
+  replaceVariablesInSentence,
 } = require("../../../dependency/UtilityFunctions");
 const { pushSlackNotification } = require("../../../hooks/general-uses");
 const { DataPurchase } = require("../../../interfaces/dataPurchase");
@@ -175,6 +177,25 @@ exports.BuyDataBundle = class BuyDataBundle {
       let responseTransaction = await this.app
         .service("transactions-history")
         .create(transactionHistory);
+
+      ////////////Notification Start/////////////////////
+      let stringData = JSON.stringify(dataPurchasePaymentResponse);
+      const notificationMessage = replaceVariablesInSentence(
+        CONSTANT.notificationInfoObject.purchase.message,
+        {
+          TRANSACTION_TYPE: CONSTANT.transactionType.data,
+          TRANSACTION_AMOUNT: formatAmount(convertToNaira(amount)),
+        }
+      );
+
+      let notificationData = {
+        userId: loggedInUserId,
+        notificationMessage: notificationMessage,
+        data: stringData,
+        action: CONSTANT.notificationInfoObject?.purchase?.actions,
+      };
+      await this.app.service("notifications").create(notificationData);
+      ////////////Notification End /////////////////////
 
       // return Promise.resolve(
       //   successMessage(

@@ -5,6 +5,8 @@ const {
   ShowCurrentDate,
   convertToNaira,
   convertToKobo,
+  replaceVariablesInSentence,
+  formatAmount,
 } = require("../../../dependency/UtilityFunctions");
 const { pushSlackNotification } = require("../../../hooks/general-uses");
 const { AirtimePurchase } = require("../../../interfaces/airtimePurchase");
@@ -197,6 +199,24 @@ exports.BuyAirtime = class BuyAirtime {
       let responseTransaction = await this.app
         .service("transactions-history")
         .create(transactionHistory);
+      ////////////Notification Start/////////////////////
+      let stringData = JSON.stringify(airtimePaymentResponse);
+      const notificationMessage = replaceVariablesInSentence(
+        CONSTANT.notificationInfoObject.purchase.message,
+        {
+          TRANSACTION_TYPE: CONSTANT.transactionType.airtime,
+          TRANSACTION_AMOUNT: formatAmount(convertToNaira(amount)),
+        }
+      );
+
+      let notificationData = {
+        userId: loggedInUserId,
+        notificationMessage: notificationMessage,
+        data: stringData,
+        action: CONSTANT.notificationInfoObject?.purchase?.actions,
+      };
+      await this.app.service("notifications").create(notificationData);
+      ////////////Notification End /////////////////////
 
       // return Promise.resolve(
       //   successMessage(
