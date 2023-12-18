@@ -48,6 +48,7 @@ exports.BuyAirtime = class BuyAirtime {
       paymentMethod,
       byPassWallet,
       platform = "auto",
+      currentCouponId = null,
     } = data;
     let loggedInUserId = params?.user?.id;
 
@@ -217,7 +218,16 @@ exports.BuyAirtime = class BuyAirtime {
       };
       await this.app.service("notifications").create(notificationData);
       ////////////Notification End /////////////////////
+      ////////////coupon start /////////////////////
+      if (currentCouponId) {
+        let usedCouponData = {
+          couponManagementId: currentCouponId,
+          userId: loggedInUserId,
+        };
+        await this.app.service("used-coupon").create(usedCouponData);
+      }
 
+      ////////////coupon End /////////////////////
       // return Promise.resolve(
       //   successMessage(
       //     airtimePaymentResponse,

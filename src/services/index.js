@@ -171,6 +171,8 @@ const notifications = require('./notifications/notifications.service.js');
 
 const userNotification = require('./user-notification/user-notification.service.js');
 
+const usedCoupon = require('./used-coupon/used-coupon.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -259,4 +261,5 @@ module.exports = function (app) {
   app.configure(globalserviceAllEnums);
   app.configure(notifications);
   app.configure(userNotification);
+  app.configure(usedCoupon);
 };

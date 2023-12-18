@@ -785,7 +785,23 @@ const sendResultBackToFrontEnd = (options = {}) => {
     return context;
   };
 };
+const includeCouponDetails = (options = {}) => {
+  return async (context) => {
+    const { app, method, result, params, data } = context;
+    const sequelize = app.get("sequelizeClient");
+    const { coupon_management } = sequelize.models;
+    params.sequelize = {
+      include: [
+        {
+          model: coupon_management,
+        },
+      ],
+      raw: false,
+    };
 
+    return context;
+  };
+};
 module.exports = {
   checkAvailableBalance,
   debitUserAccount,
@@ -803,4 +819,5 @@ module.exports = {
   includePaymentDetailsDetails,
   addToFavoriteRecharge,
   sendResultBackToFrontEnd,
+  includeCouponDetails,
 };
