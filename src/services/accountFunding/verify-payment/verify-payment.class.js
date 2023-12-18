@@ -5,6 +5,8 @@ const {
   errorMessage,
   ShowCurrentDate,
   convertToKobo,
+  replaceVariablesInSentence,
+  formatAmount,
 } = require("../../../dependency/UtilityFunctions");
 const { CONSTANT } = require("../../../dependency/Config");
 var paystack = require("paystack")(process.env.PAYSTACK_SECRET_KEY);
@@ -153,6 +155,26 @@ exports.VerifyPayment = class VerifyPayment {
               ...data,
               payHistory: fundingHistory,
             };
+
+            ////////////Notification Start/////////////////////
+            let stringData = JSON.stringify(metaData);
+            const notificationMessage = replaceVariablesInSentence(
+              CONSTANT.notificationInfoObject.accountFund.message,
+              {
+                // TRANSACTION_TYPE: CONSTANT.transactionType.data,
+                TRANSACTION_AMOUNT: formatAmount(amountPaid),
+              }
+            );
+
+            let notificationData = {
+              userId: accountOwnerId,
+              notificationMessage: notificationMessage,
+              data: stringData,
+              action: CONSTANT.notificationInfoObject?.accountFund?.actions,
+            };
+            await this.app.service("notifications").create(notificationData);
+            ////////////Notification End /////////////////////
+
             return ResponseData;
           }
           // else {

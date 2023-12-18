@@ -12,27 +12,79 @@ exports.EligibleCoupons = class EligibleCoupons {
   async find(params) {
     const UserCategory = CONSTANT.userCategories;
     let user = params?.user;
-    console.log(user, "user");
+    let loggedInUserId = user?.id;
+    const queryType = params?.query?.type ?? "all";
     const sequelize = this.app.get("sequelizeClient");
-    const { transactions_history, coupon_management } = sequelize.models;
-    let cat = await getUserCategories(user, UserCategory, transactions_history);
-    const userCategoryIds = cat.map((category) => category.id).join(",");
+    console.log(queryType, "queryType");
+    if (queryType === "available" || queryType === "all") {
+      console.log(user, "user");
+      // const sequelize = this.app.get("sequelizeClient");
+      const { transactions_history, coupon_management, used_coupon } =
+        sequelize.models;
+      let cat = await getUserCategories(
+        user,
+        UserCategory,
+        transactions_history
+      );
 
-    // Query the model with the comma-separated userCategory values
-    const result = await coupon_management.findAll({
-      where: {
-        userCategory: {
-          [Sequelize.Op.in]: userCategoryIds.split(","),
+      const userCategoryIds = cat.map((category) => category.id).join(",");
+
+      // Query the model with the comma-separated userCategory values
+
+      const usedCouponIds = await used_coupon.findAll({
+        attributes: ["couponManagementId"],
+        where: {
+          userId: loggedInUserId,
         },
-      },
-    });
+        raw: true,
+      });
 
-    return successMessage(
-      result,
-      `User Available coupon For this categories ( ${userCategoryIds.split(
-        ","
-      )} )`
-    );
+      const excludedCouponIds = usedCouponIds.map(
+        (entry) => entry?.couponManagementId
+      );
+      console.log(excludedCouponIds, "excludedCouponIds");
+      const result = await coupon_management.findAll({
+        where: {
+          userCategory: {
+            [Sequelize.Op.in]: userCategoryIds.split(","),
+          },
+          id: {
+            [Sequelize.Op.notIn]: excludedCouponIds,
+          },
+        },
+      });
+
+      return successMessage(
+        result,
+        `User Available coupon For this categories ( ${userCategoryIds.split(
+          ","
+        )} )`
+      );
+    }
+    if (queryType === "used") {
+      const loggedInUserId = user?.id;
+      let result = await this.app.service("used-coupon").find({
+        query: {
+          userId: loggedInUserId,
+        },
+      });
+
+      return Promise.resolve(successMessage(result, "Used Coupon"));
+    }
+    if (queryType === "expired") {
+      const { transactions_history, coupon_management, used_coupon } =
+        sequelize.models;
+
+      const result = await coupon_management.findAll({
+        where: {
+          validity: {
+            [Sequelize.Op.lt]: new Date(), // Filter coupons where the validity date is less than the current date
+          },
+        },
+      });
+
+      return successMessage(result, "expired coupons");
+    }
   }
 
   async get(id, params) {

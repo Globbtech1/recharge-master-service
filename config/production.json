@@ -1,5 +1,5 @@
 {
-  "host": "noisy-street-app.feathersjs.com",
+  "host": "rmaster.feathersjs.com",
   "port": "PORT",
   "postgres": "DATABASE_URL"
 }

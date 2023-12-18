@@ -130,6 +130,23 @@ const CONSTANT = {
     paystack: "paystack",
     others: "others",
   },
+  notificationInfoObject: {
+    purchase: {
+      actions: "userPurchase",
+      message:
+        "Your %TRANSACTION_TYPE% Purchase was %TRANSACTION_AMOUNT%  has been processed successfully",
+    },
+    accountFund: {
+      actions: "accountFunding",
+      message:
+        "Your account has been funded with  %TRANSACTION_AMOUNT%   successfully please check your wallet balance",
+    },
+    accountDebit: {
+      actions: "accountDebit",
+      message:
+        "Your account has been debited with  %TRANSACTION_AMOUNT%   successfully please check your wallet balance",
+    },
+  },
 };
 
 module.exports = { CONSTANT };
