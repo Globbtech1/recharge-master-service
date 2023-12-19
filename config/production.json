@@ -1,5 +1,5 @@
 {
-  "host": "noisy-street-app.feathersjs.com",
-  "port": "PORT",
+  "host": "a479ab0114feb40389d7cb267fa23952-553520342.us-west-2.elb.amazonaws.com",
+  "port": 3000,
   "postgres": "DATABASE_URL"
 }
