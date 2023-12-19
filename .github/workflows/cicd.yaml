@@ -89,7 +89,7 @@ jobs:
         run: |
           kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=${{env.ECR_IMAGE}}
           
-      # - name: Deploy.
+      # - name: Deploy
       #  # kubectl config use-context ${{secrets.K8S_CONTEXT}}
       # # kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=313472484012.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_REPOSITORY  }}:${{env.VERSION}}-$NOW-$IMAGE_TAG
       # kubectl apply -f tpl.yaml -n dev
