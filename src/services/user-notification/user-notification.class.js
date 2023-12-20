@@ -33,7 +33,7 @@ exports.UserNotification = class UserNotification {
       },
       order: [[Sequelize.literal("createdAt"), "DESC"]],
       attributes: {
-        exclude: ["deletedAt", "createdAt", "userId"],
+        exclude: ["deletedAt", "userId"],
       },
       // ...params?.query,
     });
