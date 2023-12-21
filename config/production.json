@@ -1,5 +1,5 @@
 {
-  "host": "a479ab0114feb40389d7cb267fa23952-553520342.us-west-2.elb.amazonaws.com",
+  "host": "127.0.0.1",
   "port": 3000,
-  "postgres": "DATABASE_URL"
+  "postgres": "recharge-master.ch8aiqmywpfw.us-west-2.rds.amazonaws.com"
 }
