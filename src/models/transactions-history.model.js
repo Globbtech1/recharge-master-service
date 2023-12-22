@@ -100,13 +100,15 @@ module.exports = function (app) {
       },
       Sequelize,
       paranoid: true,
+      tableName: "transactions_history",
     }
   );
 
   // eslint-disable-next-line no-unused-vars
   transactionsHistory.associate = function (models) {
-    const { product_list } = models;
+    const { product_list, users } = models;
     transactionsHistory.belongsTo(product_list);
+    transactionsHistory.belongsTo(users);
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
   };

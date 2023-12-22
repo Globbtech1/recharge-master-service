@@ -173,6 +173,10 @@ const userNotification = require('./user-notification/user-notification.service.
 
 const usedCoupon = require('./used-coupon/used-coupon.service.js');
 
+const adminFetchUsers = require('./admin/fetch-users/fetch-users.service.js');
+
+const adminDashboardData = require('./admin/dashboard-data/dashboard-data.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -262,4 +266,6 @@ module.exports = function (app) {
   app.configure(notifications);
   app.configure(userNotification);
   app.configure(usedCoupon);
+  app.configure(adminFetchUsers);
+  app.configure(adminDashboardData);
 };
