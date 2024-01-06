@@ -3,6 +3,19 @@ const {
   convertToNaira,
 } = require("../../../dependency/UtilityFunctions");
 const { Op, Sequelize } = require("sequelize");
+const {
+  getTotalWalletValue,
+  getTotalTNXCount,
+  getTotalTNXAmount,
+  getActiveUserCount,
+  getTotalWalletFunding,
+  getTotalPendingTNX,
+  getTotalFailedTNX,
+  getTotalSuccessfulTNX,
+  calculatePaymentModePercentages,
+  getDailySignUpCount,
+  getSalesPerProduct,
+} = require("../../../hooks/adminServices.hook");
 
 /* eslint-disable no-unused-vars */
 exports.DashboardData = class DashboardData {
@@ -21,87 +34,60 @@ exports.DashboardData = class DashboardData {
 
       const { transactions_history, users, account_funding, account_balance } =
         sequelize.models;
+
       // 1. Total TNX
-      const totalTNXCount = await transactions_history.count();
+      // const totalTNXCount = await transactions_history.count();
+      const totalTNXCount = await getTotalTNXCount(transactions_history);
 
       // 2. Total TNX Count
-      const totalTNX = await transactions_history.sum("amountPaid");
+      const totalTNX = await getTotalTNXAmount(transactions_history);
 
       // 3. Total Active user Count
       const lastMonth = new Date();
       lastMonth.setMonth(lastMonth.getMonth() - 1);
 
-      // const activeUserCount = await users.count({
-      //   include: [
-      //     {
-      //       model: transactions_history,
-      //       where: {
-      //         userId: Sequelize.literal(
-      //           "`users`.`id` = `transactions_history`.`userId`"
-      //         ),
-      //         transactionDate: {
-      //           [Op.gte]: lastMonth,
-      //         },
-      //       },
-      //     },
-      //     {
-      //       model: account_balance,
-      //       where: {
-      //         userId: Sequelize.literal(
-      //           "`users`.`id` = `account_balance`.`userId`"
-      //         ),
-      //         balance: {
-      //           [Op.gt]: 0,
-      //         },
-      //       },
-      //     },
-      //   ],
-      // });
-      const activeUserCount = await users.count({
-        distinct: true, // Add this line to count distinct users
-
-        include: [
-          {
-            model: transactions_history,
-            as: "transactionsHistory", // Add this line to specify the alias
-            where: {
-              userId: Sequelize.literal(
-                "`users`.`id` = `transactionsHistory`.`userId`"
-              ),
-              transactionDate: {
-                [Op.gte]: lastMonth,
-              },
-            },
-          },
-        ],
-      });
+      const activeUserCount = await getActiveUserCount(
+        users,
+        transactions_history,
+        account_balance
+      );
 
       // 4. Total Wallet Funding
-      const totalWalletFunding = await account_funding.sum("amount");
+
+      const totalWalletFunding = await getTotalWalletFunding(account_funding);
 
       // 5. Total Pending TNX
-      const totalPendingTNX = await transactions_history.count({
-        where: {
-          transactionStatus: "Pending",
-        },
-      });
+      const totalPendingTNX = await getTotalPendingTNX(transactions_history);
 
       // 6. Total Failed TNX
-      const totalFailedTNX = await transactions_history.count({
-        where: {
-          transactionStatus: "Failed",
-        },
-      });
+      const totalFailedTNX = await getTotalFailedTNX(transactions_history);
 
       // 7. Total Successful TNX
-      const totalSuccessfulTNX = await transactions_history.count({
-        where: {
-          transactionStatus: "Successful",
-        },
+      const totalSuccessfulTNX = await getTotalSuccessfulTNX(
+        transactions_history
+      );
+      // 8. Total Wallet Value
+      const totalWalletValue = await getTotalWalletValue(account_balance);
+      const PlatformModePercentages = await calculatePaymentModePercentages(
+        transactions_history,
+        "platform"
+      );
+      const PaymentModePercentages = await calculatePaymentModePercentages(
+        transactions_history,
+        "paymentMethod"
+      );
+
+      const dailySignUpCount = await getDailySignUpCount({
+        users,
+        //   startDate: "2023-09-01",
+        //   endDate: "2023-12-07",
       });
 
-      // 8. Total Wallet Value
-      const totalWalletValue = await account_balance.sum("balance");
+      const salesPerProduct = await getSalesPerProduct({
+        transactions_history,
+        // startDate: "2023-08-01",
+        // endDate: "2023-11-07",
+      });
 
       // 9. (Add additional metrics as needed)
 
@@ -118,6 +104,10 @@ exports.DashboardData = class DashboardData {
         totalSuccessfulTNX,
         totalWalletValue: convertToNaira(totalWalletValue),
         chunRate: 80,
+        PaymentModePercentages,
+        PlatformModePercentages,
+        dailySignUpCount,
+        salesPerProduct,
       };
       console.log(result);
       return Promise.resolve(successMessage(result, "Dashboard Data"));

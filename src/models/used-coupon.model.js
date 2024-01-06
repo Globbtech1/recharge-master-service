@@ -47,10 +47,11 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   usedCoupon.associate = function (models) {
-    const { coupon_management } = models;
+    const { coupon_management, users } = models;
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
     usedCoupon.belongsTo(coupon_management);
+    usedCoupon.belongsTo(users);
   };
 
   return usedCoupon;

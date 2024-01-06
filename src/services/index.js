@@ -177,6 +177,14 @@ const adminFetchUsers = require('./admin/fetch-users/fetch-users.service.js');
 
 const adminDashboardData = require('./admin/dashboard-data/dashboard-data.service.js');
 
+const adminTransactionHistory = require('./admin/transaction-history/transaction-history.service.js');
+
+const adminFundingHistory = require('./admin/funding-history/funding-history.service.js');
+
+const adminWalletTransferHistory = require('./admin/wallet-transfer-history/wallet-transfer-history.service.js');
+
+const adminPromoBeneficiary = require('./admin/promo-beneficiary/promo-beneficiary.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -268,4 +276,8 @@ module.exports = function (app) {
   app.configure(usedCoupon);
   app.configure(adminFetchUsers);
   app.configure(adminDashboardData);
+  app.configure(adminTransactionHistory);
+  app.configure(adminFundingHistory);
+  app.configure(adminWalletTransferHistory);
+  app.configure(adminPromoBeneficiary);
 };

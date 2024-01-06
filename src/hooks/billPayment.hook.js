@@ -1,15 +1,11 @@
 // Use this hook to manipulate incoming or outgoing data.
 // For more information on hooks see: http://docs.feathersjs.com/api/hooks.html
-const { BadRequest, NotFound } = require("@feathersjs/errors");
+const { BadRequest } = require("@feathersjs/errors");
 const Sentry = require("@sentry/node");
 
 const { Op } = require("sequelize");
 const {
-  generateRandomNumber,
-  errorMessage,
   successMessage,
-  generateRandomString,
-  ShowCurrentDate,
   convertToNaira,
   convertToKobo,
   getProviderSourceImage,
@@ -22,7 +18,7 @@ const {
   changeUserEmailValidator,
   userEmailVerifyValidator,
 } = require("../validations/auth.validation");
-const { ReserveBankAccount, pushSlackNotification } = require("./general-uses");
+const { pushSlackNotification } = require("./general-uses");
 const { getUserAccountBalanceInfo } = require("./userFund.hook");
 const { customLog } = require("../dependency/customLoggers");
 const { CONSTANT } = require("../dependency/Config");
@@ -32,7 +28,7 @@ var paystack = require("paystack")(process.env.PAYSTACK_SECRET_KEY);
 
 const checkAvailableBalance = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id } = context;
+    const { app, params, data } = context;
     const sequelize = app.get("sequelizeClient");
     // console.log(params, "dataSent.........");
     // console.log(params.user, "dataSent.........");
@@ -64,22 +60,13 @@ const checkAvailableBalance = (options = {}) => {
 
       if (status) {
         console.log(data, "ppppppppppp");
-        const {
-          status: transactionStatus,
-          amount,
-          authorization,
-          reference,
-          channel: paymentMethod,
-        } = paystackData;
+        const { status: transactionStatus, amount, reference } = paystackData;
         console.log(transactionStatus, "pooppoopop");
         if (transactionStatus === CONSTANT.payStackPaymentStatus.success) {
           let nairaAmount = convertToNaira(amount);
           let amountToPayInNaira = convertToNaira(amountToPay);
           console.log(nairaAmount, "nairaAmount");
           console.log(amountToPayInNaira, "amountToPayInNaira");
-          let amountSettled = nairaAmount;
-          let amountPaid = nairaAmount;
-          let transactionReference = reference;
           if (nairaAmount < amountToPayInNaira) {
             return Promise.reject(
               new BadRequest("Amount paid is less than the value")
@@ -221,8 +208,7 @@ const checkAvailableBalance = (options = {}) => {
 };
 const validateMobileNumber = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id } = context;
-    const sequelize = app.get("sequelizeClient");
+    const { app, data } = context;
     const { phoneNumber } = data;
     let cleanedUpPhoneNumber = phoneNumber?.replace(/[^+\d]+/g, "");
     let regex = new RegExp(/(0|91)?[6-9][0-9]{9}/); // if phoneNumber // is empty return false
@@ -250,7 +236,7 @@ const validateMobileNumber = (options = {}) => {
 };
 const debitUserAccount = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id } = context;
+    const { app, params, data } = context;
     const sequelize = app.get("sequelizeClient");
 
     const { account_balance } = sequelize.models;
@@ -288,19 +274,13 @@ const debitUserAccount = (options = {}) => {
 const logErrorToDb = (options = {}) => {
   return async (context) => {
     try {
-      const { app, method, result, params, data, id, error } = context;
+      const { app, params, data, error } = context;
       // console.log(error, "errormmmmmmm");
       Sentry.captureException(error);
       const sequelize = app.get("sequelizeClient");
       const { account_balance } = sequelize.models;
       let amount = data?.amount;
       let loggedInUserId = params?.user?.id;
-      const errorLogs = {
-        userId: loggedInUserId,
-        amount: amount || 0,
-        error: JSON.stringify(error),
-        userData: JSON.stringify(data),
-      };
       // pushSlackNotification(errorLogs, "error");
 
       // app.service("transaction-error-logs").create(errorLogs);
@@ -317,11 +297,10 @@ const logErrorToDb = (options = {}) => {
 };
 const recordUserCashBack = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id, error } = context;
+    const { app, result, params, data } = context;
     const sequelize = app.get("sequelizeClient");
     console.log(result, "resultkkkkkkkk");
-    const { account_balance, payment_list, payment_providers } =
-      sequelize.models;
+    const { account_balance, payment_providers } = sequelize.models;
     const { amount, productId } = data;
     const { provider } = result;
     console.log(data, "..........");
@@ -404,12 +383,10 @@ const recordUserCashBack = (options = {}) => {
 };
 const recordQuickBeneficiary = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id, error } = context;
+    const { app, params, data } = context;
     const sequelize = app.get("sequelizeClient");
-    const { quick_beneficiary, payment_providers, providers } =
-      sequelize.models;
+    const { quick_beneficiary, providers } = sequelize.models;
     const {
-      amount,
       productId,
       saveBeneficiary,
       beneficiaryAlias = "No Name",
@@ -456,9 +433,9 @@ const recordQuickBeneficiary = (options = {}) => {
 };
 const includeBillDetails = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, params } = context;
     const sequelize = app.get("sequelizeClient");
-    const { product_list, providers } = sequelize.models;
+    const { product_list, providers, users } = sequelize.models;
     params.sequelize = {
       include: [
         {
@@ -472,6 +449,19 @@ const includeBillDetails = (options = {}) => {
             },
           ],
         },
+        {
+          model: users,
+          attributes: {
+            exclude: [
+              "fcmToken",
+              "securityPin",
+              "image",
+              "password",
+              "password",
+              "id",
+            ],
+          },
+        },
       ],
       raw: false,
     };
@@ -479,18 +469,10 @@ const includeBillDetails = (options = {}) => {
     return context;
   };
 };
-const FormatResponseProfile = (options = {}) => {
-  return async (context) => {
-    const { app, method, result, params, data } = context;
-    console.log(result, "heheheh");
-    // context.result = successMessage(result, "Account verified successfully");
-    // return context;
-  };
-};
 
 const validateTransactionPin = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id } = context;
+    const { app, params, data } = context;
     const sequelize = app.get("sequelizeClient");
     const { users } = sequelize.models;
     let loggedInUserId = params?.user?.id;
@@ -526,9 +508,9 @@ const validateTransactionPin = (options = {}) => {
 };
 const getAllProviders = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id, error } = context;
+    const { app } = context;
     const sequelize = app.get("sequelizeClient");
-    const { payment_providers, payment_list } = sequelize.models;
+    const { payment_providers } = sequelize.models;
     // const {
     //   amount,
     //   productId,
@@ -583,7 +565,7 @@ const getSingleProvidersV2 = async (providers, provider, productId) => {
 };
 const scheduleUserPayment = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id, error } = context;
+    const { app, result, params, data } = context;
     const sequelize = app.get("sequelizeClient");
     const { quick_beneficiary, payment_providers, providers } =
       sequelize.models;
@@ -684,7 +666,7 @@ function formatSinglePhoneNumber(phoneNumber) {
 }
 const includePaymentDetailsDetails = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, params } = context;
     const sequelize = app.get("sequelizeClient");
     const { product_list, providers } = sequelize.models;
     params.sequelize = {
@@ -709,15 +691,13 @@ const includePaymentDetailsDetails = (options = {}) => {
 };
 const addToFavoriteRecharge = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id, error } = context;
+    const { app, params, data } = context;
     const sequelize = app.get("sequelizeClient");
-    const { user_favourite_recharge, payment_providers, providers } =
-      sequelize.models;
+    const { user_favourite_recharge, providers } = sequelize.models;
     const {
       amount,
       productId,
       addToFavorite,
-      beneficiaryAlias = "No Name",
       uniqueTransIdentity,
       provider,
       name,
@@ -777,9 +757,8 @@ const addToFavoriteRecharge = (options = {}) => {
 };
 const sendResultBackToFrontEnd = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id, error } = context;
+    const { app } = context;
     const { message } = options;
-    const sequelize = app.get("sequelizeClient");
     const responseResult = context.result;
     context.result = successMessage(responseResult, message);
     return context;
@@ -787,15 +766,29 @@ const sendResultBackToFrontEnd = (options = {}) => {
 };
 const includeCouponDetails = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, params } = context;
     const sequelize = app.get("sequelizeClient");
-    const { coupon_management } = sequelize.models;
+    const { coupon_management, users } = sequelize.models;
     params.sequelize = {
       include: [
         {
           model: coupon_management,
         },
+        {
+          model: users,
+          attributes: {
+            exclude: [
+              "fcmToken",
+              "securityPin",
+              "image",
+              "password",
+              "password",
+              "id",
+            ],
+          },
+        },
       ],
+
       raw: false,
     };
 
