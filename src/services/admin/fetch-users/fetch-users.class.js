@@ -11,14 +11,8 @@ exports.FetchUsers = class FetchUsers {
   async find(params) {
     try {
       const { user, query } = params;
-      console.log(query, "parameter");
       const loggedInUserId = user?.id;
       const userType = query?.userType || "all";
-      console.log(userType, "userType");
-      // const endDate = query?.endDate;
-      // const paymentId = query?.paymentId;
-      // const fundingSource = query?.fundingSource;
-      // const transactionStatus = query?.transactionStatus;
 
       if (userType === "active") {
         let activeUsers = await this.getActiveUser(this.app);
