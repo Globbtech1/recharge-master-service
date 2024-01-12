@@ -262,7 +262,8 @@ const creditUserAccount = () => {
     const product_listDetails = await product_list.findOne({
       where: {
         deletedAt: null,
-        slug: CONSTANT.AccountFunding,
+        // slug: CONSTANT.AccountFunding,
+        slug: CONSTANT.WalletCredit,
       },
     });
 

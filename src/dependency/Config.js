@@ -33,6 +33,8 @@ const CONSTANT = {
   RESERVED_ACCOUNT: "RESERVED_ACCOUNT",
   WEB_SDK: "WEB_SDK",
   AccountFunding: "Account-Funding",
+  WalletTransfer: "Wallet-Transfer",
+  WalletCredit: "Wallet-Credit",
   successMessage: {
     airtimePurchase: "Your Airtime Purchase is successful",
     dataPurchase: "Your Data Purchase was successful",

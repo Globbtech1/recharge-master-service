@@ -15,8 +15,7 @@ exports.UpdateUserProfile = class UpdateUserProfile {
     delete data.email;
     delete data.securityPin;
     delete data.password;
-    console.log(params, "params");
-    console.log(query, "params");
+    delete data.phoneNumber;
     try {
       let loggedInUserId = query?.id;
       return await this.app.service("users").patch(loggedInUserId, data);
