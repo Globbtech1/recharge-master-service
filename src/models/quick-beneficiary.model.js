@@ -65,10 +65,11 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   quickBeneficiary.associate = function (models) {
-    const { product_list } = models;
+    const { product_list, users } = models;
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
     quickBeneficiary.belongsTo(product_list);
+    quickBeneficiary.belongsTo(users);
   };
 
   return quickBeneficiary;
