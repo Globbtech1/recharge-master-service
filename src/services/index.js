@@ -185,6 +185,10 @@ const adminWalletTransferHistory = require('./admin/wallet-transfer-history/wall
 
 const adminPromoBeneficiary = require('./admin/promo-beneficiary/promo-beneficiary.service.js');
 
+const userResetTransactionPinInnitiateRequest = require('./user/resetTransactionPin/innitiate-request/innitiate-request.service.js');
+
+const userResetTransactionPinFinalizeRequest = require('./user/resetTransactionPin/finalize-request/finalize-request.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -280,4 +284,6 @@ module.exports = function (app) {
   app.configure(adminFundingHistory);
   app.configure(adminWalletTransferHistory);
   app.configure(adminPromoBeneficiary);
+  app.configure(userResetTransactionPinInnitiateRequest);
+  app.configure(userResetTransactionPinFinalizeRequest);
 };
