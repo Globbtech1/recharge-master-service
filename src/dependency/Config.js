@@ -33,6 +33,8 @@ const CONSTANT = {
   RESERVED_ACCOUNT: "RESERVED_ACCOUNT",
   WEB_SDK: "WEB_SDK",
   AccountFunding: "Account-Funding",
+  WalletTransfer: "Wallet-Transfer",
+  WalletCredit: "Wallet-Credit",
   successMessage: {
     airtimePurchase: "Your Airtime Purchase is successful",
     dataPurchase: "Your Data Purchase was successful",
@@ -92,6 +94,7 @@ const CONSTANT = {
     email: "emailAddress",
     phoneNumber: "phoneNumber",
     changeTransactionPin: "changeTransactionPin",
+    resetTransactionPin: "resetTransactionPin",
   },
   externalRequestFailErrorMessage:
     "The request failed due to an external provider's error.",
@@ -129,6 +132,23 @@ const CONSTANT = {
     wallet: "wallet",
     paystack: "paystack",
     others: "others",
+  },
+  notificationInfoObject: {
+    purchase: {
+      actions: "userPurchase",
+      message:
+        "Your %TRANSACTION_TYPE% Purchase was %TRANSACTION_AMOUNT%  has been processed successfully",
+    },
+    accountFund: {
+      actions: "accountFunding",
+      message:
+        "Your account has been funded with  %TRANSACTION_AMOUNT%   successfully please check your wallet balance",
+    },
+    accountDebit: {
+      actions: "accountDebit",
+      message:
+        "Your account has been debited with  %TRANSACTION_AMOUNT%   successfully please check your wallet balance",
+    },
   },
 };
 

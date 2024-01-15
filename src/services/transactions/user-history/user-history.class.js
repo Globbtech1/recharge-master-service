@@ -75,8 +75,6 @@ exports.UserHistory = class UserHistory {
         query: allQueries,
       });
 
-      const sequelize = this.app.get("sequelizeClient");
-
       return Promise.resolve(successMessage(result, "User History"));
     } catch (error) {
       console.log(error);

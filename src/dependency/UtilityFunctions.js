@@ -347,6 +347,36 @@ const normalizePhoneNumber = (phoneNumber) => {
 
   return normalizedNumber;
 };
+const replaceVariablesInSentence = (message, variables) => {
+  return message.replace(
+    /%\w+%/g,
+    (match) => variables[match.slice(1, -1)] || match
+  );
+};
+const maskSensitiveData = (data, type) => {
+  if (type === "phone") {
+    // Assuming a standard 10-digit phone number
+    return data.slice(0, -4).replace(/\d/g, "*") + data.slice(-4);
+  } else if (type === "email") {
+    const [username, domain] = data.split("@");
+    const maskedUsername =
+      username.slice(0, -Math.floor(username.length / 2)).replace(/./g, "*") +
+      username.slice(-Math.floor(username.length / 2));
+    return maskedUsername + "@" + domain;
+  } else {
+    // Handle other types or throw an error
+    throw new Error("Unsupported data type for masking");
+  }
+};
+
+// // Example usage:
+// const originalPhoneNumber = "1234567890";
+// const maskedPhoneNumber = maskSensitiveData(originalPhoneNumber, "phone");
+// console.log(maskedPhoneNumber);
+
+// const originalEmail = "example@example.com";
+// const maskedEmail = maskSensitiveData(originalEmail, "email");
+// console.log(maskedEmail);
 
 module.exports = {
   successMessage,
@@ -374,4 +404,6 @@ module.exports = {
   getBaxiAuthHeader,
   generateTransactionReference,
   normalizePhoneNumber,
+  replaceVariablesInSentence,
+  maskSensitiveData,
 };
