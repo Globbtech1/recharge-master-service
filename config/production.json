@@ -1,5 +1,5 @@
 {
-  "host": "rmaster.feathersjs.com",
-  "port": "PORT",
-  "postgres": "DATABASE_URL"
+  "host": "127.0.0.1",
+  "port": 3000,
+  "postgres": "recharge-master.ch8aiqmywpfw.us-west-2.rds.amazonaws.com"
 }
