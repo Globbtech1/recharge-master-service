@@ -5,10 +5,10 @@
     "database": "rechargeMaster",
     "host": "127.0.0.1",
     "dialect": "mysql",
-      "logging": false,
-      "define": {
-        "freezeTableName": true
-      }
+    "logging": false,
+    "define": {
+      "freezeTableName": true
+    }
   },
   "test": {
     "username": "root",
@@ -17,7 +17,7 @@
     "host": "127.0.0.1",
     "dialect": "mysql",
     "define": {
-        "freezeTableName": true
+      "freezeTableName": true
     }
   },
   "staging": {
