@@ -191,6 +191,8 @@ const userResetTransactionPinFinalizeRequest = require('./user/resetTransactionP
 
 const adminAdminManagement = require('./admin/admin-management/admin-management.service.js');
 
+const adminSpecialOps = require('./admin/special-ops/special-ops.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -289,4 +291,5 @@ module.exports = function (app) {
   app.configure(userResetTransactionPinInnitiateRequest);
   app.configure(userResetTransactionPinFinalizeRequest);
   app.configure(adminAdminManagement);
+  app.configure(adminSpecialOps);
 };
