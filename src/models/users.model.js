@@ -123,6 +123,17 @@ module.exports = function (app) {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      role: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        comment: "Access role of the user",
+        defaultValue: "customer",
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
@@ -150,12 +161,17 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   users.associate = function (models) {
-    const { generateaccount, account_balance } = models;
+    const { generateaccount, account_balance, transactions_history } = models;
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
 
     users.hasMany(generateaccount);
+    // users.hasMany(transactions_history);
     users.hasOne(account_balance);
+    users.hasMany(transactions_history, {
+      foreignKey: "userId",
+      as: "transactionsHistory",
+    }); // Add this line
   };
 
   return users;

@@ -12,6 +12,7 @@ exports.SmsService = class SmsService {
   async create(data, params) {
     // console.log(this.africastalking, "this.africastalking");
     const sms = this.africastalking.SMS;
+    console.log(data, "data to sent");
     const { phoneNumber, message } = data;
 
     try {

@@ -167,6 +167,32 @@ const userMyReferers = require('./user/my-referers/my-referers.service.js');
 
 const globalserviceAllEnums = require('./globalservice/all-enums/all-enums.service.js');
 
+const notifications = require('./notifications/notifications.service.js');
+
+const userNotification = require('./user-notification/user-notification.service.js');
+
+const usedCoupon = require('./used-coupon/used-coupon.service.js');
+
+const adminFetchUsers = require('./admin/fetch-users/fetch-users.service.js');
+
+const adminDashboardData = require('./admin/dashboard-data/dashboard-data.service.js');
+
+const adminTransactionHistory = require('./admin/transaction-history/transaction-history.service.js');
+
+const adminFundingHistory = require('./admin/funding-history/funding-history.service.js');
+
+const adminWalletTransferHistory = require('./admin/wallet-transfer-history/wallet-transfer-history.service.js');
+
+const adminPromoBeneficiary = require('./admin/promo-beneficiary/promo-beneficiary.service.js');
+
+const userResetTransactionPinInnitiateRequest = require('./user/resetTransactionPin/innitiate-request/innitiate-request.service.js');
+
+const userResetTransactionPinFinalizeRequest = require('./user/resetTransactionPin/finalize-request/finalize-request.service.js');
+
+const adminAdminManagement = require('./admin/admin-management/admin-management.service.js');
+
+const adminSpecialOps = require('./admin/special-ops/special-ops.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -253,4 +279,17 @@ module.exports = function (app) {
   app.configure(userMyBeneficiaries);
   app.configure(userMyReferers);
   app.configure(globalserviceAllEnums);
+  app.configure(notifications);
+  app.configure(userNotification);
+  app.configure(usedCoupon);
+  app.configure(adminFetchUsers);
+  app.configure(adminDashboardData);
+  app.configure(adminTransactionHistory);
+  app.configure(adminFundingHistory);
+  app.configure(adminWalletTransferHistory);
+  app.configure(adminPromoBeneficiary);
+  app.configure(userResetTransactionPinInnitiateRequest);
+  app.configure(userResetTransactionPinFinalizeRequest);
+  app.configure(adminAdminManagement);
+  app.configure(adminSpecialOps);
 };

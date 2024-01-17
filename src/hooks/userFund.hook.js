@@ -10,6 +10,8 @@ const {
   ShowCurrentDate,
   generateRandomString,
   normalizePhoneNumber,
+  replaceVariablesInSentence,
+  formatAmount,
 } = require("../dependency/UtilityFunctions");
 
 const ReserveBankAccount = async (Info, record = true) => {
@@ -260,7 +262,8 @@ const creditUserAccount = () => {
     const product_listDetails = await product_list.findOne({
       where: {
         deletedAt: null,
-        slug: CONSTANT.AccountFunding,
+        // slug: CONSTANT.AccountFunding,
+        slug: CONSTANT.WalletCredit,
       },
     });
 
@@ -315,6 +318,23 @@ const creditUserAccount = () => {
       };
       app.service("account-funding").create(funding);
       app.service("transactions-history").create(fundingHistory);
+      ////////////Notification Start/////////////////////
+      let stringData = JSON.stringify(metaData);
+      const notificationMessage = replaceVariablesInSentence(
+        CONSTANT.notificationInfoObject.accountFund.message,
+        {
+          TRANSACTION_AMOUNT: formatAmount(amountPaid),
+        }
+      );
+
+      let notificationData = {
+        userId: receiverAccountId,
+        notificationMessage: notificationMessage,
+        data: stringData,
+        action: CONSTANT.notificationInfoObject?.accountFund?.actions,
+      };
+      await app.service("notifications").create(notificationData);
+      ////////////Notification End /////////////////////
     }
     return context;
   };

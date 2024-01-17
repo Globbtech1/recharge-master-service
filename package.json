@@ -1,6 +1,6 @@
 {
-  "name": "noisy-street",
-  "description": "for  E-Commerce  platform project ",
+  "name": "recharge-master",
+  "description": "For Recharge master platform for utility payment service",
   "version": "0.0.0",
   "homepage": "",
   "private": true,
@@ -33,7 +33,8 @@
     "pdth": "git push heroku staging:master || true",
     "resetPort": "sudo lsof -i :3030",
     "dbmigrate": "npx sequelize db:migrate",
-    "dbseeder": "npx sequelize db:seed:all"
+    "dbseeder": "npx sequelize db:seed:all",
+    "dbseeder_additional": "npx sequelize db:seed --seed additional_providers-seeder.js"
   },
   "standard": {
     "env": [

@@ -436,30 +436,32 @@ const getUserNecessaryInformation = (options = {}) => {
   return async (context) => {
     const { app, method, result, params, data } = context;
     const sequelize = app.get("sequelizeClient");
-    const { generateaccount, account_balance } = sequelize.models;
+    const { generateaccount, account_balance, transactions_history } =
+      sequelize.models;
     params.sequelize = {
       include: [
-        {
-          model: generateaccount,
+        // {
+        //   model: generateaccount,
 
-          attributes: {
-            exclude: [
-              "deletedAt",
-              "status",
-              "accountReference",
-              "userId",
-              "createdAt",
-              "updatedAt",
-              "otherDetails",
-            ],
-          },
+        //   attributes: {
+        //     exclude: [
+        //       "deletedAt",
+        //       "status",
+        //       "accountReference",
+        //       "userId",
+        //       "createdAt",
+        //       "updatedAt",
+        //       "otherDetails",
+        //     ],
+        //   },
 
-          where: {
-            deletedAt: null,
-          },
-        },
+        //   where: {
+        //     deletedAt: null,
+        //   },
+        // },
         {
-          model: account_balance,
+          model: transactions_history,
+          as: "transactionsHistory", // Add this line to specify the alias
           attributes: {
             exclude: [
               "deletedAt",
@@ -545,8 +547,11 @@ const InitiateResetPassword = () => {
 const validateCouponCode = () => {
   return async (context) => {
     const { app, method, result, params, data } = context;
+    let loggedInUserId = params?.user?.id;
+
     const sequelize = app.get("sequelizeClient");
-    const { coupon_management, generateaccount } = sequelize.models;
+    const { coupon_management, generateaccount, used_coupon } =
+      sequelize.models;
     const { couponCode, amount: productAmount } = data;
     if (couponCode) {
       let discountedPrice = 0;
@@ -584,6 +589,21 @@ const validateCouponCode = () => {
       });
 
       if (coupon) {
+        let couponId = coupon?.id;
+        const isCouponInUsed = await used_coupon.findOne({
+          where: {
+            couponManagementId: couponId,
+            userId: loggedInUserId,
+            // validity: { [Sequelize.Op.gte]: new Date() },
+            deletedAt: null,
+          },
+        });
+        if (isCouponInUsed != null) {
+          const error = new BadRequest(
+            `Coupon already used, please check and try again`
+          );
+          return Promise.reject(error);
+        }
         let minimumRecharge = coupon?.minimumRecharge;
         let maximumRecharge = coupon?.maximumRecharge;
         let productAmountInNaira = convertToNaira(productAmount);
@@ -619,6 +639,7 @@ const validateCouponCode = () => {
           couponDetails: res,
           productAmount: productAmount,
           amountToPay: discountedAmountInKobo,
+          currentCouponId: couponId,
         };
         console.log(AdditionalData, "cccAdditionalData");
 
