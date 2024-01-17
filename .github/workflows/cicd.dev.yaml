@@ -34,7 +34,7 @@ jobs:
 
       - name: Get env variables
         run: |
-          aws s3 cp s3://develop-conf/recharge-master/recharge-master-dev ./.env
+          
           aws s3 cp s3://develop-conf/recharge-master/config ./src/config/config.json 
           aws s3 cp s3://develop-conf/recharge-master/sequelize ./sequelizerc 
 
