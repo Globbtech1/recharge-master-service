@@ -436,30 +436,32 @@ const getUserNecessaryInformation = (options = {}) => {
   return async (context) => {
     const { app, method, result, params, data } = context;
     const sequelize = app.get("sequelizeClient");
-    const { generateaccount, account_balance } = sequelize.models;
+    const { generateaccount, account_balance, transactions_history } =
+      sequelize.models;
     params.sequelize = {
       include: [
-        {
-          model: generateaccount,
+        // {
+        //   model: generateaccount,
 
-          attributes: {
-            exclude: [
-              "deletedAt",
-              "status",
-              "accountReference",
-              "userId",
-              "createdAt",
-              "updatedAt",
-              "otherDetails",
-            ],
-          },
+        //   attributes: {
+        //     exclude: [
+        //       "deletedAt",
+        //       "status",
+        //       "accountReference",
+        //       "userId",
+        //       "createdAt",
+        //       "updatedAt",
+        //       "otherDetails",
+        //     ],
+        //   },
 
-          where: {
-            deletedAt: null,
-          },
-        },
+        //   where: {
+        //     deletedAt: null,
+        //   },
+        // },
         {
-          model: account_balance,
+          model: transactions_history,
+          as: "transactionsHistory", // Add this line to specify the alias
           attributes: {
             exclude: [
               "deletedAt",

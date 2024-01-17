@@ -189,6 +189,8 @@ const userResetTransactionPinInnitiateRequest = require('./user/resetTransaction
 
 const userResetTransactionPinFinalizeRequest = require('./user/resetTransactionPin/finalize-request/finalize-request.service.js');
 
+const adminAdminManagement = require('./admin/admin-management/admin-management.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -286,4 +288,5 @@ module.exports = function (app) {
   app.configure(adminPromoBeneficiary);
   app.configure(userResetTransactionPinInnitiateRequest);
   app.configure(userResetTransactionPinFinalizeRequest);
+  app.configure(adminAdminManagement);
 };

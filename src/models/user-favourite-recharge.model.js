@@ -69,10 +69,11 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   userFavouriteRecharge.associate = function (models) {
-    const { product_list } = models;
+    const { product_list, users } = models;
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
     userFavouriteRecharge.belongsTo(product_list);
+    userFavouriteRecharge.belongsTo(users);
   };
 
   return userFavouriteRecharge;
