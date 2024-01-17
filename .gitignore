@@ -112,3 +112,7 @@ lib/
 .env
 node_modules/
 Dockerfile
+eks-connector-clusterrole.yaml
+eks-connector-console-dashboard-full-access-group.yaml
+eks-connector-console-dashboard-restricted-access-group.yaml
+src/config/
