@@ -87,7 +87,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
-          kubectl set image deployment $SERVICE_NAME -n dev $SERVICE_NAME=${{env.ECR_IMAGE}}
+          kubectl set image deployment $SERVICE_NAME -n prod $SERVICE_NAME=${{env.ECR_IMAGE}}
           
       # - name: Deploy
       #  # kubectl config use-context ${{secrets.K8S_CONTEXT}}
