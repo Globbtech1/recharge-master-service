@@ -112,3 +112,4 @@ lib/
 Dockerfile
 eks*
 .env
+src/config
