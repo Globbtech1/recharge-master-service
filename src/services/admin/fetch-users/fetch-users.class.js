@@ -1,5 +1,8 @@
 const { Op, Sequelize } = require("sequelize");
-const { successMessage } = require("../../../dependency/UtilityFunctions");
+const {
+  successMessage,
+  determineUserType,
+} = require("../../../dependency/UtilityFunctions");
 
 /* eslint-disable no-unused-vars */
 exports.FetchUsers = class FetchUsers {
@@ -12,23 +15,41 @@ exports.FetchUsers = class FetchUsers {
     try {
       const { user, query } = params;
       const loggedInUserId = user?.id;
+      const sequelize = this.app.get("sequelizeClient");
+
+      const { transactions_history, users } = sequelize.models;
+      const lastMonth = new Date();
+      lastMonth.setMonth(lastMonth.getMonth() - 1);
+
       const userType = query?.userType || "all";
+      let filters = { ...query };
 
       if (userType === "active") {
         let activeUsers = await this.getActiveUser(this.app);
-        return Promise.resolve(
-          successMessage(activeUsers, "Users on the platform")
-        );
+        // return Promise.resolve(
+        //   successMessage(activeUsers, "Users on the platform")
+        // );
+        filters = {
+          ...filters,
+          ...{
+            isActive: true,
+          },
+        };
       }
       if (userType === "inActive") {
-        let activeUsers = await this.getInActiveUser(this.app);
-        return Promise.resolve(
-          successMessage(activeUsers, "Users on the platform")
-        );
+        // let activeUsers = await this.getInActiveUser(this.app);
+        // return Promise.resolve(
+        //   successMessage(activeUsers, "Users on the platform")
+        // );
+        filters = {
+          ...filters,
+          ...{
+            isActive: false,
+          },
+        };
       }
-      let filters = { ...query };
 
-      let userQuery = this.determineUserType(userType);
+      let userQuery = determineUserType(userType);
       filters = {
         ...filters,
         ...userQuery,
@@ -40,9 +61,10 @@ exports.FetchUsers = class FetchUsers {
         $sort: {
           id: -1,
         },
+        role: "customer",
         ...filters,
       };
-      console.log(allQueries, "allQueries");
+
       let result = await this.app.service("users").find({
         query: allQueries,
       });
@@ -50,7 +72,6 @@ exports.FetchUsers = class FetchUsers {
       return Promise.resolve(successMessage(result, "Users on the platform"));
     } catch (error) {
       console.log(error);
-      // Sentry.captureException(error);
     }
   }
 
@@ -80,18 +101,18 @@ exports.FetchUsers = class FetchUsers {
   async remove(id, params) {
     return { id };
   }
-  determineUserType(userType) {
-    switch (userType) {
-      case "verified":
-        return { isPhoneNumberVerify: true };
-      case "nonVerified":
-        return { isPhoneNumberVerify: false };
-      case "all":
-        return {};
-      default:
-        return { userType: "Teacher" };
-    }
-  }
+  // determineUserType(userType) {
+  //   switch (userType) {
+  //     case "verified":
+  //       return { isPhoneNumberVerify: true };
+  //     case "nonVerified":
+  //       return { isPhoneNumberVerify: false };
+  //     case "all":
+  //       return {};
+  //     default:
+  //       return { userType: "Teacher" };
+  //   }
+  // }
   async getActiveUser(app) {
     const sequelize = app.get("sequelizeClient");
 

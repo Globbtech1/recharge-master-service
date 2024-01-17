@@ -368,7 +368,18 @@ const maskSensitiveData = (data, type) => {
     throw new Error("Unsupported data type for masking");
   }
 };
-
+const determineUserType = (userType) => {
+  switch (userType) {
+    case "verified":
+      return { isPhoneNumberVerify: true };
+    case "nonVerified":
+      return { isPhoneNumberVerify: false };
+    case "all":
+      return {};
+    default:
+      return { userType: "Teacher" };
+  }
+};
 // // Example usage:
 // const originalPhoneNumber = "1234567890";
 // const maskedPhoneNumber = maskSensitiveData(originalPhoneNumber, "phone");
@@ -406,4 +417,5 @@ module.exports = {
   normalizePhoneNumber,
   replaceVariablesInSentence,
   maskSensitiveData,
+  determineUserType,
 };

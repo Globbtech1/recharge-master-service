@@ -123,6 +123,17 @@ module.exports = function (app) {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      role: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        comment: "Access role of the user",
+        defaultValue: "customer",
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
