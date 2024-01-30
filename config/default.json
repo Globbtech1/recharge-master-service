@@ -9,11 +9,8 @@
   "authentication": {
     "entity": "user",
     "service": "users",
-    "secret": "7iA6ZgdRUKJP1mpAH6qAZHxjoQI=",
-    "authStrategies": [
-      "jwt",
-      "local"
-    ],
+    "secret": "6DMi0rZusQ62JoNoYQ1rJVFMGCQ=",
+    "authStrategies": ["jwt", "local"],
     "jwtOptions": {
       "header": {
         "typ": "access"
@@ -24,8 +21,20 @@
       "expiresIn": "1d"
     },
     "local": {
-      "usernameField": "phoneNumber",
+      "usernameField": "email",
       "passwordField": "password"
+    },
+    "oauth": {
+      "redirect": "/",
+      "google": {
+        "key": "112300000813-idi1ulk8nclm6hctq0hf7av1cnhpt47g.apps.googleusercontent.com",
+        "secret": "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",
+        "scope": ["email", "profile", "openid"]
+      },
+      "github": {
+        "key": "<github oauth key>",
+        "secret": "<github oauth secret>"
+      }
     }
   },
   "mysql": "mysql://root:@localhost:3306/noisy_street"
