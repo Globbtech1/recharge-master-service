@@ -109,10 +109,13 @@ $RECYCLE.BIN/
 
 # Others
 lib/
-.env
-node_modules/
 Dockerfile
+<<<<<<< HEAD
 eks-connector-clusterrole.yaml
 eks-connector-console-dashboard-full-access-group.yaml
 eks-connector-console-dashboard-restricted-access-group.yaml
 src/config/
+=======
+eks*
+.env
+>>>>>>> 69aba278755098fd2d1bd42528ba46da4bc500f6
