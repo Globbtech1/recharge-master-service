@@ -193,6 +193,12 @@ const adminAdminManagement = require('./admin/admin-management/admin-management.
 
 const adminSpecialOps = require('./admin/special-ops/special-ops.service.js');
 
+const userSignupwithSocialMedia = require('./user/signupwith-social-media/signupwith-social-media.service.js');
+
+const userSignInWithSocialMedia = require('./user/sign-in-with-social-media/sign-in-with-social-media.service.js');
+
+const userDataValidation = require('./user/data-validation/data-validation.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -292,4 +298,7 @@ module.exports = function (app) {
   app.configure(userResetTransactionPinFinalizeRequest);
   app.configure(adminAdminManagement);
   app.configure(adminSpecialOps);
+  app.configure(userSignupwithSocialMedia);
+  app.configure(userSignInWithSocialMedia);
+  app.configure(userDataValidation);
 };
