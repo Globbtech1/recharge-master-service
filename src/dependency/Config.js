@@ -55,7 +55,7 @@ const CONSTANT = {
   ],
   defaultProfileImage:
     "https://res.cloudinary.com/cvtechdom/image/upload/v1584379801/Cervitech_AndroidApp/bupwntkxpcmklgc0o3u0.png",
-
+  defaultPassword: "Password@100%$333!222",
   transactionalMailContent: `
     Dear [user_name], \n
     
