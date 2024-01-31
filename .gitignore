@@ -112,8 +112,11 @@ lib/
 Dockerfile
 eks*
 .env
+<<<<<<< HEAD
 src/config
 eks-connector-clusterrole.yaml
 eks-connector-console-dashboard-full-access-group.yaml
 eks-connector-console-dashboard-restricted-access-group.yaml
 src/config/
+=======
+>>>>>>> 6d7d656 ( Updated)
