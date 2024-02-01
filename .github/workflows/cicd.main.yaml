@@ -87,7 +87,5 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
-          kubectl config use-context globbtech-dev
-
-          kubectl apply -f tpl.yaml -n prod
-      
+          kubectl set image deployment $SERVICE_NAME -n prod $SERVICE_NAME=${{env.ECR_IMAGE}}
+          

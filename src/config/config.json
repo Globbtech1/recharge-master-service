@@ -32,10 +32,10 @@
     }
   },
   "production": {
-    "username": "noisystr_root",
-    "password": "&WxM7Z4=8DoZ",
-    "database": "noisystr_backend",
-    "host": "127.0.0.1",
+    "username": "rMasterUs3r",
+    "password": "rMastar!@$",
+    "database": "rMaster",
+    "host": "database-2.ch8aiqmywpfw.us-west-2.rds.amazonaws.com",
     "dialect": "mysql",
     "logging": false,
     "define": {
