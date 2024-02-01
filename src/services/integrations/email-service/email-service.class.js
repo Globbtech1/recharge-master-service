@@ -1,45 +1,49 @@
-/* eslint-disable no-unused-vars */
-const sgMail = require("@sendgrid/mail");
+const { MailtrapClient } = require("mailtrap");
 
+// Initialize your Mailtrap client with your API token
+// const client = new MailtrapClient({ token: "TOKEN" });
+const client = new MailtrapClient({ token: process.env.MAILTRAP_API_KEY });
 exports.EmailService = class EmailService {
   constructor(options) {
     this.options = options || {};
-    this.sendGrid = sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   }
 
   async create(data, params) {
-    const { receiverEmail, emailContent, subject } = data;
+    const { receiverEmail, emailContent, subject, bccEmails } = data;
 
     try {
-      // const bccEmails = [
-      //   "dev.rechargemaster@gmail.com",
-      //   "another@example.com",
-      //   "jinaddavid@gmail.com",
-      // ];
-      // Add the email addresses you want to BCC here
-      const bccEmails = process.env.BCC_EMAILS?.split(",");
+      // Specify the sender email address and name
+      const sender = {
+        email: process.env.FROM_EMAIL_MAIL,
+        // email: "no-reply@globbtech.com",
+        name: process.env.Email_FROM_NAME || "",
+      };
 
-      const msg = {
-        to: receiverEmail,
-        from: {
-          email: process.env.SENDGRID_FROM_MAIL,
-          name: process.env.Email_FROM_NAME,
-        }, // Use the email address or domain you verified above
+      const recipient = { email: receiverEmail };
+      // Specify the BCC recipients
+      // const bccRecipients = (bccEmails || []).map((email) => ({ email }));
+      const bccEmailsString = process.env.BCC_EMAILS || "";
+
+      const bccEmails = bccEmailsString
+        .split(",")
+        .map((email) => ({ email: email.trim() }));
+
+      // Construct the email message
+      const message = {
+        from: sender,
+        to: [recipient],
         subject: subject,
-        // text: "and easy to do anywhere, even with Node.js",
         html: emailContent,
+        // bcc: bccEmails,
         bcc: bccEmails,
       };
 
-      const response = await this.sendGrid.send(msg);
-      // const response = true;
+      // Send the email using Mailtrap
+      const response = await client.send(message);
       return response;
     } catch (error) {
-      console.log(error, "error");
-      // throw new Error("Error sending Email:", error);
+      console.error("Error sending email:", error);
       return { error: "Email sending failed" };
     }
-
-    // return data;
   }
 };

@@ -199,6 +199,10 @@ const userSignInWithSocialMedia = require('./user/sign-in-with-social-media/sign
 
 const userDataValidation = require('./user/data-validation/data-validation.service.js');
 
+const testSampleEmail = require('./test/sample-email/sample-email.service.js');
+
+const testSampleSms = require('./test/sample-sms/sample-sms.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -301,4 +305,6 @@ module.exports = function (app) {
   app.configure(userSignupwithSocialMedia);
   app.configure(userSignInWithSocialMedia);
   app.configure(userDataValidation);
+  app.configure(testSampleEmail);
+  app.configure(testSampleSms);
 };
