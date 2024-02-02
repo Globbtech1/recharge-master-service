@@ -720,7 +720,14 @@ const checkForAccountStatus = () => {
         reasonForAccountLock,
         isEmailVerify,
         isPhoneNumberVerify,
+        isVerify,
       } = userDetails;
+      // if (userDetails?.isVerify === false) {
+      //   const notFound = new BadRequest(
+      //     "User account not verified, Please verify your account"
+      //   );
+      //   return Promise.reject(notFound);
+      // }
       if (isAccountLocked) {
         const accountStatus = new BadRequest(
           `Account temporary locked  \n reason: ${reasonForAccountLock}`
@@ -728,7 +735,7 @@ const checkForAccountStatus = () => {
         return Promise.reject(accountStatus);
       }
 
-      if (!isEmailVerify && !isPhoneNumberVerify) {
+      if (isVerify === false) {
         const accountStatus = new BadRequest(
           "Account verification required. Please verify your email or phone number to perform transactions on the platform."
         );
