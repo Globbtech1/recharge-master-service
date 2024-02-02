@@ -22,7 +22,7 @@ module.exports = {
     create: [
       // proccessEmail({ mailtype: "EmailVerification" }),
       SendGeneralResponse({
-        message: "A confirmation link has been sent ",
+        message: "A confirmation code  has been sent to your email.",
       }),
     ],
     update: [],
