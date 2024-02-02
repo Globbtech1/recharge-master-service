@@ -708,7 +708,6 @@ const checkForAccountStatus = () => {
       loggedInUserId,
       transactions_history
     );
-    console.log(totalAmountSpent, "totalAmountSpent");
     const userDetails = await users.findOne({
       where: {
         id: loggedInUserId,
@@ -722,19 +721,13 @@ const checkForAccountStatus = () => {
         isEmailVerify,
         isPhoneNumberVerify,
       } = userDetails;
-      console.log(userDetails, "userDetails");
       if (isAccountLocked) {
         const accountStatus = new BadRequest(
           `Account temporary locked  \n reason: ${reasonForAccountLock}`
         );
         return Promise.reject(accountStatus);
       }
-      // if (isAccountLocked) {
-      //   const accountStatus = new BadRequest(
-      //     `Account temporary locked  \n reason: ${reasonForAccountLock}`
-      //   );
-      //   return Promise.reject(accountStatus);
-      // }
+
       if (!isEmailVerify && !isPhoneNumberVerify) {
         const accountStatus = new BadRequest(
           "Account verification required. Please verify your email or phone number to perform transactions on the platform."
