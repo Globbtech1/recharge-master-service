@@ -2,6 +2,9 @@ const { BadRequest } = require("@feathersjs/errors");
 const { CONSTANT } = require("../../../dependency/Config");
 const logger = require("../../../logger");
 const crypto = require("crypto"); // Import the crypto module
+const {
+  generateRandomNumber,
+} = require("../../../dependency/UtilityFunctions");
 
 /* eslint-disable no-unused-vars */
 exports.VerifyUserEmail = class VerifyUserEmail {
@@ -29,7 +32,7 @@ exports.VerifyUserEmail = class VerifyUserEmail {
 
     const loggedInUserId = user?.id;
     const sequelize = this.app.get("sequelizeClient");
-    const { users } = sequelize.models;
+    const { users, user_verifications } = sequelize.models;
     try {
       const userDetails = await users.findOne({
         where: {
@@ -57,12 +60,18 @@ exports.VerifyUserEmail = class VerifyUserEmail {
         );
       }
 
-      const token = crypto.randomBytes(20).toString("hex");
+      // const token = crypto.randomBytes(20).toString("hex");
+      const verification_reference = await generateRandomNumber(
+        user_verifications,
+        "token",
+        6,
+        false
+      );
       const now = new Date();
       const expirationDate = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24hours
 
       await this.app.service("user-verifications").create({
-        token,
+        token: verification_reference,
         userId: loggedInUserId,
         expiredAt: expirationDate,
         type: CONSTANT.verificationType.email, // 'type' field to distinguish email
@@ -70,16 +79,16 @@ exports.VerifyUserEmail = class VerifyUserEmail {
       });
 
       let resp = {
-        token,
+        token: verification_reference,
         email: emailAddress,
       };
-      const verificationLink = `${process.env.WEBSITE_HOSTING}/email-verification?token=${token}`;
+      // const verificationLink = `${process.env.WEBSITE_HOSTING}/email-verification?token=${token}`;
       let EmailSendingData = {
         receiverEmail: emailAddress,
         subject: "Account Verification",
         emailData: {
           customerName: "",
-          customMessage: `To verify your email, please enter click on this link ${verificationLink} or copy it to your browser`,
+          customMessage: `To verify your email address and complete your registration, please use this verification code:  ${verification_reference} `,
           mailTitle: "Please verify your account",
         },
         templateName: "default-email",
