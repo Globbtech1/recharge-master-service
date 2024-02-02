@@ -20,7 +20,7 @@ module.exports = {
     find: [],
     get: [],
     create: [
-      proccessEmail({ mailtype: "EmailVerification" }),
+      // proccessEmail({ mailtype: "EmailVerification" }),
       SendGeneralResponse({
         message: "A confirmation link has been sent ",
       }),
