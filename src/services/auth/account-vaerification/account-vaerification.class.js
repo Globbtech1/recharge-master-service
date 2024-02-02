@@ -59,6 +59,7 @@ exports.AccountVaerification = class AccountVaerification {
       if (platform === CONSTANT.verificationType.email) {
         userDetails.isEmailVerify = true;
         userDetails.email = userUpdatedData;
+        userDetails.isVerify = true;
       }
       if (platform === CONSTANT.verificationType.phoneNumber) {
         userDetails.isPhoneNumberVerify = true;
