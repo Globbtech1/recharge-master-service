@@ -189,14 +189,13 @@ const generateWalletId = () => {
 const generateReferLink = () => {
   return async (context) => {
     const { app, method, result, params, data } = context;
-    // console.log(params, "params");
-    // console.log(result, "result");
+    const { password, phoneNumber } = data;
     const sequelize = app.get("sequelizeClient");
     const { users } = sequelize.models;
-    let walletId = await generateRandomNumber(users, "refererLink", 15);
-    console.log(walletId, "walletId.....");
+    const normalizedPhoneNumber = normalizePhoneNumber(phoneNumber);
+
     let AdditionalData = {
-      refererLink: walletId,
+      refererLink: normalizedPhoneNumber,
     };
     context.data = { ...context.data, ...AdditionalData };
     return context;

@@ -68,6 +68,14 @@ exports.AccountVaerification = class AccountVaerification {
         userDetails.reasonForAccountLock = "";
         userDetails.phoneNumber = userUpdatedData;
       }
+      if (platform === CONSTANT.verificationType.onWelcome) {
+        userDetails.isPhoneNumberVerify = true;
+        userDetails.isEmailVerify = true;
+        userDetails.isVerify = true;
+        userDetails.isAccountLocked = false;
+        userDetails.reasonForAccountLock = "";
+        // userDetails.phoneNumber = userUpdatedData;
+      }
 
       await userDetails.save();
 
