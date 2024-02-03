@@ -42,6 +42,7 @@ const CONSTANT = {
     tvSubscriptionPurchase: "Your Television Subscription was successful",
     userRegistrationSuccess: "Registration successfully",
     transferFund: "Fund transfer successfully",
+    otpResend: "user OTP resend successfully",
   },
   transactionStatus: {
     failed: "Failed",

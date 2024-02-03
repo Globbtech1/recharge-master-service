@@ -203,6 +203,8 @@ const testSampleEmail = require('./test/sample-email/sample-email.service.js');
 
 const testSampleSms = require('./test/sample-sms/sample-sms.service.js');
 
+const userResendSignupCode = require('./user/resend-signup-code/resend-signup-code.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -307,4 +309,5 @@ module.exports = function (app) {
   app.configure(userDataValidation);
   app.configure(testSampleEmail);
   app.configure(testSampleSms);
+  app.configure(userResendSignupCode);
 };
