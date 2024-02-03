@@ -81,17 +81,17 @@ exports.InnitiateChangetransactionPin = class InnitiateChangetransactionPin {
         6,
         false
       );
-      if (phoneNumber) {
-        const now = new Date();
-        const expirationDate = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24hours
+      const now = new Date();
+      const expirationDate = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24hours
+      await this.app.service("user-verifications").create({
+        token: verification_reference,
+        userId: loggedInUserId,
+        expiredAt: expirationDate,
+        type: CONSTANT.verificationType.changeTransactionPin, // 'type' field to distinguish email
+        data: verification_reference,
+      });
 
-        await this.app.service("user-verifications").create({
-          token: verification_reference,
-          userId: loggedInUserId,
-          expiredAt: expirationDate,
-          type: CONSTANT.verificationType.changeTransactionPin, // 'type' field to distinguish email
-          data: verification_reference,
-        });
+      if (phoneNumber) {
         let smsData = {
           phoneNumber: phoneNumber,
           message: `Your verification code is ${verification_reference}`,

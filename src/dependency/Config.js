@@ -95,6 +95,7 @@ const CONSTANT = {
     phoneNumber: "phoneNumber",
     changeTransactionPin: "changeTransactionPin",
     resetTransactionPin: "resetTransactionPin",
+    onWelcome: "onWelcome",
   },
   externalRequestFailErrorMessage:
     "The request failed due to an external provider's error.",
