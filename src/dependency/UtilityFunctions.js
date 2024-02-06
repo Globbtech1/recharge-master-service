@@ -71,6 +71,9 @@ const generateRandomNumber = async (
       // const givenSet =
       // "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
       // const givenSet = "0123456789";
+      if (!alphaNumeric) {
+        resolve("123456");
+      }
       const givenSet = alphaNumeric
         ? "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
         : "0123456789";
