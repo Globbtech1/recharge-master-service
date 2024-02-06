@@ -21,11 +21,11 @@ exports.AccountVaerification = class AccountVaerification {
   }
 
   async create(data, params) {
-    // const { user } = params;
+    const { user } = params;
     const { token, platform } = data;
     logger.info("token...", { token });
 
-    // const loggedInUserId = user?.id;
+    const loggedInUserId = user?.id;
     const sequelize = this.app.get("sequelizeClient");
     const { users, user_verifications } = sequelize.models;
     try {
@@ -35,6 +35,7 @@ exports.AccountVaerification = class AccountVaerification {
           token: token,
           isUsed: false,
           type: platform,
+          userId: loggedInUserId,
         },
       });
       if (verificationDetails === null) {

@@ -2,10 +2,11 @@ const {
   validateVerificationInput,
 } = require("../../../hooks/email-verification");
 const { SendGeneralResponse } = require("../../../hooks/general-uses");
+const { authenticate } = require("@feathersjs/authentication").hooks;
 
 module.exports = {
   before: {
-    all: [],
+    all: [authenticate("jwt")],
     find: [],
     get: [],
     create: [validateVerificationInput()],
