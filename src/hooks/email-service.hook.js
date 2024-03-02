@@ -59,7 +59,7 @@ const sendInitiatePasswordResetEmail = (options = {}) => {
     if (phoneNumber) {
       let smsData = {
         phoneNumber: phoneNumber,
-        message: `Your verification code is ${code}`,
+        message: `Your rechargedMaster authentication code for password reset is ${code}`,
       };
       context.app.service("integrations/sms-service").create(smsData);
     }

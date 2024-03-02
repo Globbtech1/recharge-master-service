@@ -42,7 +42,7 @@ exports.Users = class Users extends Service {
     if (phoneNumber) {
       let smsData = {
         phoneNumber: phoneNumber,
-        message: `Welcome, Your verification code is ${verification_reference}`,
+        message: `Welcome, Your rechargedMaster authentication code is ${verification_reference}`,
       };
       this.app.service("integrations/sms-service").create(smsData);
     }
