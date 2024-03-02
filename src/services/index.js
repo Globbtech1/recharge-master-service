@@ -205,6 +205,10 @@ const testSampleSms = require('./test/sample-sms/sample-sms.service.js');
 
 const userResendSignupCode = require('./user/resend-signup-code/resend-signup-code.service.js');
 
+const userDeleteAccountRequestOtp = require('./user/delete-account-request-otp/delete-account-request-otp.service.js');
+
+const userDeleteAccountRequestFinalize = require('./user/delete-account-request-finalize/delete-account-request-finalize.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -310,4 +314,6 @@ module.exports = function (app) {
   app.configure(testSampleEmail);
   app.configure(testSampleSms);
   app.configure(userResendSignupCode);
+  app.configure(userDeleteAccountRequestOtp);
+  app.configure(userDeleteAccountRequestFinalize);
 };

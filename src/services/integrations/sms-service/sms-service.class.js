@@ -79,7 +79,7 @@ async function sendSMS(data, route) {
 
     const options = {
       method: "POST",
-      url: "https://api.ng.termii.com/api/sms/send/bulk",
+      url: "https://api.ng.termii.com/api/sms/send",
       headers: {
         "Content-Type": "application/json",
       },

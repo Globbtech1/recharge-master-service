@@ -2,7 +2,9 @@
 // For more information on hooks see: http://docs.feathersjs.com/api/hooks.html
 const { BadRequest } = require("@feathersjs/errors");
 const { sendSMS } = require("../dependency/commonRequest");
-const { verifyUserPhoneNumberValidator } = require("../validations/auth.validation");
+const {
+  verifyUserPhoneNumberValidator,
+} = require("../validations/auth.validation");
 
 const validatePhoneNumberInput = (options = {}) => {
   return async (context) => {
@@ -18,9 +20,13 @@ const validatePhoneNumberInput = (options = {}) => {
 
 const sendVerificationSMS = (options = {}) => {
   return async (context) => {
-    const { app, data } = context
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const user = await app.service("users").find({ query: { phoneNumber: data.phoneNumber } });
+    const { app, data } = context;
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+    const user = await app
+      .service("users")
+      .find({ query: { phoneNumber: data.phoneNumber } });
 
     if (!user || user.length === 0) {
       throw new BadRequest("User not found.");
@@ -29,15 +35,15 @@ const sendVerificationSMS = (options = {}) => {
     await app.service("phone-verification").create({
       verificationCode,
       userId: user[0].id,
-      type: "phone",          // 'type' field to distinguish phone verification
+      type: "phone", // 'type' field to distinguish phone verification
     });
 
-    const body = `Your verification code is: ${verificationCode}`
+    const body = `Your rechargedMaster authentication code is: ${verificationCode}`;
     await sendSMS(data.phoneNumber, body);
 
     context.result = { sent: true };
     return context;
-  }
+  };
 };
 
-module.exports = { sendVerificationSMS, validatePhoneNumberInput }
+module.exports = { sendVerificationSMS, validatePhoneNumberInput };
