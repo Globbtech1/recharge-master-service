@@ -72,7 +72,7 @@ exports.InnitiateRequest = class InnitiateRequest {
         });
         let smsData = {
           phoneNumber: phoneNumber,
-          message: `Your verification code is ${verification_reference}`,
+          message: `Your rechargedMaster authentication code is ${verification_reference}`,
         };
         const maskedPhoneNumber = maskSensitiveData(phoneNumber, "phone");
 

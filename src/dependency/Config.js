@@ -97,6 +97,7 @@ const CONSTANT = {
     changeTransactionPin: "changeTransactionPin",
     resetTransactionPin: "resetTransactionPin",
     onWelcome: "onWelcome",
+    deleteAccount: "deleteAccount",
   },
   externalRequestFailErrorMessage:
     "The request failed due to an external provider's error.",

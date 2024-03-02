@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const { NotFound } = require("@feathersjs/errors");
 const { Sequelize } = require("sequelize");
 const { CONSTANT } = require("../../../dependency/Config");
@@ -5,18 +6,17 @@ const {
   generateRandomNumber,
 } = require("../../../dependency/UtilityFunctions");
 
-/* eslint-disable no-unused-vars */
-exports.ResendSignupCode = class ResendSignupCode {
+exports.DeleteAccountRequestOtp = class DeleteAccountRequestOtp {
   constructor(options, app) {
     this.options = options || {};
     this.app = app || {};
   }
 
-  async find() {
+  async find(params) {
     return [];
   }
 
-  async get(id) {
+  async get(id, params) {
     return {
       id,
       text: `A new message with ID: ${id}!`,
@@ -24,7 +24,7 @@ exports.ResendSignupCode = class ResendSignupCode {
   }
 
   async create(data) {
-    const { emailOrPhoneNumber } = data;
+    const { emailOrPhoneNumber, reasonForDeletion } = data;
 
     const sequelize = this.app.get("sequelizeClient");
     const { users, user_verifications } = sequelize.models;
@@ -67,14 +67,15 @@ exports.ResendSignupCode = class ResendSignupCode {
       token: verification_reference,
       userId: loggedInUserId,
       expiredAt: expirationDate,
-      type: CONSTANT.verificationType.onWelcome, // 'type' field to distinguish email
+      type: CONSTANT.verificationType.deleteAccount, // 'type' field to distinguish email
       data: verification_reference,
     });
 
     if (phoneNumber) {
       let smsData = {
         phoneNumber: phoneNumber,
-        message: `Welcome, Your rechargedMaster authentication code is ${verification_reference}`,
+        // phoneNumber: "07065873900",
+        message: `Your rechargedMaster authentication code for account deletion is ${verification_reference}`,
       };
       this.app.service("integrations/sms-service").create(smsData);
     }
@@ -82,11 +83,11 @@ exports.ResendSignupCode = class ResendSignupCode {
       // Define the email data
       const emailData = {
         receiverEmail: email,
-        subject: "Welcome to Recharge Master",
+        subject: "RechargedMaster Account Deletion",
         emailData: {
           customerName: fullName, // Replace with the user's name if available
-          customMessage: `We welcome you to recharge master . A platform where you can do all your bills payment. \n please use this code to verify your account ${verification_reference}`,
-          mailTitle: "Welcome to our Platform",
+          customMessage: `we have receive a request to delete your account use this code  ${verification_reference} to verify \n Keep in mind that if you proceed with account deletion, all your data will be permanently removed, and any remaining funds in your wallet cannot be recovered`,
+          mailTitle: "Sad to see you go",
         },
         templateName: "default-email", // Specify the email template
       };
@@ -97,15 +98,15 @@ exports.ResendSignupCode = class ResendSignupCode {
     }
   }
 
-  async update(data) {
+  async update(id, data, params) {
     return data;
   }
 
-  async patch(data) {
+  async patch(id, data, params) {
     return data;
   }
 
-  async remove(id) {
+  async remove(id, params) {
     return { id };
   }
 };

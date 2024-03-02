@@ -94,7 +94,7 @@ exports.InnitiateChangetransactionPin = class InnitiateChangetransactionPin {
       if (phoneNumber) {
         let smsData = {
           phoneNumber: phoneNumber,
-          message: `Your verification code is ${verification_reference}`,
+          message: `Your rechargedMaster authentication code is ${verification_reference}`,
         };
         this.app.service("integrations/sms-service").create(smsData);
       }
