@@ -209,6 +209,12 @@ const userDeleteAccountRequestOtp = require('./user/delete-account-request-otp/d
 
 const userDeleteAccountRequestFinalize = require('./user/delete-account-request-finalize/delete-account-request-finalize.service.js');
 
+const adminSetReferralsBonus = require('./admin/set-referrals-bonus/set-referrals-bonus.service.js');
+
+const userReferralListBonus = require('./user-referral-list-bonus/user-referral-list-bonus.service.js');
+
+const adminReferralReports = require('./admin/referral-reports/referral-reports.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -316,4 +322,7 @@ module.exports = function (app) {
   app.configure(userResendSignupCode);
   app.configure(userDeleteAccountRequestOtp);
   app.configure(userDeleteAccountRequestFinalize);
+  app.configure(adminSetReferralsBonus);
+  app.configure(userReferralListBonus);
+  app.configure(adminReferralReports);
 };
