@@ -210,13 +210,13 @@ const validateReferByLink = () => {
     const { users } = sequelize.models;
     const { invitedBy, password } = data;
     if (invitedBy) {
-      const account_balanceDetails = await users.findOne({
+      const referralDetails = await users.findOne({
         where: {
           deletedAt: null,
           refererLink: invitedBy,
         },
       });
-      if (account_balanceDetails == null) {
+      if (referralDetails == null) {
         throw new Error("Invalid referral code supply");
       }
       console.log(password, ".....password");
@@ -224,6 +224,7 @@ const validateReferByLink = () => {
         userPassword: password,
         // userPassword2: "password",
         refererLink: invitedBy,
+        referredByUserId: referralDetails?.id,
       };
       context.data = { ...context.data, ...AdditionalData };
     }
@@ -367,6 +368,42 @@ const transformFinalizeAccountFundingData = () => {
     return context;
   };
 };
+
+const recordReferralPayment = () => {
+  return async (context) => {
+    // console.log(context, "context");
+    const { app, method, result, params, data } = context;
+    console.log(params, "params");
+    console.log(result, "result");
+    const { id } = result;
+    const { referredByUserId, invitedBy } = data;
+    const sequelize = app.get("sequelizeClient");
+    const { set_referrals_bonus } = sequelize.models;
+    if (invitedBy) {
+      const bonusDetails = await set_referrals_bonus.findOne({
+        where: {
+          deletedAt: null,
+        },
+      });
+      if (bonusDetails?.isReferralActive) {
+        let bonusAmount = parseFloat(bonusDetails?.bonusAmount) || 0;
+        let payload = {
+          userId: referredByUserId,
+          bonusAmount: bonusAmount,
+          referredUserId: id,
+        };
+        app.service("user-referral-list-bonus").create(payload);
+      } else {
+        console.log("Not Activated");
+      }
+    } else {
+      console.log("Not invited");
+    }
+
+    return context;
+  };
+};
+
 module.exports = {
   FundUserAccount,
   ReserveBankAccount,
@@ -379,4 +416,5 @@ module.exports = {
   creditUserAccount,
   getTotalAmountSpent,
   transformFinalizeAccountFundingData,
+  recordReferralPayment,
 };
