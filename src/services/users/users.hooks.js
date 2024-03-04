@@ -28,6 +28,7 @@ const {
   generateWalletId,
   generateReferLink,
   validateReferByLink,
+  recordReferralPayment,
 } = require("../../hooks/userFund.hook");
 const { CONSTANT } = require("../../dependency/Config");
 module.exports = {
@@ -79,6 +80,7 @@ module.exports = {
     create: [
       // insertIntoVerification(),
       FundUserAccount(),
+      recordReferralPayment(),
       // proccessEmail({ mailtype: "userCreation" }),
       // SendGeneralResponse({
       //   message: CONSTANT.successMessage.userRegistrationSuccess,

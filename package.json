@@ -31,7 +31,7 @@
     "start-v2": "node src/",
     "mocha": "mocha test/ --recursive --exit",
     "pdth": "git push heroku staging:master || true",
-    "resetPort": "sudo lsof -i :3030",
+    "resetPort": "lsof -i :3000",
     "dbmigrate": "npx sequelize db:migrate",
     "dbseeder": "npx sequelize db:seed:all",
     "dbseeder_additional": "npx sequelize db:seed --seed additional_providers-seeder.js"

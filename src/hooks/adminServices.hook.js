@@ -233,12 +233,50 @@ async function getSalesPerProduct({
   return result;
 }
 
-// Example usage:
-// const salesPerProduct = await getSalesPerProduct({
-//   startDate: "2023-11-01T00:00:00.000Z",
-//   endDate: "2023-11-07T23:59:59.999Z",
-// });
-// console.log(salesPerProduct);
+async function sumPendingBonusAmounts(user_referral_list_bonus) {
+  try {
+    const sum = await user_referral_list_bonus.sum("bonusAmount", {
+      where: { deletedAt: null, isBonusPaid: false },
+    });
+    return sum;
+  } catch (error) {
+    console.error("Error summing pending bonus amounts:", error);
+    throw error;
+  }
+}
+async function countAllReferrals(user_referral_list_bonus) {
+  try {
+    const count = await user_referral_list_bonus.count({
+      where: { deletedAt: null },
+    });
+    return count;
+  } catch (error) {
+    console.error("Error counting all referrals:", error);
+    throw error;
+  }
+}
+async function sumClaimedBonusAmounts(user_referral_list_bonus) {
+  try {
+    const sum = await user_referral_list_bonus.sum("bonusAmount", {
+      where: { deletedAt: null, isBonusPaid: true },
+    });
+    return sum;
+  } catch (error) {
+    console.error("Error summing claimed bonus amounts:", error);
+    throw error;
+  }
+}
+async function sumAllBonusAmounts(user_referral_list_bonus) {
+  try {
+    const sum = await user_referral_list_bonus.sum("bonusAmount", {
+      where: { deletedAt: null },
+    });
+    return sum;
+  } catch (error) {
+    console.error("Error summing all bonus amounts:", error);
+    throw error;
+  }
+}
 
 module.exports = {
   generateCouponNumber,
@@ -255,4 +293,8 @@ module.exports = {
   calculatePaymentModePercentages,
   getDailySignUpCount,
   getSalesPerProduct,
+  sumPendingBonusAmounts,
+  countAllReferrals,
+  sumClaimedBonusAmounts,
+  sumAllBonusAmounts,
 };

@@ -2,6 +2,7 @@
 // for more of what you can do here.
 const Sequelize = require("sequelize");
 const DataTypes = Sequelize.DataTypes;
+// const { paginate } = require("feathers-sequelize");
 
 module.exports = function (app) {
   const sequelizeClient = app.get("sequelizeClient");
@@ -75,7 +76,7 @@ module.exports = function (app) {
         unique: true,
       },
       invitedBy: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.STRING,
         allowNull: true,
       },
       isEmailVerify: {
@@ -172,6 +173,74 @@ module.exports = function (app) {
       foreignKey: "userId",
       as: "transactionsHistory",
     }); // Add this line
+  };
+  // users.paginate = paginate();
+
+  users.getUsersWithReferralCounts = async function (models) {
+    // const { user_referral_list_bonus } = models;
+    try {
+      const usersWithReferralCounts = await this.findAll({
+        attributes: [
+          "id",
+          "fullName",
+          "email",
+          "phoneNumber",
+          "refererLink",
+          "isVerify",
+          [
+            Sequelize.literal(
+              "(SELECT COUNT(*) FROM users AS referredUsers WHERE referredUsers.invitedBy = users.refererLink)"
+            ),
+            "referralCount",
+          ],
+          [
+            Sequelize.literal(
+              "(SELECT SUM(bonusAmount) FROM user_referral_list_bonus WHERE user_referral_list_bonus.userId = users.id AND user_referral_list_bonus.isBonusPaid = true)"
+            ),
+            "totalClaimedBonusAmount",
+          ],
+          [
+            Sequelize.literal(
+              "(SELECT SUM(bonusAmount) FROM user_referral_list_bonus WHERE user_referral_list_bonus.userId = users.id AND user_referral_list_bonus.isBonusPaid = false)"
+            ),
+            "totalPendingBonusAmount",
+          ],
+        ],
+        where: {
+          isActive: true, // Example condition
+        },
+        raw: true,
+      });
+      return usersWithReferralCounts;
+    } catch (error) {
+      console.error("Error retrieving users with referral counts:", error);
+      throw error;
+    }
+  };
+  users.countAllReferrals = async function (models) {
+    const { user_referral_list_bonus } = models;
+    try {
+      const count = await user_referral_list_bonus.count({
+        where: { deletedAt: null },
+      });
+      return count;
+    } catch (error) {
+      console.error("Error counting all referrals:", error);
+      throw error;
+    }
+  };
+  users.sumPendingBonusAmounts = async function (models) {
+    console.log(models, "models");
+    const { user_referral_list_bonus } = models;
+    try {
+      const sum = await user_referral_list_bonus.sum("bonusAmount", {
+        where: { deletedAt: null, isBonusPaid: false },
+      });
+      return sum;
+    } catch (error) {
+      console.error("Error summing pending bonus amounts:", error);
+      throw error;
+    }
   };
 
   return users;
