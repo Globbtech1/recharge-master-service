@@ -1,14 +1,16 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
+const { includeReferralDetails } = require("../../hooks/userManagement.hook");
+
+const { authenticate } = require("@feathersjs/authentication").hooks;
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
-    find: [],
-    get: [],
+    all: [authenticate("jwt")],
+    find: [includeReferralDetails()],
+    get: [includeReferralDetails()],
     create: [],
     update: [],
     patch: [],
-    remove: []
+    remove: [],
   },
 
   after: {
@@ -18,7 +20,7 @@ module.exports = {
     create: [],
     update: [],
     patch: [],
-    remove: []
+    remove: [],
   },
 
   error: {
@@ -28,6 +30,6 @@ module.exports = {
     create: [],
     update: [],
     patch: [],
-    remove: []
-  }
+    remove: [],
+  },
 };

@@ -26,8 +26,6 @@ exports.MyBeneficiaries = class MyBeneficiaries {
       },
     });
 
-    const sequelize = this.app.get("sequelizeClient");
-
     return Promise.resolve(successMessage(result, "User saved Beneficiary"));
   }
 

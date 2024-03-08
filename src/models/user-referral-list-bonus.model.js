@@ -64,6 +64,11 @@ module.exports = function (app) {
   userReferralListBonus.associate = function (models) {
     // Define associations here
     // See https://sequelize.org/master/manual/assocs.html
+    const { users } = models;
+    userReferralListBonus.belongsTo(users, {
+      foreignKey: "referredUserId",
+      as: "referredUser",
+    });
   };
 
   return userReferralListBonus;
