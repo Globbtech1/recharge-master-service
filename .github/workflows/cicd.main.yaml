@@ -36,9 +36,10 @@ jobs:
         run: |
           aws s3 cp s3://prod-conf/$SERVICE_NAME/$SERVICE_NAME-main ./.env
           aws s3 cp s3://prod-conf/$SERVICE_NAME/config ./src/config/config.json 
+          rm ./sequelizerc
           aws s3 cp s3://prod-conf/$SERVICE_NAME/sequelize ./sequelizerc 
-          echo "NOW=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
           cat ./sequelizerc
+          echo "NOW=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Install Node modules
         uses: actions/setup-node@v4
