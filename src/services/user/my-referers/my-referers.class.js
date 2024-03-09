@@ -11,18 +11,31 @@ exports.MyReferers = class MyReferers {
   async find(params) {
     try {
       const sequelize = this.app.get("sequelizeClient");
-      const { query } = params;
+      const { query, user } = params;
+      const loggedInUserId = user?.id;
 
-      const { users } = sequelize.models;
-      const myReferrers = await users.findAll({
-        where: {
-          deletedAt: null,
-          invitedBy: "7B8djCgB6aywj4j",
-        },
-      });
+      // const myReferrers = await users.findAll({
+      //   where: {
+      //     deletedAt: null,
+      //     invitedBy: refererLink,
+      //   },
+      // });
 
+      let myReferrers = await this.app
+        .service("user-referral-list-bonus")
+        .find({
+          query: {
+            // userId: loggedInUserId,
+            userId: 46,
+            deletedAt: null,
+            $sort: {
+              id: -1,
+            },
+          },
+        });
       return Promise.resolve(successMessage(myReferrers, "My referrers"));
     } catch (error) {
+      console.log(error, "error");
       return Promise.reject(
         new BadRequest("unable to retrieve data Providers")
       );

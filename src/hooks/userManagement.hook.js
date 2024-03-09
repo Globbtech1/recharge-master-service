@@ -1,7 +1,7 @@
 // Use this hook to manipulate incoming or outgoing data.
 // For more information on hooks see: http://docs.feathersjs.com/api/hooks.html
 const { BadRequest, NotFound } = require("@feathersjs/errors");
-const { Op, Sequelize } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const {
   generateRandomNumber,
   errorMessage,
@@ -17,7 +17,6 @@ const {
   userEmailVerifyValidator,
 } = require("../validations/auth.validation");
 const { ReserveBankAccount } = require("./general-uses");
-const Joi = require("joi");
 const { getTotalAmountSpent } = require("./userFund.hook");
 const { CONSTANT } = require("../dependency/Config");
 
@@ -25,9 +24,9 @@ const { CONSTANT } = require("../dependency/Config");
 
 const checkIfsubmissionisongoing = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data, id } = context;
+    const { app } = context;
     const sequelize = app.get("sequelizeClient");
-    const { call_for_submission, submissionstopic } = sequelize.models;
+    const { call_for_submission } = sequelize.models;
 
     const submissionData = await call_for_submission.findOne({
       where: {
@@ -51,7 +50,7 @@ const checkIfsubmissionisongoing = (options = {}) => {
 
 const checkIfTsubmissionExist = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, data } = context;
     console.log(data, "datasss");
     const sequelize = app.get("sequelizeClient");
     const { call_for_submission } = sequelize.models;
@@ -83,9 +82,9 @@ const checkIfTsubmissionExist = (options = {}) => {
 };
 const includeSubmission = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, params } = context;
     const sequelize = app.get("sequelizeClient");
-    const { call_for_submission, users } = sequelize.models;
+    const { call_for_submission } = sequelize.models;
     params.sequelize = {
       include: [
         {
@@ -122,14 +121,14 @@ const includeSubmission = (options = {}) => {
 };
 const requestChangeEmail = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, params, data } = context;
     const sequelize = app.get("sequelizeClient");
 
     const notFound = new BadRequest("Route Not available");
     return Promise.reject(notFound);
     console.log(params.user, "params.user");
     const loggedInUser = params.user;
-    const { user_verifications, users, change_user_email } = sequelize.models;
+    const { users, change_user_email } = sequelize.models;
     const { error } = changeUserEmailValidator(data);
     console.log(error, "error??");
 
@@ -181,91 +180,10 @@ const requestChangeEmail = (options = {}) => {
     return context;
   };
 };
-const verifyChangeEmail = (options = {}) => {
-  return async (context) => {
-    const { app, method, result, params, data } = context;
-    const sequelize = app.get("sequelizeClient");
-    const { user_verifications, users } = sequelize.models;
-    const { error } = changeUserEmailValidator(data);
-    console.log(error, "error??");
-    if (error) {
-      const ErrorMessage = new BadRequest(error.details[0].message);
-      return Promise.reject(ErrorMessage);
-    }
-    let userId = data.userId;
-    let code = data.code;
-    let newEmail = data.newEmail;
-    let oldEmail = data.oldEmail;
-    let userData = data.userData;
-    console.log(userData, "userData");
-    const userVerification = await user_verifications.findOne({
-      where: {
-        deletedAt: null,
-        userId: userId,
-        code: code,
-        status: "pending",
-      },
-    });
-    if (userVerification === null) {
-      const notFound = new BadRequest("Verification code not found");
-      return Promise.reject(notFound);
-    }
-    const userDetails = await users.findOne({
-      where: {
-        deletedAt: null,
-        email: oldEmail,
-      },
-    });
-    if (userDetails === null) {
-      const notFound = new BadRequest("User not found, please try again");
-      return Promise.reject(notFound);
-    }
-    const newUserEmail = await users.findOne({
-      where: {
-        deletedAt: null,
-        email: newEmail,
-      },
-    });
-    if (newUserEmail !== null) {
-      const EmailExist = new BadRequest(
-        "This email can not be used, please try again"
-      );
-      return Promise.reject(EmailExist);
-    }
-    const updateUser = await users.update(
-      {
-        email: newEmail,
-      },
-      {
-        where: {
-          id: userId,
-        },
-      }
-    );
-    if (updateUser === null) {
-      const notFound = new BadRequest("User not found, please try again");
-      return Promise.reject(notFound);
-    }
-    const updateVerification = await user_verifications.update(
-      {
-        status: "verified",
-      },
-      {
-        where: {
-          id: userVerification.id,
-        },
-      }
-    );
-    if (updateVerification === null) {
-      const notFound = new BadRequest("User not found, please try again");
-      return Promise.reject(notFound);
-    }
-  };
-};
 
 const verifyUserEmailChange = async (req, res) => {
   try {
-    const { app, method, result, params, data, body } = req;
+    const { app, body } = req;
     console.log(body, "body");
     const sequelize = app.get("sequelizeClient");
 
@@ -327,7 +245,7 @@ const verifyUserEmailChange = async (req, res) => {
 
 const GenerateNewVirtualAccount = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, params, data } = context;
     const sequelize = app.get("sequelizeClient");
     console.log(data, params, "params.user.id");
     const { bankCode } = data;
@@ -426,7 +344,7 @@ const SendResponseGenerateAccount = (options = {}) => {
 };
 const FormatResponseProfile = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { result } = context;
     console.log(result, "heheheh");
     // context.result = successMessage(result, "Account verified successfully");
     // return context;
@@ -434,10 +352,9 @@ const FormatResponseProfile = (options = {}) => {
 };
 const getUserNecessaryInformation = (options = {}) => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, params } = context;
     const sequelize = app.get("sequelizeClient");
-    const { generateaccount, account_balance, transactions_history } =
-      sequelize.models;
+    const { transactions_history } = sequelize.models;
     params.sequelize = {
       include: [
         // {
@@ -486,7 +403,7 @@ const getUserNecessaryInformation = (options = {}) => {
 };
 const InitiateResetPassword = () => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, data } = context;
     const sequelize = app.get("sequelizeClient");
     const { emailOrPhoneNumber } = data;
     if (!emailOrPhoneNumber) {
@@ -528,17 +445,6 @@ const InitiateResetPassword = () => {
       userDetails,
     };
     let currentDate = ShowCurrentDate();
-    const updateVerification = await initiate_reset_pwd.update(
-      {
-        deletedAt: currentDate,
-      },
-      {
-        where: {
-          userId: userId,
-          isUsed: false,
-        },
-      }
-    );
 
     context.data = { ...context.data, ...additionalOrderDetails };
     return context;
@@ -546,12 +452,11 @@ const InitiateResetPassword = () => {
 };
 const validateCouponCode = () => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, params, data } = context;
     let loggedInUserId = params?.user?.id;
 
     const sequelize = app.get("sequelizeClient");
-    const { coupon_management, generateaccount, used_coupon } =
-      sequelize.models;
+    const { coupon_management, used_coupon } = sequelize.models;
     const { couponCode, amount: productAmount } = data;
     if (couponCode) {
       let discountedPrice = 0;
@@ -663,7 +568,7 @@ const validateCouponCode = () => {
 };
 const LoginAfterSignup = () => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, result, data } = context;
     const sequelize = app.get("sequelizeClient");
     // const { amount = 0, loggedInUser } = data;
 
@@ -693,7 +598,7 @@ const LoginAfterSignup = () => {
 };
 const checkForAccountStatus = () => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, params, data } = context;
     const sequelize = app.get("sequelizeClient");
     const { users, transactions_history } = sequelize.models;
 
@@ -704,10 +609,6 @@ const checkForAccountStatus = () => {
     //   .service("transactions-history")
     //   .getTotalAmountSpent(loggedInUserId);
     // console.log(totalAmountSpent);
-    const totalAmountSpent = await getTotalAmountSpent(
-      loggedInUserId,
-      transactions_history
-    );
     const userDetails = await users.findOne({
       where: {
         id: loggedInUserId,
@@ -715,13 +616,7 @@ const checkForAccountStatus = () => {
       },
     });
     if (userDetails !== null) {
-      const {
-        isAccountLocked,
-        reasonForAccountLock,
-        isEmailVerify,
-        isPhoneNumberVerify,
-        isVerify,
-      } = userDetails;
+      const { isAccountLocked, reasonForAccountLock, isVerify } = userDetails;
       // if (userDetails?.isVerify === false) {
       //   const notFound = new BadRequest(
       //     "User account not verified, Please verify your account"
@@ -752,7 +647,7 @@ const checkForAccountStatus = () => {
 };
 const checkForAmountSpent = () => {
   return async (context) => {
-    const { app, method, result, params, data } = context;
+    const { app, params } = context;
     const sequelize = app.get("sequelizeClient");
     const { users, transactions_history } = sequelize.models;
     let loggedInUserId = params?.user?.id;
@@ -783,7 +678,33 @@ const checkForAmountSpent = () => {
     return context;
   };
 };
+const includeReferralDetails = (options = {}) => {
+  return async (context) => {
+    const { app, params } = context;
+    const sequelize = app.get("sequelizeClient");
+    const { users } = sequelize.models;
+    params.sequelize = {
+      include: [
+        {
+          model: users,
+          attributes: {
+            exclude: [
+              "fcmToken",
+              "securityPin",
+              "image",
+              "password",
+              "password",
+              "id",
+            ],
+          },
+        },
+      ],
+      raw: false,
+    };
 
+    return context;
+  };
+};
 module.exports = {
   checkIfsubmissionisongoing,
   checkIfTsubmissionExist,
@@ -799,4 +720,5 @@ module.exports = {
   LoginAfterSignup,
   checkForAccountStatus,
   checkForAmountSpent,
+  includeReferralDetails,
 };
