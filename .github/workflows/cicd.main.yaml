@@ -32,7 +32,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Get env variables
+      - name: Get env variables.
         run: |
           aws s3 cp s3://prod-conf/$SERVICE_NAME/$SERVICE_NAME-main ./.env
           aws s3 cp s3://prod-conf/$SERVICE_NAME/config ./src/config/config.json 
