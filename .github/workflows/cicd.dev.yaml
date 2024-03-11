@@ -41,7 +41,7 @@ jobs:
       - name: Install Node modules
         uses: actions/setup-node@v1
         with:
-          node-version: "16"
+          node-version: "20"
 
       - name: Set short git commit SHA
         id: commit
@@ -54,7 +54,7 @@ jobs:
 
       - name: Create docker file
         run: |-
-          echo -e 'FROM node:16 \nLABEL maintainer="Hayio Technologies LTD <hayio0.tech@gmail.com>" \nWORKDIR  /app \nCOPY . /app  \nCMD ["npm", "start"] \nEXPOSE 3000' > Dockerfile
+          echo -e 'FROM node:20 \nLABEL maintainer="Hayio Technologies LTD <hayio0.tech@gmail.com>" \nWORKDIR  /app \nCOPY . /app  \nCMD ["npm", "start"] \nEXPOSE 3000' > Dockerfile
 
       - name: Login to Amazon ECR
         id: login-ecr
