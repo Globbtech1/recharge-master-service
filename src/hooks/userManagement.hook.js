@@ -687,6 +687,7 @@ const includeReferralDetails = (options = {}) => {
       include: [
         {
           model: users,
+          as: "referredUser",
           attributes: {
             exclude: [
               "fcmToken",
