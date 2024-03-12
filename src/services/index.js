@@ -217,6 +217,8 @@ const adminReferralReports = require('./admin/referral-reports/referral-reports.
 
 const adminUserReferralList = require('./admin/user-referral-list/user-referral-list.service.js');
 
+const jobsRunUserReferralBonus = require('./jobs/run-user-referral-bonus/run-user-referral-bonus.service.js');
+
 module.exports = function (app) {
   app.configure(users);
   app.configure(userVerifications);
@@ -328,4 +330,5 @@ module.exports = function (app) {
   app.configure(userReferralListBonus);
   app.configure(adminReferralReports);
   app.configure(adminUserReferralList);
+  app.configure(jobsRunUserReferralBonus);
 };
