@@ -1,4 +1,4 @@
-const { NotFound } = require("@feathersjs/errors");
+const { NotFound, BadRequest } = require("@feathersjs/errors");
 const {
   successMessage,
   convertToKobo,
@@ -28,9 +28,9 @@ exports.RunUserReferralBonus = class RunUserReferralBonus {
       },
     });
     if (referralBonus === null) {
-      const notFound = new NotFound("referral bonus is yet to be set by admin");
-      // return Promise.reject(notFound);
-      return res.status(404).json(notFound);
+      return Promise.reject(
+        new BadRequest("referral bonus is yet to be set by admin")
+      );
     }
     console.log(referralBonus, "referralBonus");
     let userMinimumSpent = referralBonus?.minimumSpentAmount;
