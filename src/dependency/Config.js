@@ -152,6 +152,11 @@ const CONSTANT = {
       message:
         "Your account has been debited with  %TRANSACTION_AMOUNT%   successfully please check your wallet balance",
     },
+    bannerTypes: {
+      product: "products",
+      referrer: "referrers",
+      others: "others",
+    },
   },
 };
 
